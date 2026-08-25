@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+TMP/
+*.egg-info/
+
+# Runtime data products (EDM chunks, NPZs, selection outputs, audit copies)
+/data/
+audit_report/
+esd_list_*.txt
+
+# Pipeline outputs: keep only the small example sample
+output/*
+!output/example/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
