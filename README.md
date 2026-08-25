@@ -96,3 +96,8 @@ cd fitter && .venv/bin/python pipeline/run_fit_all.py \
 - 数据处理与溯源：`esd2npz/README.md`、`esd2npz/PROVENANCE.md`
 - 拟合设计与日志规范：`fitter/README.md`、`fitter/DESIGN_REPORT.md`
 - 使用手册：两项目各自 `skills/`（环境/配置/运行/排障/审计）
+
+## 相关文档（飞书）
+
+- [处理流程与需求说明](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
+- [设计/实现报告](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)

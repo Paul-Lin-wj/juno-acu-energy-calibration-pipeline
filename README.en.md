@@ -110,3 +110,8 @@ cd fitter && .venv/bin/python pipeline/run_fit_all.py \
 - Fitter design & logging spec: `fitter/README.md`, `fitter/DESIGN_REPORT.md`
 - Manuals: `skills/` under both projects (environment / configuration /
   running / troubleshooting / audit)
+
+## Related Documents (Feishu)
+
+- [Processing pipeline & requirements](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
+- [Design / implementation report](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)
