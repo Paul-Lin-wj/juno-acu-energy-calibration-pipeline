@@ -1,5 +1,7 @@
 # JUNO ACU 刻度数据流水线
 
+> **[English Version](README.en.md)**
+
 ## 项目简介
 
 JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据的完整处理流水线：
