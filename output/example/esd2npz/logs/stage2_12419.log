@@ -1,0 +1,5 @@
+[INFO] RUN12419: phase=3, 2766750 events -> /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected/RUN12419.npz
+[INFO] absolute_scale=0.99743135
+[INFO] spatial_factor range: [0.965981, 1.015201]
+[INFO] time_factor range: [0.990272, 0.990332]
+[INFO] total_factor range: [0.972913, 1.022541]

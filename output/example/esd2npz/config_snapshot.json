@@ -1,0 +1,32 @@
+{
+ "config/paths.py": {
+  "path": "/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/config/paths.py",
+  "exists": true,
+  "size_bytes": 4873,
+  "sha256": "64eb1f8f42d4df0018e82e771a4239fdf1228f115d67f00aa2303ea7b5991c92"
+ },
+ "requirements.txt": {
+  "path": "/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/requirements.txt",
+  "exists": true,
+  "size_bytes": 64,
+  "sha256": "06bd0e0e1cbed278baf24dbf8cd5a526ccfe3074daa24dd59e4f31fc7ecb2a27"
+ },
+ "calib_run_info/calib_to_analyze.txt": {
+  "path": "/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/calib_run_info/calib_to_analyze.txt",
+  "exists": true,
+  "size_bytes": 1079,
+  "sha256": "6cad458da25b8d43379347cffffd4a64a8df178e82bbc45b2e117a40f71255bd"
+ },
+ "calib_run_info/CalibRUN_from_file.csv": {
+  "path": "/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/calib_run_info/CalibRUN_from_file.csv",
+  "exists": true,
+  "size_bytes": 16506,
+  "sha256": "84d39f499b8b560a02fa243b008e2e8bfd7bf659a494bede303667a4931ee6a6"
+ },
+ "input/correction/correction_api.py": {
+  "path": "/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/input/correction/correction_api.py",
+  "exists": true,
+  "size_bytes": 11655,
+  "sha256": "500d1f45200db7f25e745040667073446b95d401cc4612c3bd801cbc2df7437a"
+ }
+}

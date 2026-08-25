@@ -1,0 +1,66 @@
+{
+ "run": 12370,
+ "source": "Ge68",
+ "bkg_run": 12419,
+ "ROI_MeV": [
+  0.46,
+  1.23
+ ],
+ "step1_energy_region_MeV": [
+  0.465,
+  0.685
+ ],
+ "z_cut": {
+  "RD_threshold_percent": 0.08,
+  "z_limit_m": 0.4185
+ },
+ "z_expected_m": 0.001,
+ "z_source_true_m": 0.0,
+ "calib_muonveto_kept": {
+  "kept": 1413255,
+  "total": 1492630,
+  "percent": 94.68
+ },
+ "bkg_muonveto_kept": {
+  "kept": 2612627,
+  "total": 2766750,
+  "percent": 94.43
+ },
+ "EFV_selected": {
+  "kept": 109212,
+  "input": 1413255
+ },
+ "final_energy_cut_MeV": [
+  0.4945,
+  0.74526
+ ],
+ "events_after_ecut": 17407,
+ "static_cut_definitions": {
+  "nominal_energy_MeV": {
+   "Cs137": 0.662,
+   "Mn54": 0.835,
+   "Ge68": 1.022,
+   "K40": 1.461,
+   "nH": 2.223,
+   "Co60": 2.506,
+   "nC": 4.94,
+   "O16": 6.13,
+   "AmC": 2.223
+  },
+  "fit_window_scale": {
+   "low": 0.9,
+   "high": 1.1
+  },
+  "fit_bin_width_MeV": 0.002,
+  "source_initial_ROI_scale_MeV": {
+   "Ge68": [
+    0.45,
+    1.2
+   ]
+  },
+  "EFV_ellipse": "sqrt((rho/rho_limit)^2 + ((z - z_expected)/z_limit)^2) <= 1",
+  "EFV_z_exclusion": "|z| >= 17.7 m dropped before EFV",
+  "muon_veto": "keep events with MuonVeto == False",
+  "energy_cut_definition": "mu +/- 3 sigma of fitted peak (Gaussian on Step-1 region)"
+ }
+}

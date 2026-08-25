@@ -1,0 +1,5 @@
+[INFO] RUN12370: phase=3, 1492630 events -> /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected/RUN12370.npz
+[INFO] absolute_scale=0.99743135
+[INFO] spatial_factor range: [0.965980, 1.015201]
+[INFO] time_factor range: [0.990087, 0.990112]
+[INFO] total_factor range: [0.973122, 1.022731]

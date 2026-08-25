@@ -1,0 +1,29 @@
+--- Running Updated Script (Dual Timestamp Output: woEcut & Ecut) ---
+--- Processing Run 12370 ---
+Configuration: Source=Ge68, BkgRun=12419
+Warning: Skip object-like key trigger_type in RUN12370.npz
+Warning: Skip object-like key trigger_type in RUN12419.npz
+Calib RUN12370 MuonVeto(pass=not-vetoed): 1413255/1492630 events kept (94.68%).
+Bkg RUN12419 MuonVeto(pass=not-vetoed): 2612627/2766750 events kept (94.43%).
+Using reconstruction keys: omilrec_energy, omilrec_x/omilrec_y/omilrec_z
+Memory usage: 298.64 MB
+Calib Run (Ge68) 12370: 1413255 evts, 3440.77 s
+Bkg Run 12419: 2612627 evts, 6876.46 s
+ROI: [0.46, 1.23] MeV
+Step1 Energy Region (robust): [0.465, 0.685] MeV
+Step3 Z-cut robust check: at z=0.3195m, next 5 points: 1/5 below threshold
+Step3 Z-cut: found robust crossing at z=0.4185m
+Step3 Z-cut: RD_threshold=0.08%, z_limit=0.4185 m
+z_expected: 0.001 m; True: 0.000 m 
+
+RUN12370: EFV event number: 109212/1413255
+Plotting EFV distribution...
+Saving results (NPZ)...
+Plotting final spectrum...
+Saved fit plot to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/figures_check_important_new/Run12370_2_EnergySpectrum_Fit.png
+Final Energy Cut (mu±3sigma): [0.49450, 0.74526] MeV
+Saving timestamps...
+Saved woEcut timestamp to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/Timestamp_wo_Ecut/RUN12370.txt
+Saved Ecut timestamp (0.49450-0.74526 MeV) to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/Timestamp_Ecut/RUN12370.txt
+Events after Ecut: 17407
+Done.

@@ -1,0 +1,50 @@
+
+============================================================
+
+[Ge68] RUN12370 (E_true=0.8845 MeV)
+
+[Ge68] Input: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run12370_SelectionResult.npz
+
+Project root path:
+ 
+/datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/fitter/fitters
+
+[Info] Starting fast Ge68 fit for RUN12370_Ge68
+
+[Progress] Fast Ge68 fit finished for RUN12370_Ge68
+
+[Output] Fit results saved to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/fitter/results/RUN12370_Ge68.npz
+
+[Output] Log-y figure saved to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/fitter/figures/RUN12370_Ge68.pdf
+
+[Ge68] mu=0.9102, sigma/E=3.54%, chi2/ndf=600/358, time=3.4s
+
+[Warning] Cs137 RUN12295: data not found at /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run12295_SelectionResult.npz, skip
+
+[Warning] Mn54 RUN12247: data not found at /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run12247_SelectionResult.npz, skip
+
+[Warning] Co60 RUN12216: data not found at /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run12216_SelectionResult.npz, skip
+
+[Warning] K40 RUN9632: data not found at /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run9632_SelectionResult.npz, skip
+
+
+============================================================
+
+Total time: 3.4s
+
+
+Source   E_true     E_rec      sigma/E    chi2/ndf     Time       Fitter    
+
+----------------------------------------------------------------------
+
+Ge68     0.884      0.9102     3.54      % 600/358   3.4     s fast      
+
+
+Drawing ENL-style resolution plot...
+
+Saved /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/fitter/enl_style_resolution.png
+
+Saved /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/fitter/enl_style_resolution.pdf
+
+[AUDIT] PASSED (52 code files, outputs complete)
+

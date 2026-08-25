@@ -1,0 +1,89 @@
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/src/convert_edm_to_npz.py --run 12370 --input-dir /lustrefs/juno26/users/zhaorz/Calib/ReProd26B/EDM_from_esd/Data --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw
+  RUN 12370: 8 EDM file(s) from /lustrefs/juno26/users/zhaorz/Calib/ReProd26B/EDM_from_esd/Data
+  -> Saved /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw/RUN12370.npz (Entries: 1492630, LiveTime: 3440.77 s)
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/src/apply_final_correction.py 12370 --input /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw/RUN12370.npz --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected
+  [INFO] RUN12370: phase=3, 1492630 events -> /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected/RUN12370.npz
+  [INFO] absolute_scale=0.99743135
+  [INFO] spatial_factor range: [0.965980, 1.015201]
+  [INFO] time_factor range: [0.990087, 0.990112]
+  [INFO] total_factor range: [0.973122, 1.022731]
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/src/convert_edm_to_npz.py --run 12419 --input-dir /lustrefs/juno26/users/zhaorz/Calib/ReProd26B/EDM_from_esd/Data --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw
+  RUN 12419: 7 EDM file(s) from /lustrefs/juno26/users/zhaorz/Calib/ReProd26B/EDM_from_esd/Data
+  -> Saved /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw/RUN12419.npz (Entries: 2766750, LiveTime: 6876.46 s)
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/src/apply_final_correction.py 12419 --input /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw/RUN12419.npz --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected
+  [INFO] RUN12419: phase=3, 2766750 events -> /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected/RUN12419.npz
+  [INFO] absolute_scale=0.99743135
+  [INFO] spatial_factor range: [0.965981, 1.015201]
+  [INFO] time_factor range: [0.990272, 0.990332]
+  [INFO] total_factor range: [0.972913, 1.022541]
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/src/combine_selection.py 12370 --Finalcorrection --input-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370
+  --- Running Updated Script (Dual Timestamp Output: woEcut & Ecut) ---
+  --- Processing Run 12370 ---
+  Configuration: Source=Ge68, BkgRun=12419
+  Warning: Skip object-like key trigger_type in RUN12370.npz
+  Warning: Skip object-like key trigger_type in RUN12419.npz
+  Calib RUN12370 MuonVeto(pass=not-vetoed): 1413255/1492630 events kept (94.68%).
+  Bkg RUN12419 MuonVeto(pass=not-vetoed): 2612627/2766750 events kept (94.43%).
+  Using reconstruction keys: omilrec_energy, omilrec_x/omilrec_y/omilrec_z
+  Memory usage: 298.64 MB
+  Calib Run (Ge68) 12370: 1413255 evts, 3440.77 s
+  Bkg Run 12419: 2612627 evts, 6876.46 s
+  ROI: [0.46, 1.23] MeV
+  Step1 Energy Region (robust): [0.465, 0.685] MeV
+  Step3 Z-cut robust check: at z=0.3195m, next 5 points: 1/5 below threshold
+  Step3 Z-cut: found robust crossing at z=0.4185m
+  Step3 Z-cut: RD_threshold=0.08%, z_limit=0.4185 m
+  z_expected: 0.001 m; True: 0.000 m 
+  
+  RUN12370: EFV event number: 109212/1413255
+  Plotting EFV distribution...
+  Saving results (NPZ)...
+  Plotting final spectrum...
+  Saved fit plot to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/figures_check_important_new/Run12370_2_EnergySpectrum_Fit.png
+  Final Energy Cut (mu±3sigma): [0.49450, 0.74526] MeV
+  Saving timestamps...
+  Saved woEcut timestamp to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/Timestamp_wo_Ecut/RUN12370.txt
+  Saved Ecut timestamp (0.49450-0.74526 MeV) to: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/_work/selection_12370/Timestamp_Ecut/RUN12370.txt
+  Events after Ecut: 17407
+  Done.
+$ /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/.venv/bin/python /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/esd2npz/tools/make_physics_qa.py --run 12370 --corrected-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_corrected --selection-npz /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/selection_npz/Run12370_SelectionResult.npz --out-dir /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/figures/physics_qa
+  written: /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/figures/physics_qa/Run12370_physics_qa.png
+  {
+   "run": 12370,
+   "source": "Ge68",
+   "source_pos_m": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "bkg_run": "12419",
+   "n_total": 1492630,
+   "n_veto_pass": 1413255,
+   "veto_fraction": 0.05318,
+   "junk_negative_fraction": 0.025668,
+   "living_time_s": 3440.77,
+   "n_efv_selected": 109212,
+   "fitted_peaks": [
+    {
+     "E_MeV": 0.9094,
+     "sigma_MeV": 0.0324,
+     "res_percent": 3.56,
+     "amp": 9975
+    }
+   ],
+   "energy_drift_pct": 2.578,
+   "rate_hz": {
+    "mean": 392.46,
+    "rms": 3.42
+   },
+   "pe_over_e_profile": {
+    "energy_range_MeV": [
+     0.3,
+     2.7
+    ],
+    "ratio_at_1MeV": 2024.0,
+    "max_adjacent_bin_jump_pct": 7.74
+   },
+   "vertex_centroid_dist_mm": 0.3
+  }
+[AUDIT] PASSED (41 code files, outputs complete)

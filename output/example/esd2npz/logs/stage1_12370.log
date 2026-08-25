@@ -1,0 +1,2 @@
+RUN 12370: 8 EDM file(s) from /lustrefs/juno26/users/zhaorz/Calib/ReProd26B/EDM_from_esd/Data
+-> Saved /datafs/users/lin/workplace/energy_reco/ENL_agent/calib_pipeline_suite/output/20260825_170131/esd2npz/results/npz_raw/RUN12370.npz (Entries: 1492630, LiveTime: 3440.77 s)

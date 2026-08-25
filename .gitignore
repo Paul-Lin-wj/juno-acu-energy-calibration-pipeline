@@ -1,1 +1,3 @@
-output/
+# Runtime outputs: keep only the small example sample
+output/*
+!output/example/
