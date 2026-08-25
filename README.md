@@ -99,5 +99,5 @@ cd fitter && .venv/bin/python pipeline/run_fit_all.py \
 
 ## 相关文档（飞书）
 
-- [处理流程与需求说明](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
-- [设计/实现报告](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)
+- [MiniESD2npz 流程报告](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
+- [刻度峰位拟合](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)

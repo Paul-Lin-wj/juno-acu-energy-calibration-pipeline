@@ -113,5 +113,5 @@ cd fitter && .venv/bin/python pipeline/run_fit_all.py \
 
 ## Related Documents (Feishu)
 
-- [Processing pipeline & requirements](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
-- [Design / implementation report](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)
+- [MiniESD2npz pipeline report](https://xcnjvifx7evw.feishu.cn/docx/COu3d06GOogbzgxijWccuQJXn2N)
+- [Calibration peak fitting](https://xcnjvifx7evw.feishu.cn/docx/Mxqmdu2BeooCZexGvRncDsgin6g)
