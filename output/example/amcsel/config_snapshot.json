@@ -1,0 +1,55 @@
+{
+  "input_data_dir": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/input/Data",
+  "calib_info_file": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/calib_run_info/calib_to_analyze.txt",
+  "calib_pos_file": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/calib_run_info/CalibRUN_from_file.csv",
+  "vertex_algo": "omilrec",
+  "fv_energy_region": [
+    0.5,
+    10.0
+  ],
+  "params_neutron": {
+    "energy_limit": 0.5,
+    "delay_region": [
+      1.9,
+      5.7
+    ],
+    "nH_region": [
+      2.0,
+      2.4
+    ],
+    "promt_region": [
+      0.5,
+      12
+    ],
+    "distance_limit": 1.5,
+    "dt_cut": 1000
+  },
+  "params_standard": {
+    "energy_limit": 0.5,
+    "delay_region": [
+      1.0,
+      3.0
+    ],
+    "promt_region": [
+      0.5,
+      12
+    ],
+    "distance_limit": 2.0,
+    "dt_cut": 2000
+  },
+  "sources_do_correlation": [
+    "AmC",
+    "AmC100",
+    "AmC117",
+    "AmC-Cs137",
+    "Co60",
+    "Cf252"
+  ],
+  "sources_do_cs137": [
+    "AmC-Cs137",
+    "Cs137"
+  ],
+  "cs137_isolation_time": 1500,
+  "cs137_energy_std_cut": 3.0,
+  "cwd": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel"
+}

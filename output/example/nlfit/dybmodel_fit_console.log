@@ -495,130 +495,98 @@ Check m_minuit->GetNumPars()=13
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
  START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-05
- FCN=510.501 FROM MIGRAD    STATUS=INITIATE       61 CALLS          62 TOTAL
+ FCN=481.542 FROM MIGRAD    STATUS=INITIATE       85 CALLS          86 TOTAL
                      EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
   EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  scale        1.00000e+00   1.00000e-03   0.00000e+00  -5.14409e+04
-   2  kB           9.39280e+00   1.00000e-01  -6.54832e-02   7.59970e+02
-   3  kC           4.00000e+00   1.00000e-02   0.00000e+00  -1.04192e+03
-   4  alpha        1.00000e-01   1.00000e-03   0.00000e+00   1.08756e+03
-   5  tau          4.00000e+01   1.00000e-03   0.00000e+00  -1.62710e+03
-   6  n12Ratio     2.57500e-02   1.00000e-03   0.00000e+00  -7.57184e+02
-   7  gamScale     1.00000e+00   5.00000e-04   0.00000e+00   1.44773e+03
+   1  scale        1.00000e+00   1.00000e-03   0.00000e+00  -4.21437e+04
+   2  kB           8.96112e+00   1.00000e-01  -4.88509e-02   1.35134e+01
+   3  kC           4.00000e+00   1.00000e-02   0.00000e+00  -1.52370e+03
+   4  alpha        1.00000e-01   1.00000e-03   0.00000e+00   1.17540e+03
+   5  tau          4.00000e+01   1.00000e-03   0.00000e+00  -1.76895e+03
+   6  n12Ratio     2.57500e-02   1.00000e-03   0.00000e+00  -7.85306e+02
+   7  gamScale     1.00000e+00   5.00000e-04   0.00000e+00   7.01513e+02
    8  fadcNor      1.00000e+00     fixed    
    9  fadcRes      0.00000e+00     fixed    
   10  lsScale      1.00000e+00     fixed    
   11  k40Scale     1.00000e+00     fixed    
-  12  c10C11Frac   1.50000e-01   1.00000e-02   0.00000e+00   2.88994e+02
-  13  c10Be11Frac   2.00000e-02   5.00000e-03   0.00000e+00  -8.66315e+01
- MINUIT WARNING IN MIGRAD  
- ============== Negative diagonal element 3 in Error Matrix
- MINUIT WARNING IN MIGRAD  
- ============== 1.00069 added to diagonal of error matrix
- MIGRAD FAILS TO FIND IMPROVEMENT
- EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -5.6237e-04  3.3389e-03  1.3616e-01  5.7282e-01  9.1270e-01  9.6134e-01  1.0250e+00  1.8832e+00  3.5060e+00
- MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 0.004068 TO DIAGONAL.
- FCN=162.36 FROM HESSE     STATUS=NOT POSDEF     85 CALLS         829 TOTAL
-                     EDM=2.45699e-05    STRATEGY= 1      ERR MATRIX NOT POS-DEF
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  scale        1.01775e+00   3.76068e-03   3.76783e-06   2.62393e-01
-   2  kB           1.46784e+01   1.42741e+00   7.52067e-05   2.88750e-02
-   3  kC           1.80385e+00   5.00976e-01   9.22880e-05   4.40515e-02
-   4  alpha        4.25615e-02   1.48046e-02   1.09966e-04   1.13374e-02
-   5  tau          2.02794e+01   1.13102e+01   1.06448e-04   5.91981e-02
-   6  n12Ratio     2.73731e-02   1.29299e-03   1.46116e-04  -1.34327e-03
-   7  gamScale     1.00143e+00   2.04295e-03   2.27312e-05   5.34009e-03
-   8  fadcNor      1.00000e+00     fixed    
-   9  fadcRes      0.00000e+00     fixed    
-  10  lsScale      1.00000e+00     fixed    
-  11  k40Scale     1.00000e+00     fixed    
-  12  c10C11Frac   1.18558e-01   1.14328e-02   2.12101e-04   9.84635e-04
-  13  c10Be11Frac   2.30727e-02   7.43485e-03   3.01594e-04   1.50603e-03
+  12  c10C11Frac   1.50000e-01   1.00000e-02   0.00000e+00   2.64703e+02
+  13  c10Be11Frac   2.00000e-02   5.00000e-03   0.00000e+00  -7.57673e+01
  MIGRAD MINIMIZATION HAS CONVERGED.
  MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -2.7859e-03  1.3502e-01  2.0112e-01  5.8464e-01  9.2074e-01  9.6155e-01  1.0254e+00  1.9442e+00  3.2301e+00
- MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 0.006016 TO DIAGONAL.
- MIGRAD TERMINATED WITHOUT CONVERGENCE.
- FCN=162.36 FROM MIGRAD    STATUS=FAILED        935 CALLS         936 TOTAL
-                     EDM=9.4169e-05    STRATEGY= 1      ERR MATRIX NOT POS-DEF
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=157.775 FROM MIGRAD    STATUS=CONVERGED     911 CALLS         912 TOTAL
+                     EDM=4.45889e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  scale        1.01775e+00   4.20544e-03   1.50713e-06   5.63966e-01
-   2  kB           1.46785e+01   6.82194e-01   3.00827e-05   3.40732e-02
-   3  kC           1.80384e+00   3.93361e-01   3.69152e-05   5.39838e-02
-   4  alpha        4.25594e-02   2.12327e-02   1.09900e-04   1.43547e-02
-   5  tau          2.02778e+01   2.27001e+00   4.25793e-05  -3.29108e-02
-   6  n12Ratio     2.73731e-02   1.41445e-03   1.46116e-04  -1.30280e-03
-   7  gamScale     1.00143e+00   2.54643e-03   2.27312e-05   5.16009e-03
+   1  scale        1.01749e+00   1.30576e-03   3.64350e-06   1.67693e+00
+   2  kB           1.46124e+01   3.76389e-01   7.32366e-05  -5.98037e-02
+   3  kC           1.79897e+00   1.76481e-01   8.90859e-05  -1.70174e-02
+   4  alpha        4.08971e-02   3.49846e-02   1.17118e-04   4.23628e-02
+   5  tau          1.98340e+01   2.92686e+01   1.15535e-04  -3.61742e-02
+   6  n12Ratio     2.73580e-02   1.34364e-03   1.43961e-04   5.50409e-03
+   7  gamScale     1.00284e+00   1.88706e-03   2.24436e-05  -1.26428e-01
    8  fadcNor      1.00000e+00     fixed    
    9  fadcRes      0.00000e+00     fixed    
   10  lsScale      1.00000e+00     fixed    
   11  k40Scale     1.00000e+00     fixed    
-  12  c10C11Frac   1.18558e-01   1.11959e-02   2.12101e-04   9.57431e-04
-  13  c10Be11Frac   2.30727e-02   7.83497e-03   1.20638e-04   1.46231e-03
+  12  c10C11Frac   1.18460e-01   1.12488e-02   2.09141e-04  -3.82598e-03
+  13  c10Be11Frac   2.32141e-02   7.36719e-03   2.96279e-04   8.18754e-03
  EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  9    ERR DEF=1
-  1.769e-05  2.783e-03  1.581e-03  8.762e-05  4.316e-04 -2.590e-06  7.428e-06  7.439e-06 -1.238e-05 
-  2.783e-03  4.661e-01  2.364e-01  1.358e-02  4.998e-02 -3.877e-04  1.129e-03  1.024e-03 -1.866e-03 
-  1.581e-03  2.364e-01  1.553e-01  8.130e-03  3.856e-02 -2.392e-04  6.731e-04  6.257e-04 -1.119e-03 
-  8.762e-05  1.358e-02  8.130e-03  4.572e-04  9.796e-03 -1.106e-05  3.677e-05  3.526e-05 -6.112e-05 
-  4.316e-04  4.998e-02  3.856e-02  9.796e-03  5.155e+00  1.185e-04  2.041e-04  4.722e-04 -5.141e-04 
- -2.590e-06 -3.877e-04 -2.392e-04 -1.106e-05  1.185e-04  2.001e-06 -1.147e-06 -1.294e-06  2.005e-06 
-  7.428e-06  1.129e-03  6.731e-04  3.677e-05  2.041e-04 -1.147e-06  6.484e-06  3.447e-06 -5.351e-06 
-  7.439e-06  1.024e-03  6.257e-04  3.526e-05  4.722e-04 -1.294e-06  3.447e-06  1.254e-04 -2.645e-06 
- -1.238e-05 -1.866e-03 -1.119e-03 -6.112e-05 -5.141e-04  2.005e-06 -5.351e-06 -2.645e-06  6.144e-05 
-ERR MATRIX NOT POS-DEF
+  1.705e-06  4.203e-04  9.425e-05 -2.824e-05 -2.665e-02 -7.945e-08  4.933e-07 -8.782e-07  3.439e-07 
+  4.203e-04  1.417e-01  5.126e-03 -7.531e-03 -6.741e+00 -1.411e-05  6.952e-05 -4.014e-04  1.898e-04 
+  9.425e-05  5.126e-03  3.117e-02 -3.748e-03 -3.525e+00 -1.060e-05  3.418e-05 -2.314e-04  1.011e-04 
+ -2.824e-05 -7.531e-03 -3.748e-03  1.274e-03  1.062e+00  9.432e-06 -5.336e-06  6.263e-05 -3.571e-05 
+ -2.665e-02 -6.741e+00 -3.525e+00  1.062e+00  9.047e+02  5.757e-03 -5.543e-03  5.304e-02 -2.938e-02 
+ -7.945e-08 -1.411e-05 -1.060e-05  9.432e-06  5.757e-03  1.806e-06 -6.724e-08  5.640e-08  5.275e-09 
+  4.933e-07  6.952e-05  3.418e-05 -5.336e-06 -5.543e-03 -6.724e-08  3.561e-06  2.766e-07 -1.805e-07 
+ -8.782e-07 -4.014e-04 -2.314e-04  6.263e-05  5.304e-02  5.640e-08  2.766e-07  1.266e-04  4.291e-07 
+  3.439e-07  1.898e-04  1.011e-04 -3.571e-05 -2.938e-02  5.275e-09 -1.805e-07  4.291e-07  5.432e-05 
  PARAMETER  CORRELATION COEFFICIENTS  
        NO.  GLOBAL      1      2      3      4      5      6      7     12     13
-        1  0.99504   1.000  0.969  0.954  0.974  0.045 -0.435  0.694  0.158 -0.376
-        2  0.98388   0.969  1.000  0.879  0.931  0.032 -0.401  0.649  0.134 -0.349
-        3  0.98980   0.954  0.879  1.000  0.965  0.043 -0.429  0.671  0.142 -0.362
-        4  0.99635   0.974  0.931  0.965  1.000  0.202 -0.366  0.675  0.147 -0.365
-        5  0.87736   0.045  0.032  0.043  0.202  1.000  0.037  0.035  0.019 -0.029
-        6  0.67731  -0.435 -0.401 -0.429 -0.366  0.037  1.000 -0.318 -0.082  0.181
-        7  0.70112   0.694  0.649  0.671  0.675  0.035 -0.318  1.000  0.121 -0.268
-       12  0.20781   0.158  0.134  0.142  0.147  0.019 -0.082  0.121  1.000 -0.030
-       13  0.38521  -0.376 -0.349 -0.362 -0.365 -0.029  0.181 -0.268 -0.030  1.000
- ERR MATRIX NOT POS-DEF
+        1  0.94976   1.000  0.855  0.409 -0.606 -0.679 -0.045  0.200 -0.060  0.036
+        2  0.94503   0.855  1.000  0.077 -0.560 -0.595 -0.028  0.098 -0.095  0.068
+        3  0.95339   0.409  0.077  1.000 -0.595 -0.664 -0.045  0.103 -0.116  0.078
+        4  0.99855  -0.606 -0.560 -0.595  1.000  0.989  0.197 -0.079  0.156 -0.136
+        5  0.99895  -0.679 -0.595 -0.664  0.989  1.000  0.142 -0.098  0.157 -0.133
+        6  0.63049  -0.045 -0.028 -0.045  0.197  0.142  1.000 -0.027  0.004  0.001
+        7  0.25662   0.200  0.098  0.103 -0.079 -0.098 -0.027  1.000  0.013 -0.013
+       12  0.21634  -0.060 -0.095 -0.116  0.156  0.157  0.004  0.013  1.000  0.005
+       13  0.17882   0.036  0.068  0.078 -0.136 -0.133  0.001 -0.013  0.005  1.000
 Check m_nFreeParameter = m_minuit->GetNumFreePars()-2=5
  =============================== 
- chi2 minimum: 162.36
+ chi2 minimum: 157.775
  =============================== 
- m_chi2B12    = 61.0321
- m_chi2C11    = 42.3829
- m_chi2C10    = 51.7779
+ m_chi2B12    = 60.7062
+ m_chi2C11    = 42.482
+ m_chi2C10    = 51.893
 running dybK40Data::InitTheo()
  calculating theoretical K40 shape 
  =====> Reduced Chi2 
-TotChi2 162.36
-RedChi2 0.99
-Gamma   3.54263
-B12     1.24555
-C11     0.941843
-C10     0.976941
+TotChi2 157.775
+RedChi2 0.962041
+Gamma   1.18495
+B12     1.2389
+C11     0.944044
+C10     0.979113
 K40     -0
 lsLBNL  -0
 lsIHEP  -0
 FADC    -0
 
 running WriteResult()
- m_chi2B12    = 1.24555
- m_chi2C11    = 0.941843
- m_chi2C10    = 0.976941
+ m_chi2B12    = 1.2389
+ m_chi2C11    = 0.944044
+ m_chi2C10    = 0.979113
 running dybK40Data::InitTheo()
  calculating theoretical K40 shape 
  =====> Reduced Chi2 
-TotChi2 162.36
-RedChi2 0.99
-Gamma   3.54263
-B12     1.24555
-C11     0.941843
-C10     0.976941
+TotChi2 157.775
+RedChi2 0.962041
+Gamma   1.18495
+B12     1.2389
+C11     0.944044
+C10     0.979113
 K40     -0
 lsLBNL  -0
 lsIHEP  -0
@@ -643,16 +611,16 @@ ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrectio
 ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_C11.pdf
 ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_C10.pdf
 running dybEnergyModel::SaveCurves()
- Scale = 1.01775
- kB    = 14.6785
- kC    = 1.80384
+ Scale = 1.01749
+ kB    = 14.6124
+ kC    = 1.79897
  Rad   = 0
   
- Alpha = 0.0425594
- Tau   = 20.2778
+ Alpha = 0.0408971
+ Tau   = 19.834
  Alp2  = 0.08
  Tau2  = 2.2
- GamS   = 1.00143
+ GamS   = 1.00284
 running dybEnergyModel::DrawErrors()
 Check  m_nParameter = 13
  Loading output/results/bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat
@@ -662,19 +630,19 @@ Check running dybGlobalFit::GetDeltaChi2()!!!  m_nFreeParameter=5
  --> Scan for delta chi2 = 6.06
  *****************&&&&&******* 
  *****************&&&&&******* 
-1.01775
-14.6785
-1.80384
-0.0425594
-20.2778
-0.0273731
-1.00143
+1.01749
+14.6124
+1.79897
+0.0408971
+19.834
+0.027358
+1.00284
 1
 0
 1
 1
-0.118558
-0.0230727
+0.11846
+0.0232141
  Destroying B12 <------
  Destroying C11 <------
  Destroying C10 <------

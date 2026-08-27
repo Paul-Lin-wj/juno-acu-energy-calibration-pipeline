@@ -15,7 +15,7 @@ external_inputs/（MANIFEST 契约）─┘            dyb 顺序 Cs137 Mn54 Ge6
 | Stage | 内容 | 输出 |
 | --- | --- | --- |
 | 4b | 外部数据契约校验（sha256 vs MANIFEST） | run_log 记录 |
-| 5 | 聚合：fitter μ + 钉死历史值（nH/nC/O16） → 7 峰表 | `results/gamma_AllPhase.dat`（+ provenance、meanEscaleEres 表）、`figures/stage5_gamma_peaks.*` |
+| 5 | 聚合：γ 源 μ（provider=fitter）+ AmC 三峰 μ（provider=amc，RUN10110）→ 7 峰表；缺失自动钉历史值+告警 | `results/gamma_AllPhase.dat`（+ provenance、meanEscaleEres 表）、`figures/stage5_gamma_peaks.*` |
 | 6 | dybmodel 全局拟合（原版 C++，自建 SL6 容器内运行） | `results/bestFit_*.dat`、`nl_curves.tsv`、`figures/stage6_nl_curves.*`、`figures/dybmodel/*.pdf` |
 | 7 | E_rec→E_true 反演（纯 Python，单调性+往返误差校验） | `results/Etrue_from_Erec_lookup.npz/.csv`、`figures/stage7_inversion.*` |
 
@@ -46,8 +46,12 @@ bash run_pipeline.sh ... --validate-ref     # Stage 6 与历史 bestFit 数值�
 - **误差约定**：dat 的 `err_mu` 列是**总相对误差**（历史约定全 7 峰 0.005）。
   fitter 给的是纯统计误差（如 Ge68 2e-4），聚合时按下限 `MU_ERR_FLOOR=0.005`
   兜底（`config/paths.py` 可调/关闭），避免过度加权。
-- **外部数据契约**：nH/nC/O16 暂用历史值（AmC 链路并入后转 fitter 提供），
-  见 `external_inputs/MANIFEST.json`；连续谱由 dybmodel 自带
+- **AmC 三峰**：nH/nC/O16 已由 `amcsel`+`fitter run_amc_fit_all` 提供
+  （provider=amc，RUN10110 = AmC117@中心；结果缺失时仍自动钉历史值+告警）。
+  O16 拟合的 minuit HESSE 可能失败（参数贴界）→ μ 误差不可用，由
+  `MU_ERR_FLOOR` 兜底，fit_valid 如实记入 run_log。
+- **外部数据契约**：过渡期历史值仍留 `external_inputs/MANIFEST.json`；
+  连续谱由 dybmodel 自带
   `Isotope_data_*.root` 提供（同属外部依赖，sha256 记录）。
 - **E_true 约定**：Ge68=1.022 MeV（湮灭对）、Co60=2.506 MeV（级联和）——
   dyb 约定，与 fitter 内部 E_scale 锚点（Ge68 0.8845）含义不同，见

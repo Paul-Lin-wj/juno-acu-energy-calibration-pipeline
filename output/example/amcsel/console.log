@@ -1,0 +1,35 @@
+[Stage1] RUN 10110: Source=AmC117 BKG=10100 pos=(0.0,0.0,0.0) cm
+📂 Loading: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/input/Data/RUN10110.npz
+🔄 加载本底 RUN 10100 ...
+✅ BKG RUN 10100 加载成功 (活时间: 3971.60 s)
+✅ RUN 10110 加载完成 (Events: 285957, LiveTime: 573.29s)
+[Stage3] optimizing standard FV cuts ...
+🎯 开始优化 RUN 10110 的关联事例 FV 切割条件 (0.50-10.00 MeV)...
+✅ 标准 FV优化图已保存: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/xyz_distribution_RUN10110.pdf
+🎯 应用RUN 10110的宏观FV选择...
+✅ FV选择应用完成 (总数: 285957, 挑选后: 155847, 效率: 54.50%)
+✅ FV切割条件已保存: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/fv_cuts_RUN10110.npz
+[Stage4] mode=neutron params={'energy_limit': 0.5, 'delay_region': [1.9, 5.7], 'nH_region': [2.0, 2.4], 'promt_region': [0.5, 12], 'distance_limit': 1.5, 'dt_cut': 1000}
+🔍 开始寻找RUN 10110的关联事件 (dt_cut=1000us)...
+   当前筛选条件: Prompt [0.5, 12] MeV, Delay [1.9, 5.7] MeV
+✅ RUN 10110 关联事件查找完成
+   找到 39147 个有效事件对
+   Prompt事件率: 68.29 Hz
+   Delay事件率: 68.29 Hz
+✅ 时间戳已开始保存 (TXT, comma-separated):
+   [All events] Prompt: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/timestamps/prompt/RUN10110.txt
+   [All events] Delay:  /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/timestamps/delay/RUN10110.txt
+   [nH (Delay)] nH:     /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/timestamps/nH/RUN10110.txt
+   (共 39147 个事件对，其中 nH 候选 38689 个)
+📊 开始拟合RUN 10110的中子俘获时间...
+✅ RUN 10110 俘获时间拟合完成
+   τ = 211.2 ± 2.0 μs
+   χ²/NDF = 1.11
+🎨 绘制RUN 10110的关联分析结果...
+📊 开始拟合RUN 10110的中子俘获时间...
+✅ RUN 10110 俘获时间拟合完成
+   τ = 211.2 ± 2.0 μs
+   χ²/NDF = 1.11
+✅ 关联分析图已保存: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/Correlation_RUN10110.pdf
+✅ 挑选结果已保存: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz
+[AUDIT] PASSED (16 code files, outputs complete)

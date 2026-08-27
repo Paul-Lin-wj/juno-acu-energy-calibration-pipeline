@@ -7,16 +7,16 @@
     "version": "",
     "workflow": ""
   },
-  "started_at": "2026-08-27T19:23:52",
+  "started_at": "2026-08-27T20:31:51",
   "system": {
     "hostname": "user-Super-Server",
     "python": "3.11.10",
     "argv": [
       "pipeline/run_nlfit_all.py",
       "--fitter-results",
-      "../output/example/fitter/results",
+      "/tmp/fitter_results_amc",
       "--out-dir",
-      "/tmp/nlfit_e2e",
+      "/tmp/nlfit_amc_e2e",
       "--validate-ref"
     ]
   },
@@ -42,22 +42,22 @@
     {
       "stage": "5 aggregate",
       "status": "ok",
-      "elapsed_s": 0.6,
+      "elapsed_s": 0.7,
       "detail": {
-        "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
-        "note": "Cs137: result file not found: ../output/example/fitter/results/RUN12295_Cs137.npz; pinned to historical value; Mn54: result file not found: ../output/example/fitter/results/RUN12247_Mn54.npz; pinned to historical value; Co60: result file not found: ../output/example/fitter/results/RUN12216_Co60.npz; pinned to historical value"
+        "gamma_dat": "/tmp/nlfit_amc_e2e/results/gamma_AllPhase.dat",
+        "note": "Cs137: result file not found: /tmp/fitter_results_amc/RUN12295_Cs137.npz; pinned to historical value; Mn54: result file not found: /tmp/fitter_results_amc/RUN12247_Mn54.npz; pinned to historical value; Co60: result file not found: /tmp/fitter_results_amc/RUN12216_Co60.npz; pinned to historical value"
       },
       "outputs": {
-        "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
-        "table": "/tmp/nlfit_e2e/results/meanEscaleEres_perPhase_CDcenter.dat"
+        "gamma_dat": "/tmp/nlfit_amc_e2e/results/gamma_AllPhase.dat",
+        "table": "/tmp/nlfit_amc_e2e/results/meanEscaleEres_perPhase_CDcenter.dat"
       }
     },
     {
       "stage": "6 dybmodel",
       "status": "ok",
-      "elapsed_s": 408.2,
+      "elapsed_s": 399.0,
       "detail": {
-        "note": "validate-ref: 14 param rows vs historical, worst rel dev 2.39e-02 (row 5)",
+        "note": "validate-ref: 14 param rows vs historical, worst rel dev 4.73e-02 (row 4)",
         "probe": {
           "apptainer": true,
           "rootfs": true,
@@ -76,11 +76,11 @@
         }
       },
       "outputs": {
-        "bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
-        "chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
-        "matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
-        "curves_root": "/tmp/nlfit_e2e/results/curves_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root",
-        "nl_curves_tsv": "/tmp/nlfit_e2e/results/nl_curves.tsv"
+        "bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_amc_e2e/results/bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_amc_e2e/results/chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_amc_e2e/results/matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "curves_root": "/tmp/nlfit_amc_e2e/results/curves_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root",
+        "nl_curves_tsv": "/tmp/nlfit_amc_e2e/results/nl_curves.tsv"
       }
     },
     {
@@ -91,8 +91,8 @@
         "note": "lookup built"
       },
       "outputs": {
-        "npz": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.npz",
-        "csv": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.csv"
+        "npz": "/tmp/nlfit_amc_e2e/results/Etrue_from_Erec_lookup.npz",
+        "csv": "/tmp/nlfit_amc_e2e/results/Etrue_from_Erec_lookup.csv"
       }
     }
   ],
@@ -100,21 +100,21 @@
   "status": "running",
   "exit_code": 0,
   "pipeline_metadata": {
-    "fitter_results": "../output/example/fitter/results",
+    "fitter_results": "/tmp/fitter_results_amc",
     "skip_dybmodel": false,
     "validate_ref": true
   },
-  "config_snapshot": "/tmp/nlfit_e2e/config_snapshot.json",
+  "config_snapshot": "/tmp/nlfit_amc_e2e/config_snapshot.json",
   "code_snapshot": {
     "n_files": 16,
-    "index_path": "/tmp/nlfit_e2e/code/sha256.json"
+    "index_path": "/tmp/nlfit_amc_e2e/code/sha256.json"
   },
   "summary": {
     "stages_run": "4b,5,6,7",
-    "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
-    "lookup": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.npz"
+    "gamma_dat": "/tmp/nlfit_amc_e2e/results/gamma_AllPhase.dat",
+    "lookup": "/tmp/nlfit_amc_e2e/results/Etrue_from_Erec_lookup.npz"
   },
-  "finished_at": "2026-08-27T19:30:42",
+  "finished_at": "2026-08-27T20:38:32",
   "audit": {
     "passed": true,
     "code_snapshot": {
@@ -127,6 +127,6 @@
       "all_present": true,
       "missing": []
     },
-    "checked_at": "2026-08-27T19:30:42"
+    "checked_at": "2026-08-27T20:38:32"
   }
 }

@@ -1,0 +1,140 @@
+{
+  "schema": "1.0",
+  "module": "amcsel",
+  "launched_by": "script",
+  "agent": {
+    "name": "",
+    "version": "",
+    "workflow": ""
+  },
+  "started_at": "2026-08-27T20:39:18",
+  "system": {
+    "hostname": "user-Super-Server",
+    "python": "3.11.10",
+    "argv": [
+      "pipeline/run_amcsel_all.py",
+      "--run",
+      "10110",
+      "--input-dir",
+      "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/input/Data",
+      "--out-dir",
+      "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel"
+    ]
+  },
+  "stage_records": [
+    {
+      "stage": "1 run-info",
+      "status": "ok",
+      "elapsed_s": 0.0,
+      "detail": {
+        "source": "AmC117",
+        "bkg_run": 10100,
+        "position_cm": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "outputs": {}
+    },
+    {
+      "stage": "2 load",
+      "status": "ok",
+      "elapsed_s": 0.4,
+      "detail": {
+        "input_dir": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/input/Data",
+        "bkg_run": 10100
+      },
+      "outputs": {}
+    },
+    {
+      "stage": "3 fv",
+      "status": "ok",
+      "elapsed_s": 4.2,
+      "detail": {},
+      "outputs": {}
+    },
+    {
+      "stage": "4 correlate",
+      "status": "ok",
+      "elapsed_s": 1.9,
+      "detail": {
+        "params": {
+          "energy_limit": 0.5,
+          "delay_region": [
+            1.9,
+            5.7
+          ],
+          "nH_region": [
+            2.0,
+            2.4
+          ],
+          "promt_region": [
+            0.5,
+            12
+          ],
+          "distance_limit": 1.5,
+          "dt_cut": 1000
+        },
+        "correlated": true
+      },
+      "outputs": {}
+    },
+    {
+      "stage": "5 save",
+      "status": "ok",
+      "elapsed_s": 4.3,
+      "detail": {},
+      "outputs": {
+        "correlation_result": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz"
+      }
+    }
+  ],
+  "errors": [],
+  "status": "running",
+  "exit_code": 0,
+  "pipeline_metadata": {
+    "run": 10110,
+    "input_dir": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/amcsel/input/Data"
+  },
+  "config_snapshot": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/config_snapshot.json",
+  "code_snapshot": {
+    "n_files": 16,
+    "index_path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/code/sha256.json"
+  },
+  "summary": {
+    "run": 10110,
+    "source": "AmC117",
+    "bkg_run": 10100,
+    "correlation_result": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz",
+    "n_events_per_key": {
+      "prompt_energy": 39147,
+      "prompt_x": 39147,
+      "prompt_y": 39147,
+      "prompt_z": 39147,
+      "delay_energy": 39147,
+      "delay_x": 39147,
+      "delay_y": 39147,
+      "delay_z": 39147,
+      "nH_energy": 38689,
+      "nH_x": 38689,
+      "nH_y": 38689,
+      "nH_z": 38689
+    }
+  },
+  "finished_at": "2026-08-27T20:39:29",
+  "audit": {
+    "passed": true,
+    "code_snapshot": {
+      "all_match": true,
+      "missing": [],
+      "mismatched": [],
+      "extra": []
+    },
+    "outputs": {
+      "all_present": true,
+      "missing": []
+    },
+    "checked_at": "2026-08-27T20:39:29"
+  }
+}

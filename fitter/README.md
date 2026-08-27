@@ -44,6 +44,8 @@ standalone_fitter/
 ├── pipeline/
 │   ├── __init__.py
 │   ├── run_fit_all.py         # ★ 主流程：跑所有源 → 收集结果 → 画 ENL 风格图
+│   ├── run_amc_fit_all.py     # ★ AmC 三峰：nH/nC 纯高斯 + O16 模板分解
+│   │                          #   （输入 amcsel 的 correlation_result npz）
 │   └── compare_fast_vs_classic.py  # Fast 版与经典版对比测试
 │
 ├── tests/
@@ -149,6 +151,19 @@ RUN,Date,X[m],Y[m],Z[m],Source,R[m]
 | Mn54 | ✅ | `src/FastSourceFitter.py` | **~0.2-0.5 秒** |
 | Co60 | ✅ | `src/FastSourceFitter.py` | **~0.3-0.7 秒** |
 | K40 | ✅ | `src/FastSourceFitter.py` | **~0.2-0.4 秒** |
+
+AmC 关联对三峰（`pipeline/run_amc_fit_all.py`，输入为 `amcsel` 的
+`correlation_result_RUN{N}.npz`，输出与 γ 源同约定）：
+
+| 峰 | 实现 | 说明 |
+|----|------|------|
+| nH 2.22 MeV | `src/NhnCFitter.py`（原版 nH_nC_fitter 逐字节移植） | 纯高斯，binned Poisson ML |
+| nC 4.95 MeV | `src/NhnCFitter.py` | 同上（delay_energy 限 nC 窗口） |
+| O16 6.13 MeV | `fitters/O16Fitter.py`（经 `MCBased_Fitter.build_fitter('AmC')`） | 模板分解；μ=center_gauss_6_13 |
+
+> 注意：O16 模板拟合中 `sigma_gauss_6_13`/`E_scale_proton` 常贴参数下界，
+> minuit HESSE 可能耗失败（μ 点估计仍收敛，误差不可用）——run_log 的
+> `fit_valid` 如实记录，下游 nlfit 以 `MU_ERR_FLOOR=0.005` 兜底。
 
 **核心原理**：初始化时一次性缓存 MC 模板的 histogram 和卷积结果，Minuit 迭代时无需重复计算。C14 pileup 使用 FFT 加速。
 

@@ -23,8 +23,8 @@
     {
       "key": "nH",
       "e_true": 2.2233,
-      "provider": "external",
-      "run_id": null
+      "provider": "amc",
+      "run_id": 10110
     },
     {
       "key": "Co60",
@@ -35,14 +35,14 @@
     {
       "key": "nC",
       "e_true": 4.95,
-      "provider": "external",
-      "run_id": null
+      "provider": "amc",
+      "run_id": 10110
     },
     {
       "key": "O16",
       "e_true": 6.129,
-      "provider": "external",
-      "run_id": null
+      "provider": "amc",
+      "run_id": 10110
     }
   ],
   "dybmodel_src": "/datafs/users/wujxy/agent-sci/ENL_agent/fitter_energynl_dybmodel",

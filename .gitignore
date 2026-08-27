@@ -1,3 +1,15 @@
 # Runtime outputs: keep only the small example sample
 output/*
 !output/example/
+
+# Python runtime artifacts
+__pycache__/
+*.pyc
+
+# Module virtualenvs / caches
+**/.venv/
+**/TMP/
+
+# AmC raw run data (re-fetchable — see amcsel/PROVENANCE.md §3 and
+# amcsel/input/Data/MANIFEST.sha256 for checksums + fetch commands)
+amcsel/input/Data/*.npz

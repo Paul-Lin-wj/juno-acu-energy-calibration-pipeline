@@ -1,0 +1,30 @@
+[Info] correlation npz keys: {'nH': 38689, 'nC': 283, 'AmC': 39147}
+
+RUN10110 nH: 38689 events in plot window, 38179 in fit range -- fitting ...
+
+ mu=2.2193 MeV, sigma=0.0572 MeV, chi2/ndf=69.7/73, valid=True
+
+RUN10110 nC: 283 events in plot window, 274 in fit range -- fitting ...
+
+ mu=5.0239 MeV, sigma=0.1138 MeV, chi2/ndf=94.4/71, valid=True
+
+[Info] Cache directories set to: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/TMP
+
+[Info] smx_ana loaded from: /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/smx_ana/__init__.py
+
+Project root path:
+ 
+/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/fitters
+
+O16 Data initialized, total count in fit range: 1536
+
+[Info] O16 fitter: 30 bins 5.60-6.80 MeV, 39147 prompt events
+
+O16 Figure saved to /datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/figures/RUN10110_AmC.pdf
+
+RUN10110 O16: center_gauss_6_13 = 6.3023 ± 0.0000 MeV (minuit valid=False, chi2/ndf=1371/21)
+
+[Warning] O16 minuit errors unreliable (HESSE failed / param at limit). Point estimate is used; nlfit MU_ERR_FLOOR=0.005 applies downstream. See run_log.
+
+[AUDIT] PASSED (54 code files, outputs complete)
+

@@ -11,8 +11,8 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 > → 非线性曲线拟合 → E_true = f(E_rec)
 
 本仓现已覆盖 **EDM → E_true=f(E_rec)** 主链（含 26B 能量修正、事例挑选、物理 QA、
-峰位拟合与非线性全局拟合），刻度源部分覆盖 Ge68 / Cs137 / Mn54 / Co60 / K40
-五种单能源；AmC 相关对链路（n-H / n-12C / O16 峰）与连续谱备谱仍按
+峰位拟合与非线性全局拟合），刻度源覆盖 Ge68 / Cs137 / Mn54 / Co60 / K40
+五种单能源 + AmC 关联对三峰（n-H / n-12C / O16，`amcsel` 链）；连续谱备谱仍按
 **并入规划**推进（见下方覆盖一览）。
 
 ```text
@@ -34,9 +34,10 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
    ▼
 ✅ Stage 3   刻度源事例挑选（MuonVeto → 稳健 ROI → Z-cut → EFV 椭圆 → 能量窗；
    │         刻度 run 与本底 run 按 LivingTime 归一为事例率后相减）
-🔶 Stage 3c  AmC 相关对挑选（prompt–delayed 时间窗 + 距离关联 → nH/nC/O16 事例）
-   │                                                 【correlate_selection 在 ENL_agent，
-   │                                                  与本仓 singles 链同源，待移植】
+✅ Stage 3c  AmC 相关对挑选（prompt–delayed 时间窗 + 距离关联 → nH/nC/O16 事例）
+   │                                                 【amcsel/：correlate_selection
+   │                                                  原样并入（仅 2 行 import 本地化），
+   │                                                  输出与生产侧逐数值一致】
 ❌            连续谱核素挑选                          【备谱 code 暂缺；暂以已有数据
    │                                                  作外部输入（契约 + 清单）】
    ▼
@@ -44,9 +45,9 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
    ▼  fitter/
 ✅ 刻度源峰位拟合（MC 模板卷积 + Minuit → μ / σ/E / χ²）
    │         + ENL 风格分辨率汇总图（参考曲线为固定参数，未拟合）
-🔶 n-H / n-12C / O16 峰位拟合                        【AmC_nH-nC_fitter（nH 单高斯、
-   │                                                  nC 双高斯）在 ENL_agent；O16Fitter
-   │                                                  + 模板本仓 fitters/ 已有，待接线】
+✅ n-H / n-12C / O16 峰位拟合                        【fitter/pipeline/run_amc_fit_all：
+   │                                                  nH/nC 纯高斯（NhnCFitter 逐字节
+   │                                                  移植）+ O16 模板分解（O16Fitter）】
 ❌ 连续谱拟合                                         【dybmodel 已内置 B12/C10/C11/
    │                                                  Michel 拟合机器；输入暂用已有数据】
    ▼  nlfit/（新模块，已接入）
@@ -76,10 +77,10 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 | 波形重建 | ❌ | 上游 JUNOSW 产物；规划以可选 stage 包装接入 |
 | 事例重建 | ⚠️ | `esd2npz` 可选 Stage 0（`--full-esd`，外部 JUNOSW，小时级）；规划接独立版 omilrec；默认从 lustrefs 现成 EDM 起步 |
 | 刻度源事例挑选 | ✅ | `esd2npz` Stage 1–3 + Stage 4 物理 QA（8 面板图 + JSON） |
-| AmC 相关对挑选（n-H/n-12C/O16） | 🔶 | `correlate_selection` 在 ENL_agent，与本仓 singles 链同源，待移植 |
+| AmC 相关对挑选（n-H/n-12C/O16） | ✅ | `amcsel`（correlate_selection 原样并入，行为与生产侧逐数值一致；中心 run 三峰 vs AllPhase 差 ≤1.2%） |
 | 连续谱核素挑选 | ❌ | 备谱 code 暂缺；暂以已有数据作外部输入（`nlfit` Stage 4b MANIFEST 契约） |
 | 刻度源峰位拟合 | ✅ | `fitter`（Fast 版 Ge68 ~4 s、其余 ~0.5 s；经典版回退） |
-| n-H/n-12C/O16 峰位拟合 | 🔶 | `AmC_nH-nC_fitter` 在 ENL_agent（nH 单高斯、nC 双高斯）；`O16Fitter`+模板本仓 `fitters/` 已有，待接线 |
+| n-H/n-12C/O16 峰位拟合 | ✅ | `fitter/pipeline/run_amc_fit_all`：nH/nC 纯高斯（`NhnCFitter` 逐字节移植）+ O16 模板分解（`O16Fitter`；HESSE 状态如实入 run_log） |
 | 连续谱拟合 | ❌ | dybmodel 已内置 B12/C10/C11/Michel 拟合机器；上游输入暂用已有数据 |
 | 非线性曲线拟合 | ✅ | `nlfit` Stage 6：wrap `ENL_agent/fitter_energynl_dybmodel`（沙箱 + 行为锁定） |
 | E_true=f(E_rec) 反演 | ✅ | `nlfit` Stage 7：纯 Python，e⁻/e⁺/γ 三条查询曲线 |
@@ -92,7 +93,7 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 | ★★★ | 5 | 聚合 per-source μ/σ → `gamma_AllPhase.dat` | ENL_agent `glue/gen_gamma_dat.py` | port（纯 Python） | ✅ 已落地（`nlfit`） |
 | ★★★ | 6 | 非线性全局拟合 | `fitter_energynl_dybmodel` | wrap（C++，cvmfs J26.1.1；能力探测） | ✅ 已落地（`nlfit`） |
 | ★★☆ | 7 | E_rec→E_true 反演出查询表 | 新写 | 纯 Python（单调性 + 往返校验） | ✅ 已落地（`nlfit`） |
-| ★☆☆ | 3c/3b | AmC 相关对挑选 + nH/nC/O16 峰位拟合 | `correlate_selection` + `AmC_nH-nC_fitter` / 本仓 `O16Fitter` | 移植 / 接线（时间窗与距离关联 cut 入 `cuts/`） | ⬜ 待做 |
+| ★☆☆ | 3c/3b | AmC 相关对挑选 + nH/nC/O16 峰位拟合 | `correlate_selection` + `AmC_nH-nC_fitter` / 本仓 `O16Fitter` | `amcsel`（原样并入）+ `fitter` `run_amc_fit_all`；nlfit PEAKS 三峰 provider=`amc` | ✅ 已落地 |
 | ☆☆☆ | 0/-1 | 波形/事例重建全链 | JUNOSW / 独立版 omilrec | 可选模式 + `data_lineage` 记录（与 ReProd26B 不逐位一致需可追溯） | ⬜ 待做 |
 
 新 stage 均沿用现有 chassis（RunLogger / code snapshot / audit / exit code /
@@ -109,7 +110,8 @@ nlfit 三段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 
 | 目录/文件 | 作用 |
 | --- | --- |
 | `esd2npz/` | 数据处理流水线：EDM→NPZ→26B 修正→挑选。`src/` 为算法代码（自原生产链路逐行移植，输出与原链路逐位一致）；`pipeline/` 为调度与审计留档；`input/correction/` 为 26B 修正模型；`calib_run_info/` 为 run→源/本底映射 |
-| `fitter/` | 能谱拟合：`src/FastGe68Fitter.py`（Ge68，MC 模板缓存，~4 s）、`src/FastSourceFitter.py`（Cs137/Mn54/Co60/K40 通用，~0.5 s）、`fitters/`（MC 模板与经典版回退）、`pipeline/run_fit_all.py`（主流程） |
+| `amcsel/` | AmC 关联对挑选（Stage 3c）：`src/` 为 correlate_selection 原样并入（仅 2 行 import 本地化，行为与生产侧逐数值一致，见其 `PROVENANCE.md`）；`pipeline/run_amcsel_all.py` 为调度与审计留档；输入即 `esd2npz` 的 26B Finalcorrection 输出 |
+| `fitter/` | 能谱拟合：`src/FastGe68Fitter.py`（Ge68，MC 模板缓存，~4 s）、`src/FastSourceFitter.py`（Cs137/Mn54/Co60/K40 通用，~0.5 s）、`fitters/`（MC 模板与经典版回退）、`pipeline/run_fit_all.py`（主流程）、`pipeline/run_amc_fit_all.py`（AmC 三峰：nH/nC 纯高斯 `NhnCFitter` + O16 模板分解） |
 | `nlfit/` | 非线性全局拟合（Stage 4b/5/6/7）：外部数据契约、7 峰聚合 `gamma_AllPhase.dat`、dybmodel C++ wrap（沙箱自动重建 + 行为锁定）、E_rec→E_true 反演查询表；`external_inputs/` 为过渡期外部数据契约 |
 | `run_pipeline.sh` | 一键依次驱动 `esd2npz` → `fitter` → `nlfit`，三个项目的输出收进同一个时间戳目录 |
 | `output/` | 运行输出（不入库），见下文布局 |
@@ -118,9 +120,12 @@ nlfit 三段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 
 
 - **源**：Ge68（正电子湮灭，双 511 keV）、Cs137（0.662 MeV）、Mn54（0.835 MeV）、
   Co60（1.173+1.333 MeV 双 γ 级联）、K40（1.461 MeV）。拟合用 E_true 作对照。
-- **AmC 中子源**（²⁴¹Am–¹³C，待并入）：¹³C(α,n)¹⁶O* 同时给出 O16 6.129 MeV
+- **AmC 中子源**（²⁴¹Am–¹³C）：¹³C(α,n)¹⁶O* 同时给出 O16 6.129 MeV
   （prompt）与慢化中子俘获峰 n-H 2.2233 MeV、n-12C 4.945 MeV（delayed），
-  需 prompt–delayed 相关对挑选；并入后为非线性拟合 7 峰输入提供其中 3 个。
+  经 prompt–delayed 相关对挑选（`amcsel`，俘获时间 τ≈211 μs）后由
+  `fitter` 拟合，为非线性拟合 7 峰输入提供其中 3 个。注意 ACU AmC 沿 z 轴
+  扫描（±17.3 m）：与 AllPhase 历史值对比须用中心 run（边缘 run 有 ~% 量级
+  位置偏移，属真实效应）。
 - **能量修正（26B）**：对重建能量施加顶点 r-bias 修正、二维空间非均匀性修正、
   时间稳定性修正与 phase 绝对能标（P1/2≈0.99340，P3/4≈0.99743）。
 - **挑选（减本底）**：刻度 run 与映射的本底 run 按 LivingTime 归一为事例率后
@@ -134,12 +139,16 @@ nlfit 三段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 
 # 环境准备（每台机器一次）
 cd esd2npz && bash setup_env.sh    # 建 .venv（Stage 1-4 纯 Python）
 cd ../fitter && bash setup_env.sh  # 建 .venv（拟合）
-cd ../nlfit  && bash setup_env.sh  # 建 .venv（聚合/反演；Stage 6 另需 cvmfs ROOT）
+cd ../amcsel && bash setup_env.sh  # 建 .venv（AmC 关联对挑选）
+cd ../nlfit  && bash setup_env.sh  # 建 .venv（聚合/反演；Stage 6 另需自建容器或 cvmfs ROOT）
 
-# 一键联合运行：esd2npz（挑选）→ fitter（拟合）→ nlfit（非线性拟合+反演）
-bash run_pipeline.sh                 # 默认 run 12370（Ge68）
-bash run_pipeline.sh 12370 12295     # 指定多个刻度 run
-NLFIT_FLAGS="--skip-dybmodel" bash run_pipeline.sh   # 无 cvmfs 时跳过 Stage 6/7
+# 一键联合运行：esd2npz（γ 挑选）→ amcsel（AmC 挑选）→ fitter（拟合）
+#                → nlfit（非线性拟合+反演）
+bash run_pipeline.sh                 # 默认 γ run 12370（Ge68）+ AmC run 10110
+bash run_pipeline.sh 12370 10110     # 指定 run（按源类型自动路由 γ/AmC 分支）
+NLFIT_FLAGS="--skip-dybmodel" bash run_pipeline.sh   # 无容器时跳过 Stage 6/7
+# AmC 输入数据（RUN10110+本底10100）预置于 amcsel/input/Data/；换 run 时按
+# amcsel/PROVENANCE.md §3 从 lustrefs 拉取对应 Finalcorrection npz
 ```
 
 输出：
@@ -149,8 +158,10 @@ output/<YYYYmmdd_HHMMSS>/
 ├── esd2npz/     # results/(npz_raw, npz_corrected, selection_npz, timestamps)
 │                # figures/  cuts/（挑选条件）  logs/  code/（代码快照）
 │                # run_log.{md,json}（含 audit）  config_snapshot.json
-├── fitter/      # results/(RUN{N}_{源}.npz)  figures/  enl_style_resolution.*
-│                # code/  run_log.{md,json}  config_snapshot.json
+├── fitter/      # results/(RUN{N}_{源}.npz, RUN{N}_{nH,nC,AmC}.npz)  figures/
+│                # enl_style_resolution.*  code/  run_log.{md,json}  config_snapshot.json
+├── amcsel/      # results/RUN{N}/(correlation_result_RUN{N}.npz, FV/关联 pdf)
+│                # timestamps/  code/  run_log.{md,json}  config_snapshot.json
 └── nlfit/       # results/(gamma_AllPhase.dat, bestFit_*.dat, nl_curves.tsv,
                  #          Etrue_from_Erec_lookup.npz/csv)
                  # figures/(stage5_gamma_peaks, stage6_nl_curves,
@@ -183,6 +194,7 @@ cd fitter && .venv/bin/python pipeline/run_fit_all.py \
 ## 文档索引
 
 - 数据处理与溯源：`esd2npz/README.md`、`esd2npz/PROVENANCE.md`
+- AmC 关联对挑选与溯源：`amcsel/README.md`、`amcsel/PROVENANCE.md`
 - 拟合设计与日志规范：`fitter/README.md`、`fitter/DESIGN_REPORT.md`
 - 非线性拟合与外部数据契约：`nlfit/README.md`、`nlfit/external_inputs/MANIFEST.json`
 - 使用手册：两项目各自 `skills/`（环境/配置/运行/排障/审计）

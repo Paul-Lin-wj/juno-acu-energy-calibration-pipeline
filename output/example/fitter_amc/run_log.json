@@ -1,0 +1,281 @@
+{
+  "schema_version": "2.0",
+  "run_id": "20260827T203930_98568280",
+  "status": "completed",
+  "pipeline_metadata": {
+    "launched_by": "script",
+    "timestamp_start_utc": "2026-08-27T12:39:30.812314Z",
+    "timestamp_start_local": "2026-08-27 20:39:30 CST",
+    "system": {
+      "hostname": "user-Super-Server",
+      "user": "wujxy",
+      "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.34",
+      "python_version": "3.11.10",
+      "python_executable": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/.venv/bin/python",
+      "timestamp_utc": "2026-08-27T12:39:30.820060+00:00"
+    },
+    "git": {
+      "commit": "f3083632cd8f84d16d36842629bfe5266318f181",
+      "branch": "main",
+      "has_uncommitted_changes": true
+    },
+    "packages": {
+      "numpy": "1.26.4",
+      "scipy": "1.13.1",
+      "matplotlib": "3.9.0",
+      "iminuit": "2.30.1",
+      "pandas": "2.2.2"
+    },
+    "pip_freeze": [
+      "contourpy==1.3.3",
+      "cycler==0.12.1",
+      "fonttools==4.63.0",
+      "iminuit==2.30.1",
+      "kiwisolver==1.5.0",
+      "matplotlib==3.9.0",
+      "numpy==1.26.4",
+      "packaging==26.3",
+      "pandas==2.2.2",
+      "pillow==12.3.0",
+      "pip==26.2.1",
+      "pyparsing==3.3.2",
+      "python-dateutil==2.9.0.post0",
+      "pytz==2026.3.post1",
+      "scipy==1.13.1",
+      "setuptools==65.5.0",
+      "six==1.17.0",
+      "tzdata==2026.3"
+    ],
+    "command": [
+      "pipeline/run_amc_fit_all.py",
+      "--run",
+      "10110",
+      "--corr-npz",
+      "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz",
+      "--out-dir",
+      "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc"
+    ],
+    "exit_code": 0,
+    "config_files": {
+      "paths_py": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/config/paths.py",
+      "calib_run_csv": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/CalibRUN.csv",
+      "requirements_txt": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/requirements.txt"
+    },
+    "config_snapshot": {
+      "paths_py": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/config/paths.py",
+        "sha256": "aa272c242f264da7518c43b3b1a20946d6a06a5d285894fa911ea22227eac485",
+        "size_bytes": 2347
+      },
+      "calib_run_csv": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/CalibRUN.csv",
+        "sha256": "84d39f499b8b560a02fa243b008e2e8bfd7bf659a494bede303667a4931ee6a6",
+        "size_bytes": 16506
+      },
+      "requirements_txt": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/fitter/requirements.txt",
+        "sha256": "0351e588f90a087a191a7b063228745b7fd0a9053c7f84fded15a934218680d2",
+        "size_bytes": 75
+      }
+    },
+    "timestamp_end_utc": "2026-08-27T12:41:29.528304Z",
+    "timestamp_end_local": "2026-08-27 20:41:29 CST"
+  },
+  "sources": [
+    {
+      "status": "success",
+      "source": "nH",
+      "run": 10110,
+      "e_true_mev": 2.2233,
+      "fitter_type": "gaussian",
+      "run_info": {
+        "run": 10110,
+        "source": "AmC117",
+        "date": "2025-09-12",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.0,
+        "r_m": 0.0
+      },
+      "input_data": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz",
+        "exists": true,
+        "size_bytes": 1874716,
+        "sha256": "ab2b13440ec425ad98938f6c80da5c7ca1b97b3f8949c7d33dc827a5fdc80153",
+        "format": ".npz"
+      },
+      "mc_template": {},
+      "event_statistics": {},
+      "code_version": {
+        "fitter_file": "src/NhnCFitter.py (ported nH_nC_fitter)",
+        "fitter_type": "gaussian",
+        "git_commit": "f3083632cd8f84d16d36842629bfe5266318f181"
+      },
+      "fitter_parameters": {},
+      "fit_results": {
+        "mu": 2.2192863211533864,
+        "sigma": 0.05722952512483902,
+        "sigma_over_e_pct": 2.578735541212016,
+        "chi2": 69.66280026707734,
+        "ndf": 73,
+        "chi2_over_ndf": "69.7/73"
+      },
+      "output_files": {
+        "result_npz": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/results/RUN10110_nH.npz",
+          "exists": true,
+          "size_bytes": 2768,
+          "sha256": "1772a18a86836be5e6debb43cedf74833ee2515895ca2d6e9751f87551679ea1"
+        },
+        "figure": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/figures/RUN10110_nH.png",
+          "exists": true,
+          "size_bytes": 143141,
+          "sha256": "912ae96880288f1065998daf5509da9daceed45787363d18b87b7fea86c2a683"
+        }
+      },
+      "timing_s": 0.3,
+      "timestamp_utc": "2026-08-27T12:39:31.928573Z"
+    },
+    {
+      "status": "success",
+      "source": "nC",
+      "run": 10110,
+      "e_true_mev": 4.95,
+      "fitter_type": "gaussian",
+      "run_info": {
+        "run": 10110,
+        "source": "AmC117",
+        "date": "2025-09-12",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.0,
+        "r_m": 0.0
+      },
+      "input_data": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz",
+        "exists": true,
+        "size_bytes": 1874716,
+        "sha256": "ab2b13440ec425ad98938f6c80da5c7ca1b97b3f8949c7d33dc827a5fdc80153",
+        "format": ".npz"
+      },
+      "mc_template": {},
+      "event_statistics": {},
+      "code_version": {
+        "fitter_file": "src/NhnCFitter.py (ported nH_nC_fitter)",
+        "fitter_type": "gaussian",
+        "git_commit": "f3083632cd8f84d16d36842629bfe5266318f181"
+      },
+      "fitter_parameters": {},
+      "fit_results": {
+        "mu": 5.023862093016635,
+        "sigma": 0.11384841183359373,
+        "sigma_over_e_pct": 2.266153204958542,
+        "chi2": 94.38316462318089,
+        "ndf": 71,
+        "chi2_over_ndf": "94.4/71"
+      },
+      "output_files": {
+        "result_npz": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/results/RUN10110_nC.npz",
+          "exists": true,
+          "size_bytes": 2768,
+          "sha256": "739ed3036dcd6aa8eef07155a4422bedb6fdf4724f4fabe7633ea40ae76e8e06"
+        },
+        "figure": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/figures/RUN10110_nC.png",
+          "exists": true,
+          "size_bytes": 119172,
+          "sha256": "66f079a7bafed84f54845e15e9ce7a5f505d6dfc86f9bd0c1bc3e22fe464e63a"
+        }
+      },
+      "timing_s": 0.3,
+      "timestamp_utc": "2026-08-27T12:39:32.196426Z"
+    },
+    {
+      "status": "success",
+      "source": "AmC",
+      "run": 10110,
+      "e_true_mev": 6.129,
+      "fitter_type": "o16-template",
+      "run_info": {
+        "run": 10110,
+        "source": "AmC117",
+        "date": "2025-09-12",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.0,
+        "r_m": 0.0
+      },
+      "input_data": {
+        "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz",
+        "exists": true,
+        "size_bytes": 1874716,
+        "sha256": "ab2b13440ec425ad98938f6c80da5c7ca1b97b3f8949c7d33dc827a5fdc80153",
+        "format": ".npz"
+      },
+      "mc_template": {},
+      "event_statistics": {},
+      "code_version": {
+        "fitter_file": "src/MCBased_Fitter.py build_fitter -> fitters/O16Fitter.py",
+        "fitter_type": "o16-template",
+        "git_commit": "f3083632cd8f84d16d36842629bfe5266318f181"
+      },
+      "fitter_parameters": {},
+      "fit_results": {
+        "mu": 6.302349811191068,
+        "sigma": 0.10000256226525572,
+        "sigma_over_e_pct": 1.5867504226388927,
+        "chi2": 1370.7584473066117,
+        "ndf": 21,
+        "chi2_over_ndf": "1370.8/21"
+      },
+      "output_files": {
+        "result_npz": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/results/RUN10110_AmC.npz",
+          "exists": true,
+          "size_bytes": 9509,
+          "sha256": "20b125c876880b9ac6ab5432c0efcc085c8a72235ec811b79490aaa1bed85edf"
+        },
+        "figure": {
+          "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/fitter_amc/figures/RUN10110_AmC.pdf",
+          "exists": true,
+          "size_bytes": 26687,
+          "sha256": "3960ac956a389d4b54011d7f45090ebe3926da605e730b147c9fc09e996ed974"
+        }
+      },
+      "timing_s": 116.8,
+      "timestamp_utc": "2026-08-27T12:41:28.966404Z"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "run": 10110,
+    "peaks": [
+      "nH",
+      "nC",
+      "AmC"
+    ],
+    "corr_npz": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260827_203916/amcsel/results/RUN10110/correlation_result_RUN10110.npz"
+  },
+  "agent_notes": null,
+  "audit": {
+    "timestamp_utc": "2026-08-27T12:41:29.262150Z",
+    "code_snapshot": {
+      "n_files": 54,
+      "all_match": true,
+      "missing": [],
+      "mismatched": [],
+      "extra": []
+    },
+    "outputs": {
+      "all_present": true,
+      "missing": []
+    },
+    "finalized_files": {
+      "all_present": true,
+      "missing": []
+    },
+    "passed": true
+  }
+}

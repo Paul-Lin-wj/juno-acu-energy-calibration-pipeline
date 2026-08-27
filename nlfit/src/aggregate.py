@@ -74,6 +74,26 @@ def _fitter_peak(key: str, run_id: int, results_dir: Path):
     return (mu, err), None
 
 
+def _amc_peak(key: str, run_id: int, results_dir: Path):
+    """AmC 三峰结果。nH/nC: RUN{N}_{nH,nC}.npz 平铺 mu/mu_err（原版
+    nH_nC_fitter 输出格式）；O16: RUN{N}_AmC.npz 的 center_gauss_6_13
+    （O16Fitter 输出格式；err 可能为 0 —— HESSE 失败/参数贴界，
+    下游 MU_ERR_FLOOR 兜底）。"""
+    npz_key = "AmC" if key == "O16" else key
+    npz = results_dir / f"RUN{run_id}_{npz_key}.npz"
+    if not npz.is_file():
+        return None, f"result file not found: {npz}"
+    with np.load(npz, allow_pickle=True) as d:
+        if key == "O16":
+            center = d["center_gauss_6_13"].item()
+            mu, err = float(center["value"]), float(center["error"])
+        else:
+            mu, err = float(d["mu"]), float(d["mu_err"])
+    if not (mu > 0 and err >= 0):
+        return None, f"invalid mu in {npz}: {mu} ± {err}"
+    return (mu, err), None
+
+
 def aggregate_gamma_dat(fitter_results_dir, out_dir) -> dict:
     """Build gamma_AllPhase.dat (+ sidecars); return per-peak records."""
     results_dir = Path(fitter_results_dir)
@@ -86,8 +106,9 @@ def aggregate_gamma_dat(fitter_results_dir, out_dir) -> dict:
     for key, e_true, provider, run_id in P.PEAKS:
         rec = {"key": key, "e_true": e_true, "provider": provider,
                "run_id": run_id, "pinned": provider == "external"}
-        if provider == "fitter":
-            got, err_msg = _fitter_peak(key, run_id, results_dir)
+        if provider in ("fitter", "amc"):
+            loader = _fitter_peak if provider == "fitter" else _amc_peak
+            got, err_msg = loader(key, run_id, results_dir)
             if got is None:
                 warnings.append(f"{key}: {err_msg}; pinned to historical value")
                 rec["mu"], rec["err_rel"] = historical[key]

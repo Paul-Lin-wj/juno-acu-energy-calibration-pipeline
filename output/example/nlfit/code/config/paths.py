@@ -38,14 +38,16 @@ HISTORICAL_GAMMA_KEY = "gamma_peaks_historical_AllPhase.dat"
 # E_scale anchor for Ge68 (0.8845), which is not a physics true energy.
 # ============================================================
 PEAKS = [
-    # key      e_true   provider    run_id (fitter provider only)
+    # key      e_true   provider    run_id (fitter/amc providers)
     ("Cs137",  0.6617,  "fitter",   12295),
     ("Mn54",   0.8348,  "fitter",   12247),
     ("Ge68",   1.022,   "fitter",   12370),
-    ("nH",     2.2233,  "external", None),
+    # AmC 关联对三峰（RUN10110 = AmC117 @ 中心 Z=0，BKG 10100）：
+    # amcsel(Stage3c) -> fitter run_amc_fit_all(Stage3b) -> 本处
+    ("nH",     2.2233,  "amc",      10110),
     ("Co60",   2.506,   "fitter",   12216),
-    ("nC",     4.95,    "external", None),
-    ("O16",    6.129,   "external", None),
+    ("nC",     4.95,    "amc",      10110),
+    ("O16",    6.129,   "amc",      10110),
 ]
 # K40 is fitted by this suite but is NOT one of the 7 dybmodel gamma peaks
 # (it enters the fit as a spectrum via K40.root); listed for provenance only.
