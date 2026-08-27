@@ -1,0 +1,24 @@
+[Stage4b] external inputs valid
+[Stage5] wrote /tmp/nlfit_e2e/results/gamma_AllPhase.dat
+  Cs137  mu=0.603754 err=0.005000  (hist 0.603754, dev +0.00%) [pinned]
+  Mn54   mu=0.779898 err=0.005000  (hist 0.779898, dev +0.00%) [pinned]
+  Ge68   mu=0.910195 err=0.005000  (hist 0.912946, dev -0.30%)
+  nH     mu=2.225911 err=0.005000  (hist 2.225911, dev +0.00%) [pinned]
+  Co60   mu=2.420677 err=0.005000  (hist 2.420677, dev +0.00%) [pinned]
+  nC     mu=5.081400 err=0.005000  (hist 5.081400, dev +0.00%) [pinned]
+  O16    mu=6.280605 err=0.005000  (hist 6.280605, dev +0.00%) [pinned]
+[Stage5][Warning] Cs137: result file not found: ../output/example/fitter/results/RUN12295_Cs137.npz; pinned to historical value
+[Stage5][Warning] Mn54: result file not found: ../output/example/fitter/results/RUN12247_Mn54.npz; pinned to historical value
+[Stage5][Warning] Co60: result file not found: ../output/example/fitter/results/RUN12216_Co60.npz; pinned to historical value
+[plots] saved /tmp/nlfit_e2e/figures/stage5_gamma_peaks.png
+[plots] saved /tmp/nlfit_e2e/figures/stage5_gamma_peaks.pdf
+[plots] saved /tmp/nlfit_e2e/figures/stage6_nl_curves.png
+[plots] saved /tmp/nlfit_e2e/figures/stage6_nl_curves.pdf
+[Stage6] validate-ref: 14 param rows vs historical, worst rel dev 2.39e-02 (row 5)
+[Stage7] gammaFullNL: monotonic=True  E_rec range 0.158–10.285 MeV  round-trip max 1.22e-06 (median 6.71e-08)
+[Stage7] electronFullNL: monotonic=True  E_rec range 0.000–12.462 MeV  round-trip max 1.83e-05 (median 2.88e-11)
+[Stage7] positronFullNL: monotonic=True  E_rec range 0.913–12.298 MeV  round-trip max 4.60e-06 (median 1.30e-10)
+[Stage7] wrote /tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.npz and /tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.csv
+[plots] saved /tmp/nlfit_e2e/figures/stage7_inversion.png
+[plots] saved /tmp/nlfit_e2e/figures/stage7_inversion.pdf
+[AUDIT] PASSED (16 code files, outputs complete)

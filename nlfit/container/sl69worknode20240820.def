@@ -1,0 +1,18 @@
+# Extracted from inside the official SIF (apptainer inspect --deffile).
+# NOTE: the official image is CHAIN-BUILT — every generation is a
+# `localimage` derivative and no from-scratch recipe is published. The
+# byte-identical SIF copy + SHA-256 (see SHA256SUMS) is therefore the
+# authoritative reproducibility mechanism; this file documents lineage.
+#
+# Build lineage (per cvmfs .../SL69/ + readme):
+#   sl69worknode20240820.sif  <- sl69worknode20240729
+#   sl69worknode20240729.sif  <- /tmp/sl69worknode20240727
+#       (20240727: rmmove /besfs2 link, add new /besfs2 -> /besfs8)
+#   sl69worknode20210906.sif  <- sl69worknode
+#       (remove user info from /etc/passwd; user lijj -> lijj16)
+#   ... chain bottoms out at a local JunoSL69Image/ directory (no public
+#       from-scratch bootstrap)
+#
+# --- embedded definition, verbatim: ---
+Bootstrap: localimage
+From: sl69worknode20240729

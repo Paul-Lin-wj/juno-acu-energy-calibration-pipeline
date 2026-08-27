@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-08-27T19:23:52",
+  "fitter_results_dir": "../output/example/fitter/results",
+  "historical_table": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/nlfit/external_inputs/gamma_peaks_historical_AllPhase.dat",
+  "peaks": [
+    {
+      "key": "Cs137",
+      "e_true": 0.6617,
+      "provider": "fitter",
+      "run_id": 12295,
+      "pinned": true,
+      "mu": 0.60375354,
+      "err_rel": 0.005,
+      "note": "result file not found: ../output/example/fitter/results/RUN12295_Cs137.npz",
+      "mu_historical": 0.60375354,
+      "dev_vs_historical": 0.0
+    },
+    {
+      "key": "Mn54",
+      "e_true": 0.8348,
+      "provider": "fitter",
+      "run_id": 12247,
+      "pinned": true,
+      "mu": 0.77989823,
+      "err_rel": 0.005,
+      "note": "result file not found: ../output/example/fitter/results/RUN12247_Mn54.npz",
+      "mu_historical": 0.77989823,
+      "dev_vs_historical": 0.0
+    },
+    {
+      "key": "Ge68",
+      "e_true": 1.022,
+      "provider": "fitter",
+      "run_id": 12370,
+      "pinned": false,
+      "mu": 0.9101946091938232,
+      "err_stat_rel": 0.00020316030520297278,
+      "err_rel": 0.005,
+      "note": "err floored 2.03e-04 -> 0.005 (stat-only lacks systematics; historical convention)",
+      "mu_historical": 0.91294604,
+      "dev_vs_historical": -0.003013793461634152
+    },
+    {
+      "key": "nH",
+      "e_true": 2.2233,
+      "provider": "external",
+      "run_id": null,
+      "pinned": true,
+      "mu": 2.22591111,
+      "err_rel": 0.005,
+      "mu_historical": 2.22591111,
+      "dev_vs_historical": 0.0
+    },
+    {
+      "key": "Co60",
+      "e_true": 2.506,
+      "provider": "fitter",
+      "run_id": 12216,
+      "pinned": true,
+      "mu": 2.42067732,
+      "err_rel": 0.005,
+      "note": "result file not found: ../output/example/fitter/results/RUN12216_Co60.npz",
+      "mu_historical": 2.42067732,
+      "dev_vs_historical": 0.0
+    },
+    {
+      "key": "nC",
+      "e_true": 4.95,
+      "provider": "external",
+      "run_id": null,
+      "pinned": true,
+      "mu": 5.0814,
+      "err_rel": 0.005,
+      "mu_historical": 5.0814,
+      "dev_vs_historical": 0.0
+    },
+    {
+      "key": "O16",
+      "e_true": 6.129,
+      "provider": "external",
+      "run_id": null,
+      "pinned": true,
+      "mu": 6.28060468,
+      "err_rel": 0.005,
+      "mu_historical": 6.28060468,
+      "dev_vs_historical": 0.0
+    }
+  ],
+  "warnings": [
+    "Cs137: result file not found: ../output/example/fitter/results/RUN12295_Cs137.npz; pinned to historical value",
+    "Mn54: result file not found: ../output/example/fitter/results/RUN12247_Mn54.npz; pinned to historical value",
+    "Co60: result file not found: ../output/example/fitter/results/RUN12216_Co60.npz; pinned to historical value"
+  ],
+  "note": "e_true follows the dybmodel convention (Ge68 = 1.022 MeV annihilation pair, Co60 = 2.506 MeV cascade sum); err_mu is RELATIVE. K40 is fitted by the suite but enters dybmodel as a spectrum (K40.root), not as one of these 7 peaks."
+}

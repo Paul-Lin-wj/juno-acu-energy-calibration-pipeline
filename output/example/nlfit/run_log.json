@@ -1,0 +1,132 @@
+{
+  "schema": "1.0",
+  "module": "nlfit",
+  "launched_by": "script",
+  "agent": {
+    "name": "",
+    "version": "",
+    "workflow": ""
+  },
+  "started_at": "2026-08-27T19:23:52",
+  "system": {
+    "hostname": "user-Super-Server",
+    "python": "3.11.10",
+    "argv": [
+      "pipeline/run_nlfit_all.py",
+      "--fitter-results",
+      "../output/example/fitter/results",
+      "--out-dir",
+      "/tmp/nlfit_e2e",
+      "--validate-ref"
+    ]
+  },
+  "stage_records": [
+    {
+      "stage": "4b external-contract",
+      "status": "ok",
+      "elapsed_s": 0.0,
+      "detail": {
+        "manifest": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/nlfit/external_inputs/MANIFEST.json",
+        "files": {
+          "gamma_peaks_historical_AllPhase.dat": {
+            "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/nlfit/external_inputs/gamma_peaks_historical_AllPhase.dat",
+            "exists": true,
+            "sha256": "f3bf7d0c076be33fb1b43f70feaf40e6c596a8e7960068df965e0ed73815466f",
+            "sha256_match": true
+          }
+        },
+        "all_valid": true
+      },
+      "outputs": {}
+    },
+    {
+      "stage": "5 aggregate",
+      "status": "ok",
+      "elapsed_s": 0.6,
+      "detail": {
+        "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
+        "note": "Cs137: result file not found: ../output/example/fitter/results/RUN12295_Cs137.npz; pinned to historical value; Mn54: result file not found: ../output/example/fitter/results/RUN12247_Mn54.npz; pinned to historical value; Co60: result file not found: ../output/example/fitter/results/RUN12216_Co60.npz; pinned to historical value"
+      },
+      "outputs": {
+        "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
+        "table": "/tmp/nlfit_e2e/results/meanEscaleEres_perPhase_CDcenter.dat"
+      }
+    },
+    {
+      "stage": "6 dybmodel",
+      "status": "ok",
+      "elapsed_s": 408.2,
+      "detail": {
+        "note": "validate-ref: 14 param rows vs historical, worst rel dev 2.39e-02 (row 5)",
+        "probe": {
+          "apptainer": true,
+          "rootfs": true,
+          "j17v1r1": true,
+          "dybmodel_src": true,
+          "all": true
+        },
+        "input_sha256": {
+          "Quenching.root": "92a9d4d05f53cec24d3f31a14ec136ec4b0871c2de89bedf22716ecf79a4319a",
+          "Gamma_Electron.root": "e2074b718ebbbc702116ddaa31acd4b3224d1a72d3d18a57208411c5585b0d56",
+          "FADC_scaleNL.txt": "b7a5ec21fcd38fe76e41a751dd9839bb5d6a7681e878fbfbb0f0d601ac76f750",
+          "LS_LBNL_2015_short.dat": "ce712783c9ea0d3cb57c37a5fef30d4cc1698eb1424f2c7400ff7206b9147b7d",
+          "LS_IHEP.dat": "574cbdaeb517e023fa98c4f54e91e95734f7368a34a230fce13b37a156d75d60",
+          "cerenkovCurve_2018.dat": "539c11f576eb1d120a0b885b9761838b078c681de7a1b77ba27df03afe5dfb5c",
+          "Isotope_data_AllPhase.root": "102cdf1d04d580bbcd1d16f7cf6fc4fa34bc1e5c8db76755e6ff1478de11f080"
+        }
+      },
+      "outputs": {
+        "bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/chi2_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat": "/tmp/nlfit_e2e/results/matrix_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat",
+        "curves_root": "/tmp/nlfit_e2e/results/curves_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root",
+        "nl_curves_tsv": "/tmp/nlfit_e2e/results/nl_curves.tsv"
+      }
+    },
+    {
+      "stage": "7 inversion",
+      "status": "ok",
+      "elapsed_s": 0.7,
+      "detail": {
+        "note": "lookup built"
+      },
+      "outputs": {
+        "npz": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.npz",
+        "csv": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.csv"
+      }
+    }
+  ],
+  "errors": [],
+  "status": "running",
+  "exit_code": 0,
+  "pipeline_metadata": {
+    "fitter_results": "../output/example/fitter/results",
+    "skip_dybmodel": false,
+    "validate_ref": true
+  },
+  "config_snapshot": "/tmp/nlfit_e2e/config_snapshot.json",
+  "code_snapshot": {
+    "n_files": 16,
+    "index_path": "/tmp/nlfit_e2e/code/sha256.json"
+  },
+  "summary": {
+    "stages_run": "4b,5,6,7",
+    "gamma_dat": "/tmp/nlfit_e2e/results/gamma_AllPhase.dat",
+    "lookup": "/tmp/nlfit_e2e/results/Etrue_from_Erec_lookup.npz"
+  },
+  "finished_at": "2026-08-27T19:30:42",
+  "audit": {
+    "passed": true,
+    "code_snapshot": {
+      "all_match": true,
+      "missing": [],
+      "mismatched": [],
+      "extra": []
+    },
+    "outputs": {
+      "all_present": true,
+      "missing": []
+    },
+    "checked_at": "2026-08-27T19:30:42"
+  }
+}

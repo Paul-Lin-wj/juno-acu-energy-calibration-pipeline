@@ -1,0 +1,18 @@
+{
+  "contract": "Stage 4b external-data contract: inputs this repo cannot yet produce. Each entry must carry sha256; the pipeline verifies and records usage in run_log.json. Replace entries when the corresponding chain lands in this repo (AmC correlated pairs for nH/nC/O16; continuous-spectrum preparation for the Isotope spectra).",
+  "created": "2026-08-27",
+  "files": {
+    "gamma_peaks_historical_AllPhase.dat": {
+      "description": "7-peak gamma table (fitter order Cs137 Mn54 Ge68 n-H Co60 n-12C O16; columns mu[MeV] err_mu_rel). Interim source for the nH/nC/O16 peak positions; also the cross-check reference for fitter-provided peaks.",
+      "source": "ENL_agent/fitter_energynl_dybmodel/necessaryfiles/input/JUNO/ReProd26B/gamma_AllPhase.dat (ReProd26B + Finalcorrection analysis, CD center, all phases)",
+      "provider": "ENL_agent workspace (historical analysis)",
+      "date": "2026-08-16",
+      "sha256": "f3bf7d0c076be33fb1b43f70feaf40e6c596a8e7960068df965e0ed73815466f",
+      "columns": "mu_mev err_mu_rel"
+    }
+  },
+  "notes": [
+    "The dybmodel Isotope_data_*.root continuous-spectrum input is consumed directly by the C++ fitter from its own necessaryfiles tree (symlinked from ENL_agent); it is part of the same external dependency and is sha256-recorded by the Stage 6 wrapper.",
+    "When AmC chain (Stage 3c) lands, move nH/nC/O16 to provider=fitter and delete their entries here."
+  ]
+}

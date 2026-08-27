@@ -1,0 +1,774 @@
+ ----> Loading quenching+cherenkov shapes 
+ kB = 4
+ kB = 5
+ kB = 6
+ kB = 7
+ kB = 8
+ kB = 9
+ kB = 10
+ kB = 11
+ kB = 12
+ kB = 13
+ kB = 14
+ kB = 15
+ kB = 16
+ kB = 17
+ kB = 18
+ kB = 19
+ kB = 20
+ kB = 21
+ kB = 22
+ kB = 23
+ kB = 24
+done1
+ nMaxBins     = 14400
+ nMaxBinsData = 80
+ nMaxBr       = 5
+ nMaxGam      = 2
+done2
+running m_k40Data    = new dybK40Data  ()
+ nMaxBins     = 20000
+ nMaxBinsData = 80
+ nMaxBr       = 3
+ nMaxGam      = 1
+ nMaxBins     = 12000
+ nMaxBinsData = 75
+ nMaxBr       = 10
+ nMaxGam      = 2
+done3
+ nMaxBins     = 5000
+ nMaxBinsData = 100
+ nMaxBr       = 183
+ nMaxGam      = 3
+done4
+ nMaxBins     = 1800
+ nMaxBinsData = 150
+ nMaxBr       = 13
+ nMaxGam      = 4
+done5
+done6
+done7
+done8
+ nMaxBins     = 14400
+ nMaxBinsData = 200
+ nMaxBr       = 1
+ nMaxGam      = 1
+done9
+ nMaxBins     = 14400
+ nMaxBinsData = 80
+ nMaxBr       = 7
+ nMaxGam      = 2
+done10
+ ---> Start loading data 
+ adding ^{137}Cs peak
+ adding ^{54}Mn peak
+ adding ^{68}Ge peak
+ adding n-H peak
+ adding ^{60}Co peak
+ adding n-^{12}C peak
+ adding ^{16}O* peak
+ -----> Reading gamma data from necessaryfiles/input/JUNO/ReProd26B/gamma_AllPhase.dat
+ adding 0.2MeV peak
+ adding 0.4MeV peak
+ adding 0.6MeV peak
+ adding 0.8MeV peak
+ adding 1MeV peak
+ adding 2MeV peak
+ adding 3MeV peak
+ adding 4MeV peak
+ adding 5MeV peak
+ ----> Preparing Gaussian lookup table 
+ ---> Preparing B12 data 
+B12 theo hist prepared.
+ ----> Reading B12 data from necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+3652 511.283
+4835 453.018
+5523 566.234
+5196 171.412
+6042 117.958
+6659 99.2824
+6672 98.7421
+7235 101.74
+7910 104.528
+8346 107.182
+8804 109.124
+9202 111.283
+9249 112.539
+9713 114.258
+9718 114.978
+9971 117.017
+10259 117.852
+10560 118.254
+10467 119.008
+10649 119.846
+10599 119.126
+10385 117.843
+10295 117.384
+10120 116.765
+9948 115.395
+9633 113.239
+9138 111.131
+8800 107.917
+8599 106.953
+8069 103.648
+7724 100.319
+6945 96.5246
+6830 94.7945
+6119 89.0786
+5533 85.1998
+4897 80.1935
+4345 75.4387
+3712 70.4273
+3231 64.6916
+2795 60.025
+2299 54.7814
+1645 46.3789
+1270 40.9878
+871 34.1028
+608 28.3901
+357 22.6936
+222 17.2047
+145 14.4568
+117 12.6886
+92 10.6771
+70 9.16515
+72 9.89949
+70 9.05539
+49 7.93725
+45 7.14143
+44 6.63325
+18 4.89898
+16 4.24264
+13 3.87298
+11 3.31662
+3 1.73205
+2 1.41421
+1 1
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+ finished preparation of B12 data <------ 
+ ---> Preparing C11 data 
+C11 theo hist prepared.
+ ----> Reading C11 data from necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+810 525.583
+962 560.871
+387 552.282
+1526 547.522
+3184 549.447
+7697 557.992
+11629 573.22
+18380 590.842
+23206 607.389
+27408 623.944
+30203 641.918
+34443 657.142
+37201 669.136
+38939 674.311
+40323 673.471
+42236 666.531
+42128 665.45
+45046 662.972
+44701 662.384
+45107 660.398
+45982 656.059
+45735 650.65
+45307 647.148
+44315 642.644
+43473 644.009
+43048 644.099
+43093 641.778
+42018 637.998
+41736 629.646
+40580 620.907
+38560 610.515
+36478 598.027
+36144 585.937
+33633 573.204
+31694 561.029
+28566 548.855
+27680 538.999
+26128 529.15
+23473 518.354
+21968 510.51
+19312 506.476
+17993 510.393
+16135 520.808
+13700 534.702
+12085 550.295
+9944 557.179
+9068 550.879
+6910 530.081
+5075 496.535
+4268 458.286
+2524 418.287
+2812 385.097
+1045 358.426
+881 335.394
+669 319.686
+399 309.918
+236 301.775
+-247 298.159
+93 299.538
+292 302.261
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+ finished preparation of C11 data <------ 
+ ---> Preparing C10 data 
+C10 theo hist prepared.
+ ----> Reading C10 data from necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root
+File reading.
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+0 0
+-11 150.07
+-237 150.735
+-243 164.727
+351 184.182
+65 200.162
+507 208.761
+288 209.886
+489 209.182
+454 207.292
+677 205.239
+537 203.541
+507 199.005
+364 189.874
+141 178.966
+165 169.573
+359 161.471
+451 157.82
+624 159.418
+645 160.297
+1006 141.131
+980 116
+1286 98.7421
+1321 91.5915
+1526 91.717
+1430 94.6256
+1712 102.215
+1644 111.669
+1651 118.52
+1796 113.481
+1661 100.404
+1824 92.293
+1510 93.9681
+1653 99.1413
+1868 103.082
+1716 114.446
+1501 131.45
+1507 137.888
+1373 118.941
+1546 88.193
+1257 59.3886
+1264 46.669
+1165 42.0595
+1022 41.1339
+968 38.9102
+839 36.565
+680 35.0714
+666 32.0624
+530 28.4253
+402 25.6515
+305 22.2036
+262 19.4422
+161 16.8819
+110 14.3527
+67 11.9583
+19 10.8167
+16 10.2956
+0 9.69536
+14 9.69536
+-2 10
+18 9.79796
+18 10.0995
+5 10.247
+7 10.1489
+10 10.6771
+ finished preparation of C10 data <------ 
+ **********
+ **    1 **SET PRINT           1
+ **********
+ **********
+ **    2 **CLEAR
+ **********
+ MINUIT MEMORY CLEARED. NO PARAMETERS NOW DEFINED.
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 scale        1.00000e+00  1.00000e-03    5.00000e-01  2.00000e+00
+     2 kB           1.00000e+01  1.00000e-01    4.00000e+00  2.48000e+01
+     3 kC           4.00000e+00  1.00000e-02    0.00000e+00  1.00000e+01
+     4 alpha        1.00000e-01  1.00000e-03    0.00000e+00  3.00000e-01
+     5 tau          4.00000e+01  1.00000e-03    0.00000e+00  3.00000e+02
+     6 n12Ratio     2.57500e-02  1.00000e-03    0.00000e+00  1.00000e-01
+     7 gamScale     1.00000e+00  5.00000e-04    5.00000e-01  1.50000e+00
+     8 fadcNor      1.00000e+00  1.00000e-03    9.00000e-01  1.10000e+00
+     9 fadcRes      0.00000e+00  1.00000e-03   -2.00000e-01  2.00000e-01
+    10 lsScale      1.00000e+00  1.00000e-03    5.00000e-01  2.00000e+00
+    11 k40Scale     1.00000e+00  5.00000e-04    5.00000e-01  1.50000e+00
+    12 c10C11Frac   1.50000e-01  1.00000e-02    0.00000e+00  1.00000e+00
+    13 c10Be11Frac   2.00000e-02  5.00000e-03    0.00000e+00  1.00000e+00
+ **********
+ **    3 **FIX          10
+ **********
+ **********
+ **    4 **FIX          11
+ **********
+ **********
+ **    5 **FIX           8
+ **********
+ **********
+ **    6 **FIX           9
+ **********
+Check m_minuit->GetNumPars()=13
+ **********
+ **    7 **SET STR           1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    8 **MIGRAD       2e+06        0.01
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-05
+ FCN=510.501 FROM MIGRAD    STATUS=INITIATE       61 CALLS          62 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  scale        1.00000e+00   1.00000e-03   0.00000e+00  -5.14409e+04
+   2  kB           9.39280e+00   1.00000e-01  -6.54832e-02   7.59970e+02
+   3  kC           4.00000e+00   1.00000e-02   0.00000e+00  -1.04192e+03
+   4  alpha        1.00000e-01   1.00000e-03   0.00000e+00   1.08756e+03
+   5  tau          4.00000e+01   1.00000e-03   0.00000e+00  -1.62710e+03
+   6  n12Ratio     2.57500e-02   1.00000e-03   0.00000e+00  -7.57184e+02
+   7  gamScale     1.00000e+00   5.00000e-04   0.00000e+00   1.44773e+03
+   8  fadcNor      1.00000e+00     fixed    
+   9  fadcRes      0.00000e+00     fixed    
+  10  lsScale      1.00000e+00     fixed    
+  11  k40Scale     1.00000e+00     fixed    
+  12  c10C11Frac   1.50000e-01   1.00000e-02   0.00000e+00   2.88994e+02
+  13  c10Be11Frac   2.00000e-02   5.00000e-03   0.00000e+00  -8.66315e+01
+ MINUIT WARNING IN MIGRAD  
+ ============== Negative diagonal element 3 in Error Matrix
+ MINUIT WARNING IN MIGRAD  
+ ============== 1.00069 added to diagonal of error matrix
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -5.6237e-04  3.3389e-03  1.3616e-01  5.7282e-01  9.1270e-01  9.6134e-01  1.0250e+00  1.8832e+00  3.5060e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.004068 TO DIAGONAL.
+ FCN=162.36 FROM HESSE     STATUS=NOT POSDEF     85 CALLS         829 TOTAL
+                     EDM=2.45699e-05    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  scale        1.01775e+00   3.76068e-03   3.76783e-06   2.62393e-01
+   2  kB           1.46784e+01   1.42741e+00   7.52067e-05   2.88750e-02
+   3  kC           1.80385e+00   5.00976e-01   9.22880e-05   4.40515e-02
+   4  alpha        4.25615e-02   1.48046e-02   1.09966e-04   1.13374e-02
+   5  tau          2.02794e+01   1.13102e+01   1.06448e-04   5.91981e-02
+   6  n12Ratio     2.73731e-02   1.29299e-03   1.46116e-04  -1.34327e-03
+   7  gamScale     1.00143e+00   2.04295e-03   2.27312e-05   5.34009e-03
+   8  fadcNor      1.00000e+00     fixed    
+   9  fadcRes      0.00000e+00     fixed    
+  10  lsScale      1.00000e+00     fixed    
+  11  k40Scale     1.00000e+00     fixed    
+  12  c10C11Frac   1.18558e-01   1.14328e-02   2.12101e-04   9.84635e-04
+  13  c10Be11Frac   2.30727e-02   7.43485e-03   3.01594e-04   1.50603e-03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -2.7859e-03  1.3502e-01  2.0112e-01  5.8464e-01  9.2074e-01  9.6155e-01  1.0254e+00  1.9442e+00  3.2301e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.006016 TO DIAGONAL.
+ MIGRAD TERMINATED WITHOUT CONVERGENCE.
+ FCN=162.36 FROM MIGRAD    STATUS=FAILED        935 CALLS         936 TOTAL
+                     EDM=9.4169e-05    STRATEGY= 1      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  scale        1.01775e+00   4.20544e-03   1.50713e-06   5.63966e-01
+   2  kB           1.46785e+01   6.82194e-01   3.00827e-05   3.40732e-02
+   3  kC           1.80384e+00   3.93361e-01   3.69152e-05   5.39838e-02
+   4  alpha        4.25594e-02   2.12327e-02   1.09900e-04   1.43547e-02
+   5  tau          2.02778e+01   2.27001e+00   4.25793e-05  -3.29108e-02
+   6  n12Ratio     2.73731e-02   1.41445e-03   1.46116e-04  -1.30280e-03
+   7  gamScale     1.00143e+00   2.54643e-03   2.27312e-05   5.16009e-03
+   8  fadcNor      1.00000e+00     fixed    
+   9  fadcRes      0.00000e+00     fixed    
+  10  lsScale      1.00000e+00     fixed    
+  11  k40Scale     1.00000e+00     fixed    
+  12  c10C11Frac   1.18558e-01   1.11959e-02   2.12101e-04   9.57431e-04
+  13  c10Be11Frac   2.30727e-02   7.83497e-03   1.20638e-04   1.46231e-03
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  9    ERR DEF=1
+  1.769e-05  2.783e-03  1.581e-03  8.762e-05  4.316e-04 -2.590e-06  7.428e-06  7.439e-06 -1.238e-05 
+  2.783e-03  4.661e-01  2.364e-01  1.358e-02  4.998e-02 -3.877e-04  1.129e-03  1.024e-03 -1.866e-03 
+  1.581e-03  2.364e-01  1.553e-01  8.130e-03  3.856e-02 -2.392e-04  6.731e-04  6.257e-04 -1.119e-03 
+  8.762e-05  1.358e-02  8.130e-03  4.572e-04  9.796e-03 -1.106e-05  3.677e-05  3.526e-05 -6.112e-05 
+  4.316e-04  4.998e-02  3.856e-02  9.796e-03  5.155e+00  1.185e-04  2.041e-04  4.722e-04 -5.141e-04 
+ -2.590e-06 -3.877e-04 -2.392e-04 -1.106e-05  1.185e-04  2.001e-06 -1.147e-06 -1.294e-06  2.005e-06 
+  7.428e-06  1.129e-03  6.731e-04  3.677e-05  2.041e-04 -1.147e-06  6.484e-06  3.447e-06 -5.351e-06 
+  7.439e-06  1.024e-03  6.257e-04  3.526e-05  4.722e-04 -1.294e-06  3.447e-06  1.254e-04 -2.645e-06 
+ -1.238e-05 -1.866e-03 -1.119e-03 -6.112e-05 -5.141e-04  2.005e-06 -5.351e-06 -2.645e-06  6.144e-05 
+ERR MATRIX NOT POS-DEF
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3      4      5      6      7     12     13
+        1  0.99504   1.000  0.969  0.954  0.974  0.045 -0.435  0.694  0.158 -0.376
+        2  0.98388   0.969  1.000  0.879  0.931  0.032 -0.401  0.649  0.134 -0.349
+        3  0.98980   0.954  0.879  1.000  0.965  0.043 -0.429  0.671  0.142 -0.362
+        4  0.99635   0.974  0.931  0.965  1.000  0.202 -0.366  0.675  0.147 -0.365
+        5  0.87736   0.045  0.032  0.043  0.202  1.000  0.037  0.035  0.019 -0.029
+        6  0.67731  -0.435 -0.401 -0.429 -0.366  0.037  1.000 -0.318 -0.082  0.181
+        7  0.70112   0.694  0.649  0.671  0.675  0.035 -0.318  1.000  0.121 -0.268
+       12  0.20781   0.158  0.134  0.142  0.147  0.019 -0.082  0.121  1.000 -0.030
+       13  0.38521  -0.376 -0.349 -0.362 -0.365 -0.029  0.181 -0.268 -0.030  1.000
+ ERR MATRIX NOT POS-DEF
+Check m_nFreeParameter = m_minuit->GetNumFreePars()-2=5
+ =============================== 
+ chi2 minimum: 162.36
+ =============================== 
+ m_chi2B12    = 61.0321
+ m_chi2C11    = 42.3829
+ m_chi2C10    = 51.7779
+running dybK40Data::InitTheo()
+ calculating theoretical K40 shape 
+ =====> Reduced Chi2 
+TotChi2 162.36
+RedChi2 0.99
+Gamma   3.54263
+B12     1.24555
+C11     0.941843
+C10     0.976941
+K40     -0
+lsLBNL  -0
+lsIHEP  -0
+FADC    -0
+
+running WriteResult()
+ m_chi2B12    = 1.24555
+ m_chi2C11    = 0.941843
+ m_chi2C10    = 0.976941
+running dybK40Data::InitTheo()
+ calculating theoretical K40 shape 
+ =====> Reduced Chi2 
+TotChi2 162.36
+RedChi2 0.99
+Gamma   3.54263
+B12     1.24555
+C11     0.941843
+C10     0.976941
+K40     -0
+lsLBNL  -0
+lsIHEP  -0
+FADC    -0
+
+running Plot()
+ ---> Intializing Gamma data 
+ ----> Reading LBNL LS data from necessaryfiles/input/LS_LBNL_2015_short.dat
+ LS data initialized <-----
+Running dybLSData::Plot!!!
+ ----> Reading FADC data from necessaryfiles/input/FADC_scaleNL.txt
+ FADC data initialized <-----
+Running TGraphErrors dybFadcData::Plot!!!
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_gamma.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_gamma2.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_gamma_ratio.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_gamma_ratio_fullNL.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_gamma_raw.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_B12_log0.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_B12.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_B12_log.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_C11.pdf
+ERROR in TPDF::Open: Cannot open file:plots/JUNO/26B/nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720_C10.pdf
+running dybEnergyModel::SaveCurves()
+ Scale = 1.01775
+ kB    = 14.6785
+ kC    = 1.80384
+ Rad   = 0
+  
+ Alpha = 0.0425594
+ Tau   = 20.2778
+ Alp2  = 0.08
+ Tau2  = 2.2
+ GamS   = 1.00143
+running dybEnergyModel::DrawErrors()
+Check  m_nParameter = 13
+ Loading output/results/bestFit_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.dat
+Check running dybGlobalFit::LoadResult!!!  m_nFreeParameter=5
+ --> Computing errors for 5 free parameters
+Check running dybGlobalFit::GetDeltaChi2()!!!  m_nFreeParameter=5
+ --> Scan for delta chi2 = 6.06
+ *****************&&&&&******* 
+ *****************&&&&&******* 
+1.01775
+14.6785
+1.80384
+0.0425594
+20.2778
+0.0273731
+1.00143
+1
+0
+1
+1
+0.118558
+0.0230727
+ Destroying B12 <------
+ Destroying C11 <------
+ Destroying C10 <------
+ Destroying  <------
+ Destroying  <------
+ Destroying  <------
+ Destroying  <------
+
+--- stderr ---
+WARNING: While bind mounting '/datafs:/datafs': destination is already in the mount point list
+WARNING: While bind mounting '/tmp:/tmp': destination is already in the mount point list
+Warning in <TStreamerInfo::BuildCheck>: 
+   The StreamerInfo for version 3 of class TCollection read from the file necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root
+   has a different checksum than the previously loaded StreamerInfo.
+   Reading objects of type TCollection from the file necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root 
+   (and potentially other files) might not work correctly.
+   Most likely the version number of the class was not properly
+   updated [See ClassDef(TCollection,3)].
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 3 of class 'TCollection' differs from 
+the in-memory layout version 3:
+   int fSize; //
+vs
+   Int_t fSize; //
+Warning in <TStreamerInfo::BuildCheck>: 
+   The StreamerInfo for version 4 of class TAttAxis read from the file necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root
+   has a different checksum than the previously loaded StreamerInfo.
+   Reading objects of type TAttAxis from the file necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root 
+   (and potentially other files) might not work correctly.
+   Most likely the version number of the class was not properly
+   updated [See ClassDef(TAttAxis,4)].
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   int fNdivisions; //
+vs
+   Int_t fNdivisions; //
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   float fLabelOffset; //
+vs
+   Float_t fLabelOffset; //
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   float fLabelSize; //
+vs
+   Float_t fLabelSize; //
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   float fTickLength; //
+vs
+   Float_t fTickLength; //
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   float fTitleOffset; //
+vs
+   Float_t fTitleOffset; //
+Warning in <TStreamerInfo::CompareContent>: The following data member of
+the on-file layout version 4 of class 'TAttAxis' differs from 
+the in-memory layout version 4:
+   float fTitleSize; //
+vs
+   Float_t fTitleSize; //
+Error in <TTree::SetBranchAddress>: The pointer type given "vector<double>" does not correspond to the type needed "Double_t" (8) by the branch: photonE
+Error in <TTree::SetBranchAddress>: The pointer type given "vector<double>" does not correspond to the type needed "Double_t" (8) by the branch: photonE
+Error in <THistPainter::PaintInit>: Cannot set Y axis to log scale
+Error in <THistPainter::PaintInit>: Cannot set Y axis to log scale
+Error in <THistPainter::PaintInit>: Cannot set Y axis to log scale
+SysError in <TFile::TFile>: file plots/JUNO/26B/../Hist_B12_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root can not be opened (No such file or directory)
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (data) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (theo) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (b12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (n12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (ratio) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (line) has not been written.
+SysError in <TFile::TFile>: file plots/JUNO/26B/../Hist_C11_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root can not be opened (No such file or directory)
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (data) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (theo) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (b12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (n12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (ratio) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (line) has not been written.
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: tmpC
+SysError in <TFile::TFile>: file plots/JUNO/26B/../Hist_C10_nom_JUNO_26B_finalCorrection_AllPhase_FVcutR0_1720.root can not be opened (No such file or directory)
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (data) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (theo) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (b12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (n12) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (c10) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (c11) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (be11) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (ratio) has not been written.
+Error in <TROOT::WriteTObject>: The current directory (RootApp) is not associated with a file. The object (line) has not been written.
