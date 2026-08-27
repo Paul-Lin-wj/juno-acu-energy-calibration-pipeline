@@ -1,9 +1,9 @@
 # nlfit — 非线性全局拟合模块（Stage 4b/5/6/7）
 
-把 fitter 的峰位结果变成 **E_true = f(E_rec)**：
+把 peakfit 的峰位结果变成 **E_true = f(E_rec)**：
 
 ```text
-fitter/results/RUN{N}_{src}.npz ──┐
+peakfit/results/RUN{N}_{src}.npz ──┐
                                   ├─ Stage 5  聚合 → gamma_AllPhase.dat（7 峰，
 external_inputs/（MANIFEST 契约）─┘            dyb 顺序 Cs137 Mn54 Ge68 nH Co60 nC O16）
                                   → Stage 6  dybmodel C++ 全局 NL 拟合（原版，SL6 容器）
@@ -23,7 +23,7 @@ external_inputs/（MANIFEST 契约）─┘            dyb 顺序 Cs137 Mn54 Ge6
 
 ```bash
 bash setup_env.sh                      # 一次
-bash run_pipeline.sh --fitter-results <fitter输出>/results --out-dir <目录>
+bash run_pipeline.sh --fitter-results <peakfit输出>/results --out-dir <目录>
 bash run_pipeline.sh ... --skip-dybmodel    # 只跑 4b+5（无 ROOT 环境时）
 bash run_pipeline.sh ... --validate-ref     # Stage 6 与历史 bestFit 数值对比（行为锁）
 ```
@@ -44,9 +44,9 @@ bash run_pipeline.sh ... --validate-ref     # Stage 6 与历史 bestFit 数值�
   行为锁定：中心值与历史基线一致到 ~0.1%。
 - **C++ main() 成功也返回 1**：成功与否只看 bestFit/curves 输出是否产生。
 - **误差约定**：dat 的 `err_mu` 列是**总相对误差**（历史约定全 7 峰 0.005）。
-  fitter 给的是纯统计误差（如 Ge68 2e-4），聚合时按下限 `MU_ERR_FLOOR=0.005`
+  peakfit 给的是纯统计误差（如 Ge68 2e-4），聚合时按下限 `MU_ERR_FLOOR=0.005`
   兜底（`config/paths.py` 可调/关闭），避免过度加权。
-- **AmC 三峰**：nH/nC/O16 已由 `amcsel`+`fitter run_amc_fit_all` 提供
+- **AmC 三峰**：nH/nC/O16 已由 `calibsel` AmC 支线 + `peakfit run_amc_fit_all` 提供
   （provider=amc，RUN10110 = AmC117@中心；结果缺失时仍自动钉历史值+告警）。
   O16 拟合的 minuit HESSE 可能失败（参数贴界）→ μ 误差不可用，由
   `MU_ERR_FLOOR` 兜底，fit_valid 如实记入 run_log。
@@ -54,11 +54,11 @@ bash run_pipeline.sh ... --validate-ref     # Stage 6 与历史 bestFit 数值�
   连续谱由 dybmodel 自带
   `Isotope_data_*.root` 提供（同属外部依赖，sha256 记录）。
 - **E_true 约定**：Ge68=1.022 MeV（湮灭对）、Co60=2.506 MeV（级联和）——
-  dyb 约定，与 fitter 内部 E_scale 锚点（Ge68 0.8845）含义不同，见
+  dyb 约定，与 peakfit 内部 E_scale 锚点（Ge68 0.8845）含义不同，见
   `config/paths.py` 注释。
 - **留档与审计**：run_log.{md,json} / config_snapshot / console.log / code+sha256
   快照 / 结束完整性审计（脚本模式 exit 3，agent 模式警告）——与
-  esd2npz、fitter 同一契约。
+  calibsel、peakfit 同一契约。
 
 ## 依赖
 

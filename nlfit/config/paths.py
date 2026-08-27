@@ -12,10 +12,10 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SUITE_ROOT = PROJECT_ROOT.parent
 
 # ============================================================
-# Input: fitter results directory (contains RUN{N}_{source}.npz)
-# Default points at the joint-run layout output/<ts>/fitter/results.
+# Input: peakfit results directory (contains RUN{N}_{source}.npz)
+# Default points at the joint-run layout output/<ts>/peakfit/results.
 # ============================================================
-FITTER_RESULTS_DIR = SUITE_ROOT / "fitter" / "output" / "latest" / "results"
+FITTER_RESULTS_DIR = SUITE_ROOT / "peakfit" / "output" / "latest" / "results"
 
 # ============================================================
 # External inputs contract (Stage 4b)
@@ -31,7 +31,7 @@ HISTORICAL_GAMMA_KEY = "gamma_peaks_historical_AllPhase.dat"
 # ============================================================
 # The 7 gamma peaks entering fitter_energynl_dybmodel, in the FIXED
 # order expected by dybGammaData::LoadData (one "mu err_mu_rel" per line).
-#   provider = "fitter"  -> mu from <fitter results>/RUN{run}_{key}.npz
+#   provider = "fitter"  -> mu from <peakfit results>/RUN{run}_{key}.npz
 #              "external"-> mu from the MANIFEST historical table (pinned)
 # e_true follows the dyb convention (Ge68 = annihilation pair 1.022 MeV,
 # Co60 = cascade sum 2.506 MeV) — NOTE: differs from the fitter's internal
@@ -43,7 +43,7 @@ PEAKS = [
     ("Mn54",   0.8348,  "fitter",   12247),
     ("Ge68",   1.022,   "fitter",   12370),
     # AmC 关联对三峰（RUN10110 = AmC117 @ 中心 Z=0，BKG 10100）：
-    # amcsel(Stage3c) -> fitter run_amc_fit_all(Stage3b) -> 本处
+    # calibsel AmC 支线(Stage3c) -> peakfit run_amc_fit_all(Stage3b) -> 本处
     ("nH",     2.2233,  "amc",      10110),
     ("Co60",   2.506,   "fitter",   12216),
     ("nC",     4.95,    "amc",      10110),

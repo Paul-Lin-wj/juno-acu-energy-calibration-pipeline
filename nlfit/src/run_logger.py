@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Slim run logger for the nlfit module — same artifact contract as the
-sibling esd2npz/fitter loggers (run_log.{md,json}, config_snapshot.json,
+sibling calibsel/fitter loggers (run_log.{md,json}, config_snapshot.json,
 console.log, code/ + sha256.json, end-of-run audit), reduced to the
 stages this module runs (4b contract, 5 aggregate, 6 dybmodel, 7 invert).
 """

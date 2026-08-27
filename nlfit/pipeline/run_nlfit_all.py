@@ -13,7 +13,7 @@ run_nlfit_all.py — one-click orchestration of the nlfit module.
 
 Every run is archived (run_log.{md,json}, config_snapshot.json, console.log,
 code/ + sha256.json) and ends with a completeness audit (exit 3 on failure
-in script mode, warning in agent mode) — same contract as esd2npz/fitter.
+in script mode, warning in agent mode) — same contract as calibsel/fitter.
 
 Usage:
     .venv/bin/python pipeline/run_nlfit_all.py \

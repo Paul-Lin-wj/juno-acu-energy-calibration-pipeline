@@ -10,6 +10,6 @@ __pycache__/
 **/.venv/
 **/TMP/
 
-# AmC raw run data (re-fetchable — see amcsel/PROVENANCE.md §3 and
-# amcsel/input/Data/MANIFEST.sha256 for checksums + fetch commands)
-amcsel/input/Data/*.npz
+# AmC raw run data (re-fetchable — see calibsel/PROVENANCE.amc.md §3 and
+# calibsel/input/amc_data/MANIFEST.sha256 for checksums + fetch commands)
+calibsel/input/amc_data/*.npz
