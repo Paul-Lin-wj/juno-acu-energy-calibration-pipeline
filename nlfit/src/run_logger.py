@@ -172,6 +172,11 @@ class RunLogger:
     # ------------------------------------------------------------- writer
     def _write_logs(self):
         self.data["finished_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        # success paths never call set_exit_code(0) explicitly — upgrade the
+        # initial "running" so finished logs don't read status=running
+        if self.data.get("status") == "running":
+            code = self.data.get("exit_code")
+            self.data["status"] = "completed" if code in (None, 0) else "failed"
         (self.out / "run_log.json").write_text(
             json.dumps(self.data, indent=2, ensure_ascii=False, default=str))
         lines = [

@@ -541,6 +541,12 @@ def plot_fast_ge68_results(fitter: FastGe68Fitter, title_latex: str, fig_path: s
     plt.grid(True, alpha=0.3)
     os.makedirs(os.path.dirname(fig_path) or ".", exist_ok=True)
     plt.savefig(fig_path, bbox_inches="tight")
+    # always leave a PNG twin (screen viewing) next to the PDF (or vice versa)
+    _stem, _ext = os.path.splitext(fig_path)
+    if _ext.lower() == ".pdf":
+        plt.savefig(_stem + ".png", dpi=200, bbox_inches="tight")
+    elif _ext.lower() == ".png":
+        plt.savefig(_stem + ".pdf", bbox_inches="tight")
     plt.close()
 
 

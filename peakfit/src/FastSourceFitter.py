@@ -252,6 +252,8 @@ def run_fast_source_fitter(source, run_id=None, input_path="",
         ax.grid(True, alpha=0.3)
         fig_path = f"{output_fig_dir}/{sample_label}.pdf"
         fig.savefig(fig_path, bbox_inches="tight")
+        fig.savefig(f"{output_fig_dir}/{sample_label}.png", dpi=200,
+                    bbox_inches="tight")
         plt.close(fig)
         outputs["figure"] = fig_path
 

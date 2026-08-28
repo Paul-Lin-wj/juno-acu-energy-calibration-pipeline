@@ -155,6 +155,8 @@ RECON_IMPL=omilrecv2 bash run_pipeline.sh 12370      # 开启本地 rtraw→ESD 
 
 ```text
 output/<YYYYmmdd_HHMMSS>/
+├── suite_run_log.{md,json}  # 套件级留档：argv/env/各段状态与耗时/各模块审计结果
+├── suite_console.log        # 套件驱动全程控制台
 ├── recon/        # 【仅 RECON_IMPL 开启】results/(esd/RUN{N}/, esd_lists/) + 审计
 ├── calibsel/     # results/(npz_raw, npz_corrected, selection_npz, timestamps)
 │                # figures/  cuts/（挑选条件）  logs/  code/（代码快照）
@@ -186,6 +188,12 @@ cd calibsel && .venv/bin/python pipeline/run_amcsel_all.py --run 10110 \
 
 ## 留档与审计
 
+- **套件级**：`run_pipeline.sh` 每次运行落盘 `suite_run_log.{md,json}`
+  （argv/环境开关/逐段状态与耗时/各模块 audit 结果汇总）与
+  `suite_console.log`；无论中途成败都会写出（EXIT trap）
+- **图件配对**：收尾自动给全链图件补齐 PNG（看屏）/PDF（打印/幻灯）双格式，
+  移植来的物理绘图代码零改动，缺哪侧补哪侧（PDF→PNG 需 poppler 的
+  `pdftoppm`）
 - **挑选条件**：`cuts/{RUN}_cuts.json`（ROI、Step-1 能量区、z_limit、EFV 计数、
   最终能量窗）+ `cuts/summary.md` 多 run 汇总
 - **代码快照**：每次运行把完整代码树复制到 `code/`（附 `code/sha256.json`），

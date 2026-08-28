@@ -182,6 +182,8 @@ Output:
 
 ```text
 output/<YYYYmmdd_HHMMSS>/
+├── suite_run_log.{md,json}  # suite-level record: argv/env/stage table/module audits
+├── suite_console.log        # full driver console (tee'd)
 ├── recon/        # [only when RECON_IMPL set] results/(esd/RUN{N}/, esd_lists/) + audit
 ├── calibsel/     # results/(npz_raw, npz_corrected, selection_npz, timestamps)
 │                # figures/  cuts/ (selection conditions)  logs/  code/ (snapshot)
@@ -212,6 +214,13 @@ cd peakfit && .venv/bin/python pipeline/run_fit_all.py \
 
 ## Logging & Audit
 
+- **Suite level**: every `run_pipeline.sh` run writes `suite_run_log.{md,json}`
+  (argv / env toggles / per-stage status & timing / per-module audit summary)
+  plus `suite_console.log`; written via an EXIT trap, so it exists even when a
+  stage fails midway.
+- **Figure pairing**: a final pass mirrors every figure into both PNG (screen)
+  and PDF (print/slides); ported physics plotting code is left untouched —
+  whichever side is missing gets created (PDF→PNG needs poppler `pdftoppm`).
 - **Selection conditions**: `cuts/{RUN}_cuts.json` (ROI, Step-1 energy region,
   z_limit, EFV counts, final energy window) + `cuts/summary.md` multi-run table
 - **Code snapshot**: the complete code tree is copied to `code/` per run

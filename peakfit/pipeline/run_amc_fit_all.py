@@ -98,6 +98,7 @@ def fit_gaussian_peak(peak: str, energy: np.ndarray, run_id: int,
     plt.tight_layout()
     fig_path = fig_dir / f"RUN{run_id}_{peak}.png"
     fig.savefig(fig_path, dpi=200, bbox_inches="tight")
+    fig.savefig(fig_dir / f"RUN{run_id}_{peak}.pdf", bbox_inches="tight")
     plt.close(fig)
     return {"result_npz": str(npz_path), "figure": str(fig_path),
             "mu": r["mu"], "mu_err": r["mu_err"], "fit_valid": valid,
