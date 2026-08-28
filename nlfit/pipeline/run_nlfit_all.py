@@ -52,12 +52,47 @@ def main() -> int:
     ap.add_argument("--validate-ref", action="store_true",
                     help="Stage 6: also compare bestFit against the "
                          "historical reference (behaviour lock)")
+    ap.add_argument("--phase", default="all",
+                    help="'all' (default: the fixed AllPhase reference runs) "
+                         "or a phase number from ValProd26BPhase.csv — "
+                         "per-phase fit with automatic centre-run selection")
+    ap.add_argument("--nc-pin", action="store_true",
+                    help="pin nC to the production value (production pinned "
+                         "nC in every gamma_*.dat; default: measured nC)")
+    ap.add_argument("--no-fold-pre", action="store_true",
+                    help="--phase 1: do NOT fold the pre-range 2025-08 "
+                         "commissioning week into Phase 1 (production "
+                         "tables folded it in)")
+    ap.add_argument("--runs-override", default=None,
+                    metavar="SRC=RUN[,RUN...]",
+                    help="manual per-phase run selection, e.g. "
+                         "'Cs137=12295,Ge68=12370' (bare numbers go to "
+                         "AmC117), overriding the automatic centre-run pick")
+    ap.add_argument("--isotope-root", default=None, metavar="FILE",
+                    help="override the Spec/forNLfitter isotope root for "
+                         "--phase (default: ISOTOPE_ROOT_BY_PHASE mapping)")
     ap.add_argument("--launched-by", default="script",
                     choices=["script", "agent"])
     ap.add_argument("--agent-name", default="")
     ap.add_argument("--agent-version", default="")
     ap.add_argument("--agent-workflow", default="")
     args = ap.parse_args()
+
+    # resolve per-phase mode (validate the phase + isotope mapping up front)
+    phase = None
+    isotope_root = None
+    if args.phase and args.phase != "all":
+        try:
+            phase = int(args.phase)
+        except ValueError:
+            ap.error(f"--phase expects 'all' or an integer, got {args.phase!r}")
+        aggregate.select_phase_runs(phase, fold_pre=not args.no_fold_pre)
+        isotope_root = (args.isotope_root
+                        or P.ISOTOPE_ROOT_BY_PHASE.get(phase))
+        if isotope_root is None and not args.skip_dybmodel:
+            ap.error(f"--phase {phase}: no isotope root mapped — add it to "
+                     "ISOTOPE_ROOT_BY_PHASE (config/paths.py) or pass "
+                     "--isotope-root")
 
     ts = time.strftime("%Y%m%d_%H%M%S")
     out = Path(args.out_dir) if args.out_dir else _PROJ / "output" / ts
@@ -76,7 +111,11 @@ def main() -> int:
             logger.record_command(sys.argv)
             logger.set_pipeline_info(fitter_results=args.fitter_results,
                                      skip_dybmodel=args.skip_dybmodel,
-                                     validate_ref=args.validate_ref)
+                                     validate_ref=args.validate_ref,
+                                     phase=args.phase, nc_pin=args.nc_pin,
+                                     fold_pre=(not args.no_fold_pre),
+                                     runs_override=args.runs_override,
+                                     isotope_root=isotope_root)
             logger.snapshot_config()
             logger.snapshot_code()
 
@@ -107,7 +146,9 @@ def main() -> int:
             t0 = time.time()
             try:
                 stage5 = aggregate.aggregate_gamma_dat(
-                    args.fitter_results, res_dir)
+                    args.fitter_results, res_dir, phase=phase,
+                    fold_pre=not args.no_fold_pre, nc_pin=args.nc_pin,
+                    runs_override=args.runs_override)
                 plots.plot_stage5(stage5["peaks"], fig_dir)
                 logger.add_stage(
                     "5 aggregate", "ok", round(time.time() - t0, 1),
@@ -133,7 +174,8 @@ def main() -> int:
                 t0 = time.time()
                 try:
                     fit = dybmodel_wrap.run_dybmodel(out,
-                                                     stage5["gamma_dat"])
+                                                     stage5["gamma_dat"],
+                                                     isotope_root=isotope_root)
                     probe = dybmodel_wrap.probe()
                     curves = invert.parse_curves_tsv(
                         fit["harvested"]["nl_curves_tsv"])
@@ -197,12 +239,14 @@ def main() -> int:
                 "gamma_dat": stage5["gamma_dat"],
                 "lookup": (lookup or {}).get("lookup_npz", "n/a"),
             })
+            dat_name = ("gamma_AllPhase.dat" if phase is None
+                        else f"gamma_Phase{phase}.dat")
             expected = [out / "run_log.json", out / "run_log.md",
                         out / "config_snapshot.json", out / "console.log",
                         out / "code" / "sha256.json",
-                        res_dir / "gamma_AllPhase.dat",
+                        res_dir / dat_name,
                         res_dir / "meanEscaleEres_perPhase_CDcenter.dat",
-                        res_dir / "gamma_AllPhase.dat.provenance.json",
+                        res_dir / f"{dat_name}.provenance.json",
                         fig_dir / "stage5_gamma_peaks.png"]
             if curves is not None:
                 expected += [res_dir / "nl_curves.tsv",

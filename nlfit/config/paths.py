@@ -64,6 +64,60 @@ MU_DEVIATION_WARN = 0.05
 MU_ERR_FLOOR = 0.005
 
 # ============================================================
+# Per-phase mode:  --phase {all,1,2,3,4}
+#
+# DESIGN CONTRACT — adding a NEW phase stays data-driven (files, not
+# code), with exactly ONE mapping line to add here (step 3):
+#   1. calibsel/input/correction/data/ValProd26BPhase.csv — add the run
+#      range row. This csv is the single source of truth: the 26B
+#      correction AND nlfit's --phase choices both read it.
+#      (Needs the colleague deliverables phase{N}_model.npz + absolute
+#      energy scale under calibsel/input/correction/ — cannot be
+#      self-generated; out-of-range runs fall back to the NEAREST phase,
+#      see correction_api.phase_from_run.)
+#   2. calibsel/calib_run_info/{CalibRUN_from_file.csv,
+#      calib_to_analyze.txt} — the new phase's runs (production-side
+#      updates anyway).
+#   3. dybmodel necessaryfiles .../Spec/forNLfitter/ — add the phase's
+#      Isotope_data_Phase{N}_*.root (colleague deliverable) AND one line
+#      in ISOTOPE_ROOT_BY_PHASE below.
+#   4. Run:  nlfit --phase N  (run selection is automatic — the phase's
+#      centre runs, |z| <= CENTRE_Z_MAX, inverse-variance weighted mean
+#      per source; absent sources are EXCLUDED, not pinned).
+# ============================================================
+PHASE_TABLE = (SUITE_ROOT / "calibsel" / "input" / "correction" / "data" /
+               "ValProd26BPhase.csv")
+CALIB_RUN_TABLE = (SUITE_ROOT / "calibsel" / "calib_run_info" /
+                   "CalibRUN_from_file.csv")
+
+# centre-run convention for automatic per-phase selection (matches the
+# production analysis: meanEscaleEres_perPhase_CDcenter)
+CENTRE_Z_MAX = 0.5
+
+# Production pinned nC to this value in ALL gamma_*.dat tables
+# (glue/gen_gamma_dat.py --override nC=5.08140). Our default is the
+# measured nC; pass --nc-pin to reproduce the production caliber exactly.
+NC_PIN = 5.08140
+
+# The C++ opens ONE fixed filename (dybParameters.cxx:199-201, b12/c11/c10
+# share it). Per-phase isotope spectra are placed AT this canonical path
+# as a real copy inside the per-run sandbox — the colleague's tree is
+# never touched and no rebuild is needed.
+ISOTOPE_CANONICAL = ("Isotope_data_AllPhase_FVcutR0_1720_"
+                     "Finalcorrection.root")
+SPEC_FORNL_RELDIR = "input/JUNO/ReProd26B/Spec/forNLfitter"
+
+# Per-phase isotope spectra — same FVcutR0_1720 + Finalcorrection caliber
+# as the AllPhase default (all four already exist in the colleague tree).
+# NEW PHASE: drop the root into Spec/forNLfitter/ and add one line here.
+ISOTOPE_ROOT_BY_PHASE = {
+    1: "Isotope_data_Phase1_FVcutR0_1720_Finalcorrection.root",
+    2: "Isotope_data_Phase2_FVcutR0_1720_Finalcorrection.root",
+    3: "Isotope_data_Phase3_FVcutR0_1720_Finalcorrection.root",
+    4: "Isotope_data_Phase4_FVcutR0_1720_Finalcorrection.root",
+}
+
+# ============================================================
 # dybmodel C++ fitter — ORIGINAL tree, run in OUR OWN container.
 #
 # Assets staged on /datafs by tools/setup_container.sh (see container/):

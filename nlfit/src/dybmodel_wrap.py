@@ -53,10 +53,16 @@ def _input_fingerprints() -> dict:
 
 
 # ---------------------------------------------------------------- sandbox
-def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path) -> None:
+def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
+                              isotope_root: str | None = None) -> None:
     """Mirror DYBMODEL_SRC into `sandbox` with symlinks, except that
     necessaryfiles/input/JUNO/ReProd26B/gamma_AllPhase.dat is a REAL copy
     of this run's gamma table (the C++ reads that canonical path).
+
+    isotope_root: per-phase mode — place this Spec/forNLfitter file (a
+    FILENAME, e.g. Isotope_data_Phase1_...root) AT the canonical AllPhase
+    isotope path the C++ opens (dybParameters.cxx:199-201) as a real copy.
+    The colleague tree is never touched and no rebuild is needed.
 
     Directories are linked WHOLESALE and never descended into (pruned),
     so nothing is ever created inside the original tree."""
@@ -67,7 +73,12 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path) -> None:
     nf_src = src / "necessaryfiles"
     nf_dst = sandbox / "necessaryfiles"
     gamma_rel = "input/JUNO/ReProd26B/gamma_AllPhase.dat"
+    iso_rel = f"{P.SPEC_FORNL_RELDIR}/{P.ISOTOPE_CANONICAL}"
     real_dirs = {"input", "input/JUNO", "input/JUNO/ReProd26B"}
+    if isotope_root:
+        # materialize Spec/ and forNLfitter/ so the canonical isotope
+        # path can hold the per-phase real copy
+        real_dirs |= {"input/JUNO/ReProd26B/Spec", P.SPEC_FORNL_RELDIR}
 
     skip_top = {"necessaryfiles", "output", "plots", "obj", "cursor",
                 "run.log", ".git"}
@@ -88,11 +99,17 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path) -> None:
                 dirs.remove(d)  # linked wholesale: do not descend
         for f in files:
             rel = (rel_root / f).as_posix()
-            if rel == gamma_rel:
+            if rel in (gamma_rel, iso_rel):
                 continue
             (nf_dst / rel).symlink_to(Path(root) / f)
 
     shutil.copy2(gamma_dat, nf_dst / gamma_rel)
+    if isotope_root:
+        src_iso = nf_src / P.SPEC_FORNL_RELDIR / isotope_root
+        if not src_iso.is_file():
+            raise FileNotFoundError(
+                f"per-phase isotope root not in colleague tree: {src_iso}")
+        shutil.copy2(src_iso, nf_dst / iso_rel)
     for d in ("output/results", "output/curves", "output/errors",
               "output/gammas", "plots"):
         (sandbox / d).mkdir(parents=True, exist_ok=True)
@@ -122,8 +139,13 @@ def _apptainer_cmd(sandbox: Path) -> str:
             f"cd {sandbox} && timeout {P.DYB_FIT_TIMEOUT_S} ./fitter'")
 
 
-def run_dybmodel(out_dir, gamma_dat_path, work_dir=None) -> dict:
-    """Run the original fitter in the container; harvest into out_dir."""
+def run_dybmodel(out_dir, gamma_dat_path, work_dir=None,
+                 isotope_root=None) -> dict:
+    """Run the original fitter in the container; harvest into out_dir.
+
+    isotope_root: per-phase Spec/forNLfitter filename placed at the
+    canonical AllPhase isotope path inside the sandbox (None = AllPhase).
+    """
     out_dir, gamma_dat = Path(out_dir), Path(gamma_dat_path)
     p = probe()
     if not p["all"]:
@@ -131,11 +153,12 @@ def run_dybmodel(out_dir, gamma_dat_path, work_dir=None) -> dict:
 
     work = Path(work_dir) if work_dir else out_dir / P.OUTPUT_WORK_DIR
     sandbox = work / "dybmodel_run"
-    make_symlink_farm_sandbox(sandbox, gamma_dat)
+    make_symlink_farm_sandbox(sandbox, gamma_dat, isotope_root=isotope_root)
     (sandbox / "run_env.txt").write_text(
         f"sif={P.DYBMODEL_SIF}\nsif_sha256={sha256_file(P.DYBMODEL_SIF)}\n"
         f"j17_setup={P.DYBMODEL_J17_SETUP}\n"
-        f"gamma_sha256={sha256_file(gamma_dat)}\n")
+        f"gamma_sha256={sha256_file(gamma_dat)}\n"
+        f"isotope_root={isotope_root or P.ISOTOPE_CANONICAL}\n")
 
     t0 = time.time()
     proc = subprocess.run(["bash", "-c", _apptainer_cmd(sandbox)],

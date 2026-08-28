@@ -26,9 +26,47 @@ bash setup_env.sh                      # 一次
 bash run_pipeline.sh --fitter-results <peakfit输出>/results --out-dir <目录>
 bash run_pipeline.sh ... --skip-dybmodel    # 只跑 4b+5（无 ROOT 环境时）
 bash run_pipeline.sh ... --validate-ref     # Stage 6 与历史 bestFit 数值对比（行为锁）
+
+# 分 phase 非线性拟合（run 自动选：该 phase 区间内的中心 run，|z|≤0.5 m）
+bash run_pipeline.sh ... --phase 1 --out-dir <目录>/phase1
+bash run_pipeline.sh ... --phase 3 --nc-pin      # nC 钉生产值 5.08140（对齐口径）
+bash run_pipeline.sh ... --phase 2 --runs-override 'Cs137=12118,Ge68=12370'  # 手工指定
 ```
 
 顶层 `run_pipeline.sh`（仓根）已把本模块作为第三段自动接入。
+
+## 分 phase 模式（--phase N）
+
+- **phase 清单数据驱动**：读 `calibsel/input/correction/data/ValProd26BPhase.csv`
+  （与 26B 修正共用同一份 run 区间表，唯一事实源）。
+- **run 挑选**：phase 区间内该源的全部**中心 run**（|z|≤0.5 m，与生产
+  `meanEscaleEres_perPhase_CDcenter` 同口径），μ 取各 run 结果的
+  **方差倒数加权平均**；`--phase 1` 默认把区间前的 2025-08 试运行周并入
+  P1（生产 `gamma_Phase1_K40.dat` 即如此；`--no-fold-pre` 关闭）。
+- **缺峰剔除而非钉值**：某源在该 phase 没有可用结果就从表中剔除并告警
+  （AllPhase 模式仍保持"钉历史值"旧行为，字节级不变）。可用性：
+  P2/P3 六峰、P4 六峰（三源各仅 1 个中心 run）、P1 五峰
+  （γ 单能源只有 8 月周并入后可用）、K40 仅 P1（且不入 7 峰表）。
+- **isotope 谱自动切换**：sandbox 内把该 phase 的
+  `Isotope_data_Phase{N}_FVcutR0_1720_Finalcorrection.root` 物化到 C++
+  固定打开的 AllPhase 文件名（`dybParameters.cxx:199-201`）——
+  不改同事代码、不重编译；映射表在 `config/paths.py::ISOTOPE_ROOT_BY_PHASE`。
+- **nC 口径**：生产所有分相表把 nC 钉在 5.08140；本模块默认用实测值，
+  `--nc-pin` 切到生产口径（当前实测 5.024，差 −1.1%）。
+
+### 新增一个 phase 的操作清单（改数据不改代码，仅 1 行映射）
+
+1. `calibsel/input/correction/data/ValProd26BPhase.csv` 加一行 run 区间；
+   同时需要 26B 生产侧交付的 `phase{N}_model.npz` + 绝对能标
+   （放 `calibsel/input/correction/`；没有则区间外 run 按就近 phase 修正，
+   见 `correction_api.phase_from_run`）。
+2. `calibsel/calib_run_info/{CalibRUN_from_file.csv, calib_to_analyze.txt}`
+   补该 phase 的 run（生产侧本来就会更新）。
+3. dybmodel `necessaryfiles/.../Spec/forNLfitter/` 放入该 phase 的
+   `Isotope_data_Phase{N}_*.root`，并在 `config/paths.py::
+   ISOTOPE_ROOT_BY_PHASE` **加一行映射**（唯一要动的代码处）。
+4. `--phase N` 直接跑；run 挑选、缺峰剔除、产物命名
+   （`gamma_Phase{N}.dat`）、审计全部自动。
 
 ## 关键设计
 

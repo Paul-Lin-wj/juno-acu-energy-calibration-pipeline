@@ -94,8 +94,24 @@ def _amc_peak(key: str, run_id: int, results_dir: Path):
     return (mu, err), None
 
 
-def aggregate_gamma_dat(fitter_results_dir, out_dir) -> dict:
-    """Build gamma_AllPhase.dat (+ sidecars); return per-peak records."""
+def aggregate_gamma_dat(fitter_results_dir, out_dir, *, phase=None,
+                        fold_pre=True, nc_pin=False, runs_override=None
+                        ) -> dict:
+    """Build the fitter's gamma table (+ sidecars); return per-peak records.
+
+    phase=None  -> AllPhase mode: the fixed reference runs in P.PEAKS;
+                   absent results are PINNED to historical values
+                   (backward-compatible, byte-identical to before).
+    phase=int   -> per-phase mode: the phase's centre runs (selected from
+                   CALIB_RUN_TABLE inside the PHASE_TABLE run range),
+                   inverse-variance weighted mean of mu per source; absent
+                   sources are EXCLUDED (never pinned — a pinned AllPhase
+                   number would defeat the purpose of phase separation).
+    """
+    if phase is not None:
+        return _aggregate_phase(fitter_results_dir, out_dir, phase,
+                                fold_pre=fold_pre, nc_pin=nc_pin,
+                                runs_override=runs_override)
     results_dir = Path(fitter_results_dir)
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -175,3 +191,206 @@ def aggregate_gamma_dat(fitter_results_dir, out_dir) -> dict:
         print(f"[Stage5][Warning] {w}")
     return {"peaks": peaks, "warnings": warnings,
             "gamma_dat": str(dat_path), "table": str(tbl)}
+
+
+# ============================================================
+# Per-phase aggregation (--phase N)
+# ============================================================
+def load_phase_ranges():
+    """[(phase, run_min, run_max)] from the shared ValProd26B table."""
+    import csv
+    ranges = []
+    with open(P.PHASE_TABLE, newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            name = next(v for v in row.values() if v and v.strip())
+            phase = int(name.split()[-1])
+            lo, hi = (int(x) for x in row["Run Range"].split("-"))
+            ranges.append((phase, lo, hi))
+    return sorted(ranges)
+
+
+def load_calib_runs():
+    """[{run, date, x, y, z, source}] from CalibRUN_from_file.csv."""
+    import csv
+    runs = []
+    with open(P.CALIB_RUN_TABLE, newline="", encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            runs.append({"run": int(r["RUN"]), "date": r["Date"],
+                         "x": float(r["X[m]"]), "y": float(r["Y[m]"]),
+                         "z": float(r["Z[m]"]), "source": r["Source"]})
+    return runs
+
+
+def select_phase_runs(phase, fold_pre=True):
+    """Centre runs per source inside the phase's run range.
+
+    fold_pre (phase 1 only): also take runs BELOW the first range — the
+    production tables folded the 2025-08-25 commissioning week into
+    Phase 1 (gamma_Phase1_K40.dat has 8 peaks incl. K40 9632), matching
+    correction_api.phase_from_run's nearest-phase fallback.
+    """
+    ranges = load_phase_ranges()
+    match = [r for r in ranges if r[0] == phase]
+    if not match:
+        known = ", ".join(f"P{p} [{lo}-{hi}]" for p, lo, hi in ranges)
+        raise ValueError(f"phase {phase} not in {P.PHASE_TABLE} (have {known})")
+    _p, lo, hi = match[0]
+    first_lo = ranges[0][1]
+    sel = {}
+    for r in load_calib_runs():
+        inside = lo <= r["run"] <= hi
+        if not inside and phase == 1 and fold_pre and r["run"] < first_lo:
+            inside = True  # pre-P1 commissioning week folded into Phase 1
+        if inside and abs(r["z"]) <= P.CENTRE_Z_MAX:
+            sel.setdefault(r["source"], []).append(r["run"])
+    return {s: sorted(v) for s, v in sel.items()}
+
+
+def _parse_runs_override(text):
+    """'Cs137=12295,Ge68=12370,AmC117=10110,10111' -> {source: [runs]}."""
+    out = {}
+    for part in (text or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "=" in part:
+            src, runs = part.split("=", 1)
+            out[src.strip()] = [int(v) for v in runs.split() if v.isdigit()]
+        else:
+            out.setdefault("AmC117", []).append(int(part))
+    return out
+
+
+def _weighted_mean(points):
+    """points = [(run, mu, err_abs)] -> (mu, err_abs, n_used, n_dropped)."""
+    ok = [(rid, m, e) for rid, m, e in points if m > 0]
+    if not ok:
+        return None
+    weights = []
+    for _rid, _m, e in ok:
+        weights.append(1.0 / (e * e) if e > 0 else 0.0)
+    if sum(weights) <= 0:
+        mu = float(np.mean([m for _r, m, _e in ok]))
+        err = float(np.std([m for _r, m, _e in ok]) / np.sqrt(len(ok))) \
+            if len(ok) > 1 else 0.0
+    else:
+        w = np.asarray(weights)
+        m = np.asarray([mm for _r, mm, _e in ok])
+        mu = float(np.sum(w * m) / np.sum(w))
+        err = float(1.0 / np.sqrt(np.sum(w)))
+    return mu, err, len(ok), len(points) - len(ok)
+
+
+def _aggregate_phase(fitter_results_dir, out_dir, phase, *,
+                     fold_pre=True, nc_pin=False, runs_override=None):
+    """Per-phase gamma table: weighted mean over the phase's centre runs."""
+    results_dir = Path(fitter_results_dir)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    historical = load_historical_peaks()
+
+    sel = select_phase_runs(phase, fold_pre=fold_pre)
+    if runs_override:
+        for src, runs in _parse_runs_override(runs_override).items():
+            sel[src] = runs
+        print(f"[Stage5] runs override applied: "
+              f"{_parse_runs_override(runs_override)}")
+
+    peaks, warnings = [], []
+    for key, e_true, provider, _fixed in P.PEAKS:
+        src = "AmC117" if provider == "amc" else key
+        runs = sel.get(src, [])
+        loader = _fitter_peak if provider == "fitter" else _amc_peak
+        points, missing = [], []
+        for rid in runs:
+            got, err_msg = loader(key, rid, results_dir)
+            if got is None:
+                missing.append(f"{key}@{rid}: {err_msg}")
+            else:
+                points.append((rid, *got))
+        if not points:
+            warnings.append(f"{key}: no usable centre runs in phase {phase} "
+                            f"(runs {runs or 'none'} taken) — EXCLUDED")
+            for m in missing:
+                warnings.append(f"  {m}")
+            continue
+        mu, err_abs, n_used, n_dropped = _weighted_mean(points)
+        if key == "nC" and nc_pin:
+            note = (f"nC pinned to production value {P.NC_PIN} "
+                    f"(measured {mu:.5f})")
+            mu = float(P.NC_PIN)
+        else:
+            note = None
+        err_stat = err_abs / mu if mu > 0 else 0.0
+        rec = {"key": key, "e_true": e_true, "provider": provider,
+               "phase": phase, "runs": [r for r, _m, _e in points],
+               "n_used": n_used, "n_dropped": n_dropped,
+               "mu": mu,
+               "err_stat_rel": err_stat,
+               "err_rel": max(err_stat, P.MU_ERR_FLOOR),
+               "pinned": bool(key == "nC" and nc_pin)}
+        if note:
+            rec["note"] = note
+        if missing:
+            rec["missing_runs"] = missing
+        hist_mu = historical[key][0]
+        rec["mu_historical"] = hist_mu
+        rec["dev_vs_historical"] = (rec["mu"] - hist_mu) / hist_mu
+        if abs(rec["dev_vs_historical"]) > P.MU_DEVIATION_WARN:
+            warnings.append(f"{key}: mu deviates from historical by "
+                            f"{rec['dev_vs_historical']:+.1%} "
+                            f"(>{P.MU_DEVIATION_WARN:.0%})")
+        peaks.append(rec)
+
+    if not peaks:
+        raise RuntimeError(f"phase {phase}: no peaks with usable runs — "
+                           "nothing to aggregate (run peakfit first?)")
+
+    dat_name = f"gamma_Phase{phase}.dat"
+    dat_path = out_dir / dat_name
+    dat_path.write_text(
+        "\n".join(f"{p['mu']:.8f} {p['err_rel']:.8f}" for p in peaks) + "\n")
+
+    tbl = out_dir / "meanEscaleEres_perPhase_CDcenter.dat"
+    header = ("Phase,Source,n,mu,err_mu,err_sys_mu,err_stat_mu,"
+              "res,err_res,err_sys_res,err_stat_res")
+    rows = [f"{phase},{p['key']},{p['n_used']},{p['mu']:.8f},"
+            f"{p['err_rel']:.8f},0,{p['err_stat_rel']:.8f},0,0,0,0"
+            for p in peaks]
+    tbl.write_text(header + "\n" + "\n".join(rows) + "\n")
+
+    prov = {
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "mode": "per-phase",
+        "phase": phase,
+        "fold_pre_p1_into_p1": fold_pre,
+        "nc_pin": nc_pin,
+        "fitter_results_dir": str(results_dir),
+        "phase_table": str(P.PHASE_TABLE),
+        "selection": {s: v for s, v in sel.items()},
+        "peaks": peaks,
+        "warnings": warnings,
+        "excluded": [k for k, _e, _p, _r in P.PEAKS
+                     if k not in {p["key"] for p in peaks}],
+        "note": ("per-phase caliber: centre runs (|z|<="
+                 f"{P.CENTRE_Z_MAX} m), inverse-variance weighted mean; "
+                 "absent sources EXCLUDED (not pinned). Production tables "
+                 "pinned nC — use --nc-pin to match."),
+    }
+    (out_dir / f"{dat_name}.provenance.json").write_text(
+        json.dumps(prov, indent=2, ensure_ascii=False))
+
+    print(f"[Stage5] wrote {dat_path}  (phase {phase}: "
+          f"{len(peaks)}/{len(P.PEAKS)} peaks, excluded: "
+          f"{prov['excluded'] or 'none'})")
+    for p in peaks:
+        pin = " [pinned]" if p["pinned"] else ""
+        print(f"  {p['key']:<6} mu={p['mu']:.6f} err={p['err_rel']:.6f}"
+              f"  n={p['n_used']} runs={p['runs']}"
+              f"  (hist {p['mu_historical']:.6f}, "
+              f"dev {p['dev_vs_historical']:+.2%}){pin}")
+    for w in warnings:
+        print(f"[Stage5][Warning] {w}")
+    return {"peaks": peaks, "warnings": warnings,
+            "gamma_dat": str(dat_path), "table": str(tbl),
+            "phase": phase, "excluded": prov["excluded"]}
