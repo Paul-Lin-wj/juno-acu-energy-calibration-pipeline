@@ -157,6 +157,10 @@ def main() -> int:
     ap.add_argument("--full-esd", action="store_true",
                     help="run Stage 0 ESD->EDM first (needs CVMFS/JUNOSW); "
                          "default is to start from the pre-existing EDM")
+    ap.add_argument("--esd-list-dir", default=None,
+                    help="take ESD file lists from <dir>/esd_list_<RUN>.txt "
+                         "(written by the recon module) instead of querying "
+                         "EOS production; implies Stage 0 ESD->EDM")
     ap.add_argument("--slice", type=int, default=None,
                     help="with --full-esd: reconstruct only the first N ESD files")
     ap.add_argument("--edm-input", default=None,
@@ -172,7 +176,9 @@ def main() -> int:
     args = ap.parse_args()
 
     runs = args.runs or list(paths.DEFAULT_RUNS)
-    mode = "full-esd" if args.full_esd else paths.DEFAULT_MODE
+    # --esd-list-dir (recon module handoff) implies the full-esd Stage 0
+    mode = "full-esd" if (args.full_esd or args.esd_list_dir) \
+        else paths.DEFAULT_MODE
 
     ts = time.strftime("%Y%m%d_%H%M%S")
     out = Path(args.out_dir) if args.out_dir else paths.OUTPUT_DIR / ts
@@ -218,15 +224,30 @@ def main() -> int:
 
                 # ---------------- Stage 0 (optional) ----------------
                 if mode == "full-esd":
-                    esd_list = _PROJ / f"esd_list_{run}.txt"
-                    if not esd_list.exists():
-                        rc, o, dt = run_stage(
-                            [PY, _PROJ / "src/list_esd.py", run,
-                             "--out", esd_list], logs / f"stage0a_{run}.log")
-                        stage("ok" if rc == 0 else "failed", "0a esd-list", dt)
-                        if rc:
+                    if args.esd_list_dir:
+                        # ESD lists handed over by the recon module
+                        # (local reconstruction); no EOS query needed.
+                        esd_list = Path(args.esd_list_dir) / f"esd_list_{run}.txt"
+                        if not esd_list.exists():
+                            print(f"[Error] missing recon handoff {esd_list}")
+                            stage("failed", "0a esd-list", 0,
+                                  {"source": "recon handoff"})
+                            logger.add_error(
+                                "stage0a", f"RUN{run}: missing {esd_list}")
                             failed = True
                             break
+                        stage("ok", "0a esd-list", 0,
+                              {"source": "recon handoff"})
+                    else:
+                        esd_list = _PROJ / f"esd_list_{run}.txt"
+                        if not esd_list.exists():
+                            rc, o, dt = run_stage(
+                                [PY, _PROJ / "src/list_esd.py", run,
+                                 "--out", esd_list], logs / f"stage0a_{run}.log")
+                            stage("ok" if rc == 0 else "failed", "0a esd-list", dt)
+                            if rc:
+                                failed = True
+                                break
                     cmd = [PY, _PROJ / "src/esd_to_edm.py", run,
                            "--esd-list", esd_list]
                     if args.slice:

@@ -1,6 +1,7 @@
 # Runtime outputs: keep only the small example sample
 output/*
 !output/example/
+*/output/
 
 # Python runtime artifacts
 __pycache__/

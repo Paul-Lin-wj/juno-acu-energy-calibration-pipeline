@@ -1,0 +1,251 @@
+{
+ "schema_version": "2.0",
+ "run_id": "20260828T002003_88eaba",
+ "status": "completed",
+ "launched_by": "script",
+ "command": [
+  "run_recon_all.py",
+  "--runs",
+  "10110",
+  "--impl",
+  "omilrecv2",
+  "--slice",
+  "1",
+  "--evtmax",
+  "100",
+  "--out-dir",
+  "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon"
+ ],
+ "exit_code": 0,
+ "pipeline_metadata": {
+  "timestamp_start_utc": "2026-08-27T16:20:03.926099+00:00",
+  "timestamp_start_local": "2026-08-28 00:20:03 ",
+  "system": {
+   "hostname": "user-Super-Server",
+   "user": "wujxy",
+   "platform": "Linux-6.8.0-136-generic-x86_64-with-glibc2.34",
+   "python_version": "3.11.10",
+   "python_executable": "/datafs/users/wujxy/py_venv/alma/juno_env/bin/python3",
+   "timestamp_utc": "2026-08-27T16:20:03.934033+00:00"
+  },
+  "git": {
+   "commit": "e1d98d153c7d1ed52b097c2b0f42198b0d8592fd",
+   "branch": "main",
+   "has_uncommitted_changes": true
+  },
+  "packages": {
+   "numpy": "2.4.6",
+   "pandas": "not-installed",
+   "scipy": "not-installed",
+   "matplotlib": "3.11.1",
+   "uproot": "not-installed"
+  },
+  "pip_freeze": [
+   "-e git+https://github.com/wujxy/SimpleLoop.git@e304493ff4a3a87b79ef50728d4b419e5718a87a#egg=simpleloop",
+   "-e git+ssh://git@github.com/wujxy/SimpleEvolution.git@871a4ae48a8784fa79b8f32c856a49adb66053e1#egg=simpleevo",
+   "PyYAML==6.0.3",
+   "Pygments==2.20.0",
+   "annotated-types==0.8.0",
+   "anthropic==0.120.2",
+   "anyio==4.14.2",
+   "certifi==2026.7.22",
+   "contourpy==1.3.3",
+   "cycler==0.12.1",
+   "damei==1.1.137",
+   "distro==1.9.0",
+   "docstring_parser==0.18.0",
+   "execnet==2.1.2",
+   "fonttools==4.63.0",
+   "git-filter-repo==2.47.0",
+   "graphviz==0.21",
+   "h11==0.16.0",
+   "hepai==1.4.9",
+   "httpcore==1.0.9",
+   "httpx==0.28.1",
+   "idna==3.18",
+   "iniconfig==2.3.0",
+   "jiter==0.16.0",
+   "kiwisolver==1.5.0",
+   "matplotlib==3.11.1",
+   "numpy==2.4.6",
+   "openai==2.49.0",
+   "packaging==26.2",
+   "pillow==12.3.0",
+   "pip==24.0",
+   "pluggy==1.6.0",
+   "pydantic==2.13.4",
+   "pydantic_core==2.46.4",
+   "pyparsing==3.3.2",
+   "pytest-xdist==3.8.0",
+   "pytest==9.1.1",
+   "python-dateutil==2.9.0.post0",
+   "python-dotenv==1.2.2",
+   "setuptools==65.5.0",
+   "six==1.17.0",
+   "sniffio==1.3.1",
+   "tqdm==4.70.0",
+   "typing-inspection==0.4.2",
+   "typing_extensions==4.16.0",
+   "uv==0.11.32"
+  ],
+  "config_files": {
+   "config/paths.py": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/config/paths.py",
+   "requirements.txt": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/requirements.txt",
+   "calib_run_info/calib_to_analyze.txt": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/calib_to_analyze.txt",
+   "calib_run_info/CalibRUN_from_file.csv": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/CalibRUN_from_file.csv",
+   "input/correction/correction_api.py": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/input/correction/correction_api.py"
+  },
+  "config_snapshot": {
+   "config/paths.py": {
+    "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/config/paths.py",
+    "exists": true,
+    "size_bytes": 6215,
+    "sha256": "522b26da06a791cb6c6ba58b762794b7d6721e55948c85040f6f2e988ed32c19"
+   },
+   "requirements.txt": {
+    "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/requirements.txt",
+    "exists": false,
+    "size_bytes": null,
+    "sha256": null
+   },
+   "calib_run_info/calib_to_analyze.txt": {
+    "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/calib_to_analyze.txt",
+    "exists": false,
+    "size_bytes": null,
+    "sha256": null
+   },
+   "calib_run_info/CalibRUN_from_file.csv": {
+    "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/CalibRUN_from_file.csv",
+    "exists": false,
+    "size_bytes": null,
+    "sha256": null
+   },
+   "input/correction/correction_api.py": {
+    "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/input/correction/correction_api.py",
+    "exists": false,
+    "size_bytes": null,
+    "sha256": null
+   }
+  },
+  "timestamp_end_utc": "2026-08-27T16:21:10.718222+00:00",
+  "timestamp_end_local": "2026-08-28 00:21:10 ",
+  "elapsed_s": 64.9
+ },
+ "errors": [],
+ "runs": [
+  {
+   "run": 10110,
+   "source": "AmC117",
+   "status": "ok",
+   "run_info": {
+    "RUN": "10110",
+    "Date": "2025-09-12",
+    "X[m]": "0.0",
+    "Y[m]": "0.0",
+    "Z[m]": "0.0",
+    "Source": "AmC117",
+    "R[m]": "0.0"
+   },
+   "input": {},
+   "event_statistics": {},
+   "stages": [
+    {
+     "stage": "-1pre verify-maps",
+     "run": 0,
+     "status": "ok",
+     "elapsed_s": 1.339850902557373,
+     "detail": {
+      "n_assets": 4,
+      "problems": []
+     }
+    },
+    {
+     "stage": "-1a rtraw-list",
+     "run": 10110,
+     "status": "ok",
+     "elapsed_s": 0.3406045436859131,
+     "detail": {
+      "n_files": 1
+     }
+    },
+    {
+     "stage": "-1b rtraw->esd",
+     "run": 10110,
+     "status": "ok",
+     "elapsed_s": 63.2107629776001,
+     "detail": {
+      "esd_root": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd/RUN10110/recon_RUN10110.root",
+      "evtmax": 100
+     }
+    },
+    {
+     "stage": "handoff esd-list",
+     "run": 10110,
+     "status": "ok",
+     "elapsed_s": 0.0,
+     "detail": {
+      "esd_list": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd_lists/esd_list_10110.txt"
+     }
+    }
+   ],
+   "cuts_ref": null,
+   "outputs": [
+    {
+     "kind": "esd_root",
+     "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd/RUN10110/recon_RUN10110.root"
+    },
+    {
+     "kind": "esd_list_handoff",
+     "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd_lists/esd_list_10110.txt"
+    }
+   ]
+  }
+ ],
+ "outputs": [
+  {
+   "kind": "esd_root",
+   "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd/RUN10110/recon_RUN10110.root",
+   "size_bytes": 3248892,
+   "sha256": "b162858b0e8da50f4141cbed9ad567a57189456c35a79e83f389384bf2e47e80"
+  },
+  {
+   "kind": "esd_list_handoff",
+   "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd_lists/esd_list_10110.txt",
+   "size_bytes": 142,
+   "sha256": "32c7475a79958329e601130cf29c29cd8e8dbfda836d8edbbc0f13b1583a2132"
+  }
+ ],
+ "pipeline": {
+  "impl": "omilrecv2",
+  "runs": [
+   10110
+  ],
+  "slice": 1,
+  "evtmax": 100,
+  "global_tag": "ReProd26A_v1",
+  "omilrecv2_dir": "/datafs/users/wujxy/agent-sci/omilrec_opt/omilrecv2",
+  "maps_dir": "/data/juno/dingxf/OMILREC_maps"
+ },
+ "audit": {
+  "timestamp_utc": "2026-08-27T16:21:10.716232+00:00",
+  "code_snapshot": {
+   "n_files": 6,
+   "all_match": true,
+   "missing": [],
+   "mismatched": [],
+   "extra": []
+  },
+  "outputs": {
+   "all_present": true,
+   "missing": []
+  },
+  "passed": true
+ },
+ "summary": {
+  "n_runs": 1,
+  "n_ok": 1,
+  "n_failed": 0,
+  "n_outputs": 2,
+  "n_errors": 0
+ }
+}

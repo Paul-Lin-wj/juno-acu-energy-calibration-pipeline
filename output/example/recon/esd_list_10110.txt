@@ -1,0 +1,1 @@
+/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/output/20260828_recon_smoke/recon/results/esd/RUN10110/recon_RUN10110.root

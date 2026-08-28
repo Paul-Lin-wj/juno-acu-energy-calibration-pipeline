@@ -1,13 +1,16 @@
 #!/bin/bash
 # =============================================================================
 # run_pipeline.sh — sequential driver:
-#   calibsel (γ singles + AmC correlated-pair selection)
+#   recon (optional: rtraw→ESD local reconstruction via junosw/OMILRECV2)
+#   → calibsel (γ singles + AmC correlated-pair selection)
 #   → peakfit (γ peak fits + AmC nH/nC/O16)
 #   → nlfit (global NL fit + E_true=f(E_rec))
 # =============================================================================
 # Runs the full chain in ONE timestamped output directory:
 #
 #   <suite>/output/<YYYYmmdd_HHMMSS>/
+#   ├── recon/         # [可选] rtraw→ESD 本地重建（RECON_IMPL 启用；默认关，
+#   │                 #   γ 分支直接用生产 ESD）
 #   ├── calibsel/     # γ: EDM→NPZ→26B correction→selection (run_log, cuts, code/)
 #   ├── calibsel_amc/ # AmC: (prompt,delayed) correlated-pair selection
 #   ├── peakfit/      # γ peak fitting: RUN{N}_{src}.npz + ENL resolution plot
@@ -22,17 +25,22 @@
 #   bash run_pipeline.sh --skip-qa          # extra flags pass through to calibsel γ
 #   RUNS="12370 12295" bash run_pipeline.sh   # 或经 RUNS/AMC_RUNS 环境变量给 run
 #   DEFAULT_AMC_RUN=none bash run_pipeline.sh   # AmC 分支关闭
+#   RECON_IMPL=omilrecv2 bash run_pipeline.sh   # 开启本地 rtraw→ESD 重建
+#     # 规模: RECON_SLICE=1 RECON_EVTMAX=100（默认，冒烟级）
+#     #       全量: RECON_SLICE=9999 RECON_EVTMAX=-1
 #
 # Run routing: each run number is looked up in
 # calibsel/calib_run_info/calib_to_analyze.txt; AmC* sources → calibsel AmC
 # branch + peakfit run_amc_fit_all, other sources → γ branch + run_fit_all.
+# RECON note: 本地重建目前只服务 γ 分支（calibsel Stage 0 吃 recon 的
+# esd_list）；AmC 走本地重建还需 run_all 出 npz_corrected（待 --corrections-only）。
 # Requires the submodules' venvs to exist (run their setup_env.sh once).
 
 set -e
 SUITE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TS="$(date +%Y%m%d_%H%M%S)"
 OUT="$SUITE/output/$TS"
-mkdir -p "$OUT/calibsel" "$OUT/calibsel_amc" "$OUT/peakfit" "$OUT/peakfit_amc" "$OUT/nlfit"
+mkdir -p "$OUT/recon" "$OUT/calibsel" "$OUT/calibsel_amc" "$OUT/peakfit" "$OUT/peakfit_amc" "$OUT/nlfit"
 
 # collect run numbers (positional or RUNS/AMC_RUNS env) and pass the
 # rest through to the γ branch.
@@ -85,25 +93,52 @@ if [ $EXPLICIT_RUNS -eq 0 ] && [ "${DEFAULT_AMC_RUN-10110}" != "none" ] \
 fi
 echo "gamma runs: ${GAMMA_RUNS[*]:-<none>}   AmC runs: ${AMC_RUNS[*]:-<none>}"
 
-# ---------------- [1/5] calibsel γ branch ----------------
+# ---------------- [0/6] recon (optional): rtraw → ESD ----------------
+# RECON_IMPL=omilrecv2|baseline 开启本地重建（默认关闭 = 用生产 ESD）。
+# 产物 ESD 清单传给 calibsel γ 分支（--full-esd --esd-list-dir）。
+RECON_ESD_LIST_DIR=""
+if [ -n "${RECON_IMPL:-}" ]; then
+    RECON_RUNS=(${GAMMA_RUNS[@]} ${AMC_RUNS[@]})
+    if [ ${#RECON_RUNS[@]} -gt 0 ]; then
+        echo ""
+        echo "=== [0/6] recon ($RECON_IMPL): rtraw → ESD → $OUT/recon ==="
+        cd "$SUITE/recon"
+        bash run_pipeline.sh "${RECON_RUNS[@]}" --impl "$RECON_IMPL" \
+            --slice "${RECON_SLICE:-1}" --evtmax "${RECON_EVTMAX:-100}" \
+            --out-dir "$OUT/recon"
+        RECON_ESD_LIST_DIR="$OUT/recon/results/esd_lists"
+    else
+        echo "=== [0/6] recon: skipped (no runs given) ==="
+    fi
+else
+    echo ""
+    echo "=== [0/6] recon: skipped (RECON_IMPL unset — using production ESD) ==="
+fi
+
+# ---------------- [1/6] calibsel γ branch ----------------
 # （未给 run 时保留 calibsel 自己的 DEFAULT_RUNS 默认；显式只给 AmC run 时跳过）
 if [ ${#GAMMA_RUNS[@]} -gt 0 ] || [ ${#RUNS[@]} -eq 0 ]; then
     echo ""
-    echo "=== [1/5] calibsel (gamma): EDM → selection NPZ → $OUT/calibsel ==="
+    echo "=== [1/6] calibsel (gamma): EDM → selection NPZ → $OUT/calibsel ==="
     cd "$SUITE/calibsel"
-    bash run_pipeline.sh "${GAMMA_RUNS[@]}" "${GAMMA_FLAGS[@]}" --out-dir "$OUT/calibsel"
+    CALIBSEL_ARGS=("${GAMMA_RUNS[@]}" "${GAMMA_FLAGS[@]}" --out-dir "$OUT/calibsel")
+    if [ -n "$RECON_ESD_LIST_DIR" ] && [ ${#GAMMA_RUNS[@]} -gt 0 ]; then
+        # recon 本地重建的 ESD 清单（含 Stage 0；本底 run 需一并重建）
+        CALIBSEL_ARGS+=(--full-esd --esd-list-dir "$RECON_ESD_LIST_DIR")
+    fi
+    bash run_pipeline.sh "${CALIBSEL_ARGS[@]}"
     GAMMA_SELECTION_DIR="$OUT/calibsel/results/selection_npz"
 else
     echo ""
-    echo "=== [1/5] calibsel (gamma): skipped (no gamma runs) ==="
+    echo "=== [1/6] calibsel (gamma): skipped (no gamma runs) ==="
     GAMMA_SELECTION_DIR=""
 fi
 
-# ---------------- [2/5] calibsel AmC branch ----------------
+# ---------------- [2/6] calibsel AmC branch ----------------
 AMC_CORR_NPZ=""
 if [ ${#AMC_RUNS[@]} -gt 0 ]; then
     echo ""
-    echo "=== [2/5] calibsel (AmC): correlated pairs → $OUT/calibsel_amc ==="
+    echo "=== [2/6] calibsel (AmC): correlated pairs → $OUT/calibsel_amc ==="
     cd "$SUITE/calibsel"
     [ -x .venv/bin/python ] || bash setup_env.sh
     for r in "${AMC_RUNS[@]}"; do
@@ -118,12 +153,12 @@ if [ ${#AMC_RUNS[@]} -gt 0 ]; then
     done
 else
     echo ""
-    echo "=== [2/5] calibsel (AmC): skipped (no AmC runs) ==="
+    echo "=== [2/6] calibsel (AmC): skipped (no AmC runs) ==="
 fi
 
-# ---------------- [3/5] peakfit: γ peaks ----------------
+# ---------------- [3/6] peakfit: γ peaks ----------------
 echo ""
-echo "=== [3/5] peakfit (gamma): peak fits → $OUT/peakfit ==="
+echo "=== [3/6] peakfit (gamma): peak fits → $OUT/peakfit ==="
 cd "$SUITE/peakfit"
 PY="$SUITE/peakfit/.venv/bin/python"
 [ -x "$PY" ] || { echo "ERROR: peakfit/.venv missing — run peakfit/setup_env.sh first"; exit 1; }
@@ -132,10 +167,10 @@ if [ -n "$GAMMA_SELECTION_DIR" ]; then
                                   --out-dir "$OUT/peakfit"
 fi
 
-# ---------------- [4/5] peakfit: AmC triple peak ----------------
+# ---------------- [4/6] peakfit: AmC triple peak ----------------
 if [ -n "$AMC_CORR_NPZ" ]; then
     echo ""
-    echo "=== [4/5] peakfit (AmC): nH/nC/O16 → $OUT/peakfit_amc ==="
+    echo "=== [4/6] peakfit (AmC): nH/nC/O16 → $OUT/peakfit_amc ==="
     r="${AMC_RUNS[-1]}"
     # AmC 拟合单独留档（避免与 γ 拟合的 run_log 互相覆盖），
     # 结果 npz 汇入 $OUT/peakfit/results 供 nlfit 统一消费
@@ -145,12 +180,12 @@ if [ -n "$AMC_CORR_NPZ" ]; then
     cp "$OUT"/peakfit_amc/results/RUN"${r}"_*.npz "$OUT/peakfit/results/"
 else
     echo ""
-    echo "=== [4/5] peakfit (AmC): skipped ==="
+    echo "=== [4/6] peakfit (AmC): skipped ==="
 fi
 
-# ---------------- [5/5] nlfit: aggregate → dybmodel → lookup ----------------
+# ---------------- [5/6] nlfit: aggregate → dybmodel → lookup ----------------
 echo ""
-echo "=== [5/5] nlfit: aggregate → dybmodel NL fit → E_true=f(E_rec) → $OUT/nlfit ==="
+echo "=== [5/6] nlfit: aggregate → dybmodel NL fit → E_true=f(E_rec) → $OUT/nlfit ==="
 cd "$SUITE/nlfit"
 NLFIT_ARGS=(--fitter-results "$OUT/peakfit/results" --out-dir "$OUT/nlfit")
 # extra nlfit flags (e.g. --skip-dybmodel) via env: NLFIT_FLAGS="--skip-dybmodel"
@@ -161,6 +196,7 @@ echo ""
 echo "=============================================="
 echo "Joint run complete."
 echo "Output root : $OUT"
+echo "  recon       : $OUT/recon       (only if RECON_IMPL set: local rtraw→ESD)"
 echo "  calibsel    : $OUT/calibsel    (selection NPZ for peakfit)"
 echo "  calibsel_amc: $OUT/calibsel_amc (correlation_result_RUN{N}.npz)"
 echo "  peakfit     : $OUT/peakfit     (RUN{N}_{src}.npz incl. nH/nC/AmC + ENL plot)"

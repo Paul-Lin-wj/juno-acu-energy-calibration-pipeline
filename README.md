@@ -19,13 +19,13 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 完整物理链路与覆盖状态
 （✅ 本仓已有 ｜ 🔶 代码已有·待并入 ｜ ⚠️ 外部依赖·可选接入 ｜ ❌ 暂缺，先用已有数据）
 
-❌ 波形重建（PMT waveform → 电荷/时间）            【上游 JUNOSW；规划以可选 stage
-   │                                                 包装接入，环境指纹入 run_log】
-   ▼
-⚠️ 事例重建（OMILREC 能量/顶点）                    【可选 Stage 0 --full-esd 调外部
-   │                                                  CVMFS/JUNOSW；规划换独立版 omilrec
-   │                                                  （tag 固定算法版本）；默认 from-edm
-   │                                                  直接读 lustrefs 现成 ReProd26B EDM】
+✅ 波形+事例重建（rtraw → ESD：waverec 刻度 + OMILREC 顶点/能量）
+   │                                                 【可选模块 `recon`：官方
+   │                                                  tut_rtraw2rec（CVMFS J26.1.1）
+   │                                                  编排包装 + OMILRECV2 overlay
+   │                                                  开关（--impl omilrecv2|baseline）；
+   │                                                  默认关闭——γ 链 Stage 0 --full-esd
+   │                                                  读生产 ReProd26B ESD 走 MySimpleTag】
    ▼  calibsel/
 ✅ Stage 1   EDM → NPZ（每 run 合并事件 + LivingTime）
    ▼
@@ -74,7 +74,7 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 | 物理链路阶段 | 状态 | 位置 / 说明 |
 | --- | :---: | --- |
 | 波形重建 | ❌ | 上游 JUNOSW 产物；规划以可选 stage 包装接入 |
-| 事例重建 | ⚠️ | `calibsel` 可选 Stage 0（`--full-esd`，外部 JUNOSW，小时级）；规划接独立版 omilrec；默认从 lustrefs 现成 EDM 起步 |
+| 波形+事例重建 | ✅（可选） | `recon` 模块：官方 tut_rtraw2rec 编排包装 + OMILRECV2 overlay 开关（rtraw→ESD，xrootd 读 EOS 原始档）；默认关闭，`calibsel` Stage 0 `--full-esd` 走生产 ESD→MySimpleTag→EDM。⚠️ 冻结 tag 为 26A，与生产 26B ESD 的差异待量化 |
 | 刻度源事例挑选 | ✅ | `calibsel` Stage 1–3 + Stage 4 物理 QA（8 面板图 + JSON） |
 | AmC 相关对挑选（n-H/n-12C/O16） | ✅ | `calibsel` AmC 支线（correlate_selection 原样并入，行为与生产侧逐数值一致；中心 run 三峰 vs AllPhase 差 ≤1.2%） |
 | 连续谱核素挑选 | ❌ | 备谱 code 暂缺；暂以已有数据作外部输入（`nlfit` Stage 4b MANIFEST 契约） |
@@ -93,11 +93,11 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 | ★★★ | 6 | 非线性全局拟合 | `fitter_energynl_dybmodel` | wrap（C++，cvmfs J26.1.1；能力探测） | ✅ 已落地（`nlfit`） |
 | ★★☆ | 7 | E_rec→E_true 反演出查询表 | 新写 | 纯 Python（单调性 + 往返校验） | ✅ 已落地（`nlfit`） |
 | ★☆☆ | 3c/3b | AmC 相关对挑选 + nH/nC/O16 峰位拟合 | `correlate_selection` + `AmC_nH-nC_fitter` / 本仓 `O16Fitter` | `calibsel` AmC 支线（原样并入）+ `peakfit` `run_amc_fit_all`；nlfit PEAKS 三峰 provider=`amc` | ✅ 已落地 |
-| ☆☆☆ | 0/-1 | 波形/事例重建全链 | JUNOSW / 独立版 omilrec | 可选模式 + `data_lineage` 记录（与 ReProd26B 不逐位一致需可追溯） | ⬜ 待做 |
+| ☆☆☆ | 0/-1 | 波形/事例重建全链 | JUNOSW 官方链 + `omilrec_opt/omilrecv2`（overlay） | 独立 `recon` 模块编排包装（`--impl omilrecv2\|baseline`；与 ReProd26B 不逐位一致，tag 口径待对齐） | ✅ 已落地（2026-08-28，默认关） |
 
 新 stage 均沿用现有 chassis（RunLogger / code snapshot / audit / exit code /
-`--launched-by agent`），顶层 `run_pipeline.sh` 已扩展为 calibsel → peakfit →
-nlfit 三段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 编排，
+`--launched-by agent`），顶层 `run_pipeline.sh` 已扩展为 recon（可选）→ calibsel →
+peakfit → nlfit 四段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 编排，
 `.dsh/skills/`）仍是 🔶 待并入模块的代码来源，同时 dybmodel 以**只读 wrap**
 方式被 `nlfit` 调用（沙箱自动重建，输入输出 sha256 记录在案）。
 
@@ -108,11 +108,11 @@ nlfit 三段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 
 
 | 目录/文件 | 作用 |
 | --- | --- |
-| `calibsel/` | 刻度事例挑选（γ 单例链 + AmC 关联对支线）：γ 链 EDM→NPZ→26B 修正→挑选（`src/` 算法自原生产链路逐行移植，输出与原链路逐位一致）；AmC 支线 `src/amc/` 为 correlate_selection 原样并入（仅 2 行 import 本地化，行为与生产侧逐数值一致，见 `PROVENANCE.amc.md`）；`pipeline/run_all.py`（γ）与 `pipeline/run_amcsel_all.py`（AmC）为调度与审计留档 |
-
+| `recon/` | 【可选 Stage −1】rtraw→ESD 本地重建：官方 `tut_rtraw2rec`（CVMFS J26.1.1）编排包装 + OMILRECV2 overlay 开关（`--impl omilrecv2\|baseline`）；纯编排零算法代码，flag 集冻结于 `config/paths.py`（见 `PROVENANCE.md`；⚠️ tag 26A vs 生产 26B 待对齐） |
+| `calibsel/` | 刻度事例挑选（γ 单例链 + AmC 关联对支线）：γ 链 EDM→NPZ→26B 修正→挑选（`src/` 算法自原生产链路逐行移植，输出与原链路逐位一致）；AmC 支线 `src/amc/` 为 correlate_selection 原样并入（仅 2 行 import 本地化，行为与生产侧逐数值一致，见 `PROVENANCE.amc.md`）；`pipeline/run_all.py`（γ，`--esd-list-dir` 吃 recon 衔接清单）与 `pipeline/run_amcsel_all.py`（AmC）为调度与审计留档 |
 | `peakfit/` | 能谱拟合：`src/FastGe68Fitter.py`（Ge68，MC 模板缓存，~4 s）、`src/FastSourceFitter.py`（Cs137/Mn54/Co60/K40 通用，~0.5 s）、`fitters/`（MC 模板与经典版回退）、`pipeline/run_fit_all.py`（主流程）、`pipeline/run_amc_fit_all.py`（AmC 三峰：nH/nC 纯高斯 `NhnCFitter` + O16 模板分解） |
 | `nlfit/` | 非线性全局拟合（Stage 4b/5/6/7）：外部数据契约、7 峰聚合 `gamma_AllPhase.dat`、dybmodel C++ wrap（沙箱自动重建 + 行为锁定）、E_rec→E_true 反演查询表；`external_inputs/` 为过渡期外部数据契约 |
-| `run_pipeline.sh` | 一键依次驱动 `calibsel`（γ+AmC 挑选）→ `peakfit`（拟合）→ `nlfit`，各项目的输出收进同一个时间戳目录 |
+| `run_pipeline.sh` | 一键依次驱动 `recon`（可选，`RECON_IMPL` 开启）→ `calibsel`（γ+AmC 挑选）→ `peakfit`（拟合）→ `nlfit`，各项目的输出收进同一个时间戳目录 |
 | `output/` | 运行输出（不入库），见下文布局 |
 
 ## 物理背景
@@ -140,11 +140,13 @@ cd calibsel && bash setup_env.sh    # 建 .venv（Stage 1-4 纯 Python）
 cd ../peakfit && bash setup_env.sh # 建 .venv（拟合）
 cd ../nlfit  && bash setup_env.sh  # 建 .venv（聚合/反演；Stage 6 另需自建容器或 cvmfs ROOT）
 
-# 一键联合运行：calibsel（γ 单例 + AmC 关联对挑选）→ peakfit（拟合）
+# 一键联合运行：recon（可选）→ calibsel（γ 单例 + AmC 关联对挑选）→ peakfit（拟合）
 #                → nlfit（非线性拟合+反演）
 bash run_pipeline.sh                 # 默认 γ run 12370（Ge68）+ AmC run 10110
 bash run_pipeline.sh 12370 10110     # 指定 run（按源类型自动路由 γ/AmC 分支）
 NLFIT_FLAGS="--skip-dybmodel" bash run_pipeline.sh   # 无容器时跳过 Stage 6/7
+RECON_IMPL=omilrecv2 bash run_pipeline.sh 12370      # 开启本地 rtraw→ESD 重建
+#   （RECON_SLICE/RECON_EVTMAX 控规模；默认 1 文件×100 事例=冒烟级）
 # AmC 输入数据（RUN10110+本底10100）预置于 calibsel/input/amc_data/；换 run 时
 # 按 calibsel/PROVENANCE.amc.md §3 从 lustrefs 拉取对应 Finalcorrection npz
 ```
@@ -153,6 +155,7 @@ NLFIT_FLAGS="--skip-dybmodel" bash run_pipeline.sh   # 无容器时跳过 Stage 
 
 ```text
 output/<YYYYmmdd_HHMMSS>/
+├── recon/        # 【仅 RECON_IMPL 开启】results/(esd/RUN{N}/, esd_lists/) + 审计
 ├── calibsel/     # results/(npz_raw, npz_corrected, selection_npz, timestamps)
 │                # figures/  cuts/（挑选条件）  logs/  code/（代码快照）
 │                # run_log.{md,json}（含 audit）  config_snapshot.json
@@ -195,6 +198,7 @@ cd calibsel && .venv/bin/python pipeline/run_amcsel_all.py --run 10110 \
 ## 文档索引
 
 - 数据处理与溯源：`calibsel/README.md`、`calibsel/PROVENANCE.md`
+- 本地重建（rtraw→ESD）与溯源：`recon/README.md`、`recon/PROVENANCE.md`
 - AmC 支线挑选与溯源：`calibsel/README.amc.md`、`calibsel/PROVENANCE.amc.md`
 - 拟合设计与日志规范：`peakfit/README.md`、`peakfit/DESIGN_REPORT.md`
 - 非线性拟合与外部数据契约：`nlfit/README.md`、`nlfit/external_inputs/MANIFEST.json`

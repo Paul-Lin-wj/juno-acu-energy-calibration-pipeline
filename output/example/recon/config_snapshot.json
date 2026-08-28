@@ -1,0 +1,32 @@
+{
+ "config/paths.py": {
+  "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/config/paths.py",
+  "exists": true,
+  "size_bytes": 6215,
+  "sha256": "522b26da06a791cb6c6ba58b762794b7d6721e55948c85040f6f2e988ed32c19"
+ },
+ "requirements.txt": {
+  "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/requirements.txt",
+  "exists": false,
+  "size_bytes": null,
+  "sha256": null
+ },
+ "calib_run_info/calib_to_analyze.txt": {
+  "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/calib_to_analyze.txt",
+  "exists": false,
+  "size_bytes": null,
+  "sha256": null
+ },
+ "calib_run_info/CalibRUN_from_file.csv": {
+  "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/calib_run_info/CalibRUN_from_file.csv",
+  "exists": false,
+  "size_bytes": null,
+  "sha256": null
+ },
+ "input/correction/correction_api.py": {
+  "path": "/datafs/users/wujxy/agent-sci/juno-acu-energy-calibration-pipeline/recon/input/correction/correction_api.py",
+  "exists": false,
+  "size_bytes": null,
+  "sha256": null
+ }
+}

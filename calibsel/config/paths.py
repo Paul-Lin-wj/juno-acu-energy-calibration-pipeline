@@ -79,7 +79,15 @@ CVMFS_XROOTD_BIN = (
 )
 
 # MySimpleTag reconstruction (ESD -> EDM), built from JUNOSW_MyAlgz.
-JUNOSW_DIR   = Path("/lustrefs/juno26/users/zhaorz/Calib/JUNOSW_MyAlgz")
+# Prefer the local build (rsynced from lustrefs + rebuilt against J26.3.1,
+# 2026-08-27; see recon/PROVENANCE.md); fall back to the original lustrefs
+# location (IHEP-internal hosts).
+_LOCAL_MyAlgz = PROJECT_ROOT.parent.parent / "JUNOSW_MyAlgz"
+JUNOSW_DIR = (
+    _LOCAL_MyAlgz
+    if (_LOCAL_MyAlgz / "InstallArea" / "setup.sh").exists()
+    else Path("/lustrefs/juno26/users/zhaorz/Calib/JUNOSW_MyAlgz")
+)
 JUNOSW_SETUP = JUNOSW_DIR / "InstallArea" / "setup.sh"
 RUN_PY       = JUNOSW_DIR / "SimpleTagAlgz" / "share" / "run.py"
 

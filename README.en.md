@@ -26,16 +26,17 @@ coverage table and integration plan below.
 Complete physics chain and coverage
 (✅ present in this repo | 🔶 code exists, to be absorbed | ⚠️ external dep, optional | ❌ missing, use existing data for now)
 
-❌ Waveform reconstruction (PMT waveform → charge/time)     [upstream JUNOSW; plan: wrap as an
-   │                                                         optional stage, env fingerprint
-   │                                                         recorded in run_log]
-   ▼
-⚠️ Event reconstruction (OMILREC energy/vertex)             [optional Stage 0 --full-esd calls the
-   │                                                         external CVMFS/JUNOSW; plan: switch to
-   │                                                         the standalone omilrec (tag-pinned
-   │                                                         algorithm version); the default
-   │                                                         from-edm mode reads the pre-existing
-   │                                                         ReProd26B EDM chunks on lustrefs]
+✅ Waveform + event reconstruction (rtraw → ESD: waverec calibration + OMILREC
+   │                                                         energy/vertex)
+   │                                                         [optional `recon` module:
+   │                                                          orchestration wrapper around
+   │                                                          the official tut_rtraw2rec
+   │                                                          (CVMFS J26.1.1) + OMILRECV2
+   │                                                          overlay switch
+   │                                                          (--impl omilrecv2|baseline);
+   │                                                          OFF by default — gamma Stage 0
+   │                                                          --full-esd reads the production
+   │                                                          ReProd26B ESD via MySimpleTag]
    ▼  calibsel/
 ✅ Stage 1   EDM → NPZ (per-run merged events + LivingTime)
    ▼
@@ -91,8 +92,7 @@ Complete physics chain and coverage
 
 | Physics-chain stage | Status | Location / notes |
 | --- | :---: | --- |
-| Waveform reconstruction | ❌ | Upstream JUNOSW product; plan: wrap as an optional stage |
-| Event reconstruction | ⚠️ | Optional Stage 0 in `calibsel` (`--full-esd`, external JUNOSW, hours); plan: switch to the standalone omilrec; default starts from the pre-existing EDM on lustrefs |
+| Waveform + event reconstruction | ✅ (optional) | `recon` module: orchestration wrapper around the official tut_rtraw2rec + OMILRECV2 overlay switch (rtraw→ESD, raw files read from EOS via xrootd); OFF by default — `calibsel` Stage 0 `--full-esd` runs production ESD→MySimpleTag→EDM. ⚠️ frozen tag is 26A; difference vs the production 26B ESD not yet quantified |
 | Calibration-source event selection | ✅ | `calibsel` Stages 1–3 + Stage 4 physics QA (8-panel figure + JSON) |
 | AmC correlated-pair selection (n-H/n-12C/O16) | ✅ | `calibsel` AmC branch (correlate_selection absorbed verbatim, output matches production value-for-value; centre-run triple peak vs AllPhase within 1.2%) |
 | Continuous-spectrum nuclide selection | ❌ | Preparation code not yet obtained; use existing data as declared external inputs (MANIFEST contract) |
@@ -111,11 +111,11 @@ Complete physics chain and coverage
 | ★★★ | 6 | Global nonlinearity fit | `fitter_energynl_dybmodel` | wrap (C++, cvmfs J26.1.1; probed) | ✅ landed (`nlfit`) |
 | ★★☆ | 7 | E_rec→E_true inversion to a lookup table | new code | pure Python (monotonicity + round-trip check) | ✅ landed (`nlfit`) |
 | ★☆☆ | 3c/3b | AmC correlated-pair selection + nH/nC/O16 peak fitting | `correlate_selection` + `AmC_nH-nC_fitter` / this repo's `O16Fitter` | `calibsel` AmC branch (verbatim absorption) + `peakfit` `run_amc_fit_all`; nlfit PEAKS triple provider=`amc` | ✅ landed |
-| ☆☆☆ | 0/-1 | Full waveform/event reconstruction chain | JUNOSW / standalone omilrec | optional mode + `data_lineage` record (not bitwise-identical to ReProd26B, must stay traceable) | ⬜ pending |
+| ☆☆☆ | 0/-1 | Full waveform/event reconstruction chain | official JUNOSW chain + `omilrec_opt/omilrecv2` (overlay) | standalone `recon` module (`--impl omilrecv2\|baseline`; not bitwise-identical to ReProd26B, tag alignment pending) | ✅ landed (2026-08-28, off by default) |
 
 New stages reuse the existing chassis (RunLogger / code snapshot / audit /
 exit codes / `--launched-by agent`); the top-level `run_pipeline.sh` now runs
-calibsel → peakfit → nlfit. The sibling workspace
+recon (optional) → calibsel → peakfit → nlfit. The sibling workspace
 `/datafs/users/wujxy/agent-sci/ENL_agent/` (DSH orchestration, `.dsh/skills/`)
 remains the code source for the 🔶 modules, and dybmodel itself is consumed
 read-only by `nlfit` (auto-rebuilt sandbox, inputs/outputs sha256-recorded).
@@ -131,7 +131,8 @@ archived with the run; each run also ships a **complete code snapshot** and an
 | `calibsel/` | Data-processing pipeline: EDM→NPZ→26B correction→selection. `src/` is the algorithm code (line-by-line port of the original production chain; outputs bitwise identical to it); `pipeline/` holds orchestration & audit logging; `input/correction/` the 26B correction models; `calib_run_info/` the run→source/background mapping  The AmC branch lives in `src/amc/` (driver `pipeline/run_amcsel_all.py`, provenance in `PROVENANCE.amc.md`). |
 | `peakfit/` | Spectrum fitting: `src/FastGe68Fitter.py` (Ge68, cached MC templates, ~4 s), `src/FastSourceFitter.py` (generic for Cs137/Mn54/Co60/K40, ~0.5 s), `fitters/` (MC templates + classic fallback), `pipeline/run_fit_all.py` (main driver), `pipeline/run_amc_fit_all.py` (AmC triple peak: nH/nC pure Gaussian `NhnCFitter` + O16 template decomposition) |
 | `nlfit/` | Global nonlinearity fit (Stages 4b/5/6/7): external-data contract, 7-peak aggregation to `gamma_AllPhase.dat`, dybmodel C++ wrap (auto-rebuilt sandbox + behaviour lock), E_rec→E_true inversion lookup; `external_inputs/` holds the interim external-data contract |
-| `run_pipeline.sh` | One-shot sequential driver: `calibsel` (gamma + AmC selection) → `peakfit` → `nlfit`, all outputs under one timestamped directory |
+| `recon/` | [optional Stage -1] rtraw→ESD local reconstruction: orchestration wrapper around the official `tut_rtraw2rec` (CVMFS J26.1.1) + OMILRECV2 overlay switch (`--impl omilrecv2\|baseline`); pure orchestration, zero algorithm code, flag set frozen in `config/paths.py` (see `PROVENANCE.md`; ⚠️ tag 26A vs production 26B pending) |
+| `run_pipeline.sh` | One-shot sequential driver: `recon` (optional, enabled via `RECON_IMPL`) → `calibsel` (gamma + AmC selection) → `peakfit` → `nlfit`, all outputs under one timestamped directory |
 | `output/` | Runtime outputs (not committed), see layout below |
 
 ## Physics Background
@@ -168,7 +169,7 @@ cd ../peakfit && bash setup_env.sh # create .venv (fitting)
 cd ../nlfit  && bash setup_env.sh  # create .venv (aggregate/invert; Stage 6 needs
                                    #   the self-built container or cvmfs ROOT)
 
-# one-shot joint run: calibsel (gamma singles + AmC correlated pairs)
+# one-shot joint run: recon (optional) → calibsel (gamma singles + AmC correlated pairs)
 #                      → peakfit (fit) → nlfit (NL fit + inversion)
 bash run_pipeline.sh                 # default gamma 12370 (Ge68) + AmC 10110
 bash run_pipeline.sh 12370 10110     # explicit runs (auto-routed per source type)
@@ -181,6 +182,7 @@ Output:
 
 ```text
 output/<YYYYmmdd_HHMMSS>/
+├── recon/        # [only when RECON_IMPL set] results/(esd/RUN{N}/, esd_lists/) + audit
 ├── calibsel/     # results/(npz_raw, npz_corrected, selection_npz, timestamps)
 │                # figures/  cuts/ (selection conditions)  logs/  code/ (snapshot)
 │                # run_log.{md,json} (with audit)  config_snapshot.json
@@ -225,6 +227,7 @@ cd peakfit && .venv/bin/python pipeline/run_fit_all.py \
 ## Documentation
 
 - Data processing & provenance: `calibsel/README.md`, `calibsel/PROVENANCE.md`
+- Local reconstruction (rtraw→ESD) & provenance: `recon/README.md`, `recon/PROVENANCE.md`
 - AmC branch selection & provenance: `calibsel/README.amc.md`, `calibsel/PROVENANCE.amc.md`
 - Fitter design & logging spec: `peakfit/README.md`, `peakfit/DESIGN_REPORT.md`
 - Nonlinearity fit & external-data contract: `nlfit/README.md`, `nlfit/external_inputs/MANIFEST.json`
