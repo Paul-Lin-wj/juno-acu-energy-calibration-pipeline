@@ -3,6 +3,7 @@ Centralized path & physics configuration for the nlfit (nonlinearity fit) module
 
 Only this file needs editing when the environment changes.
 """
+import os
 from pathlib import Path
 
 # ============================================================
@@ -140,7 +141,38 @@ ISOTOPE_ROOT_BY_PHASE = {
 # The C++ code is NEVER modified: the per-run gamma table is placed at the
 # canonical necessaryfiles path inside a per-run symlink-farm sandbox.
 # ============================================================
-DYBMODEL_SRC = Path("/datafs/users/wujxy/agent-sci/ENL_agent/fitter_energynl_dybmodel")
+DYBMODEL_SRC = Path("/datafs/users/wujxy/agent-sci/ENL_agent/fitter_energynl_dybmodel")  # legacy alias (pre-vendoring); see below
+
+# ============================================================
+# dybmodel fitter — vendored CODE (in-repo) + staged DATA (out of git)
+#
+#   nlfit/dybmodel/            src/ include/ Makefile run.sh — VERBATIM
+#                              copy of the C++ (byte-verified against
+#                              ENL_FITTER_COMMIT), plus reference/ (the
+#                              behaviour-lock bestFit) and
+#                              MINIMAL_RUN_LIST.md (upstream cursor note).
+#   DYBMODEL_DATA_DIR          773 MB necessaryfiles/ + the prebuilt
+#                              1.4 MB `fitter` binary — NOT in git.
+#                              Populate with tools/fetch_dybmodel_data.sh
+#                              (default nlfit/dybmodel_data/, gitignored;
+#                              override with $DYBMODEL_DATA).
+#
+# The binary is sha-pinned (not rebuilt) so the behaviour lock holds:
+# original binary + our container + historical gamma table -> bestFit
+# byte-identical to the 2026-08-16 baseline (see PROVENANCE notes).
+# ============================================================
+DYBMODEL_CODE_DIR = PROJECT_ROOT / "dybmodel"
+DYBMODEL_DATA_DIR = Path(os.environ.get("DYBMODEL_DATA")
+                         or PROJECT_ROOT / "dybmodel_data")
+ENL_FITTER_REPO = "git@github.com:wujxy/ENL_fitter.git"   # upstream mirror
+ENL_FITTER_COMMIT = "2f487f9a21843e8f86db338d8d3ef884e179dde5"
+DYBMODEL_BIN_SHA256 = ("9d36caac71f2f5651503819115e5555cae66d0eb"
+                       "16c48e057a990c403f336be2")
+# Quenching.root (364 MB) is NOT in the upstream HEAD tree — it exists
+# only in commit cda3b93b; fetch_dybmodel_data.sh recovers it from there.
+QUENCHING_SHA256 = ("92a9d4d05f53cec24d3f31a14ec136ec4b0871c2"
+                    "de89bedf22716ecf79a4319a")
+QUENCHING_RECOVER_COMMIT = "cda3b93b"
 
 # Container assets (staged outside the repo; see tools/setup_container.sh)
 DYBMODEL_CONTAINER_DIR = Path("/datafs/users/wujxy/containers/dybmodel-sl6")

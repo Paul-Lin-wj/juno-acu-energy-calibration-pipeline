@@ -70,16 +70,15 @@ bash run_pipeline.sh ... --phase 2 --runs-override 'Cs137=12118,Ge68=12370'  # �
 
 ## 关键设计
 
-- **原样运行（remote-container，首选）**：dybmodel 的**原版代码与预编译二进制**
-  在其原生 SL6 / J17v1r1（ROOT5）环境里跑——通过 `hep_container exec SL6 -g juno`
-  在 lxlogin002 上执行（本节点没有 container.ihep.ac.cn）。**C++ 零修改**：
-  每 run 的 gamma 表复制到原路径 `necessaryfiles/.../gamma_AllPhase.dat`
-  （跑完恢复原值；工作区每次 rsync 自 ENL_agent 源树，状态自愈）。
-  串行运行（每工作区同时一个拟合）。
-- **本地回退（local）**：远程节点不可用时，用 el9 ROOT 6.30.08 重编
-  `nlfit/_dybmodel/`（自动重建，不入库），带两处**非物理**补丁：
-  ① `SetBatch`（headless）② `DYB_GAMMA_DAT` 环境变量注入 gamma 表。
-  行为锁定：中心值与历史基线一致到 ~0.1%。
+- **原样运行（本地 apptainer，唯一模式）**：dybmodel 的**原版预编译二进制**
+  （sha256 钉死于 `config/paths.py`）在其原生 SL6 / J17v1r1（ROOT 5.34）环境里
+  跑——SL6 rootfs + J17 布防在 `/datafs/.../containers/dybmodel-sl6/`
+  （`tools/setup_container.sh`），apptainer `--userns` 免 root。
+  **C++ 零修改**：每 run 建符号链接农场沙箱（代码链自仓内 `dybmodel/`、
+  数据链自 `dybmodel_data/`），把该 run 的 gamma 表（分 phase 时连同该
+  phase 的 isotope root）物化到 C++ 写死的读入路径——喂文件而非改代码、
+  不重编译。行为锁：原二进制 + 该容器 + 历史 gamma 表 → bestFit 与
+  2026-08-16 基线**逐字节一致**（`--validate-ref` 随时可复核）。
 - **C++ main() 成功也返回 1**：成功与否只看 bestFit/curves 输出是否产生。
 - **误差约定**：dat 的 `err_mu` 列是**总相对误差**（历史约定全 7 峰 0.005）。
   peakfit 给的是纯统计误差（如 Ge68 2e-4），聚合时按下限 `MU_ERR_FLOOR=0.005`
@@ -101,7 +100,14 @@ bash run_pipeline.sh ... --phase 2 --runs-override 'Cs137=12118,Ge68=12370'  # �
 ## 依赖
 
 - Python：numpy / scipy / matplotlib（`.venv`，`setup_env.sh` 自建）
+- **dybmodel C++（随仓分发）**：源码原样入仓于 [`dybmodel/`](dybmodel/)
+  （src/include/Makefile/run.sh，逐字节等于上游 `wujxy/ENL_fitter` 的
+  `ENL_FITTER_COMMIT`，见 `config/paths.py` 钉版本）；773 MB 运行数据
+  （`necessaryfiles/`）与预编译二进制（1.4 MB，sha256 钉死，保证行为锁）
+  **不入 git**，`tools/fetch_dybmodel_data.sh` 一键拉到
+  `dybmodel_data/`（gitignored；Quenching.root 从上游旧提交
+  `cda3b93b` 自动恢复）。可用 `DYBMODEL_DATA` 指向已备好的目录。
 - Stage 6：自建 SL6 容器资产（见 `container/README.md`，`tools/setup_container.sh`
   一键布防到 `/datafs/users/wujxy/containers/dybmodel-sl6/`）+ 本机 apptainer
-  （`--userns` 模式，无需 root/setuid）+ `DYBMODEL_SRC`（ENL_agent 姊妹工作区，只读）
+  （`--userns` 模式，无需 root/setuid）
 - 曲线导出（dump_curves.C）：`config/paths.py::CVMFS_SETUP`（el9 ROOT 6.30.08）

@@ -181,7 +181,7 @@ def main() -> int:
                         fit["harvested"]["nl_curves_tsv"])
                     plots.plot_stage6(curves, stage5["peaks"], fig_dir)
                     if args.validate_ref:
-                        ref = (Path(P.DYBMODEL_SRC) / "output" / "results" /
+                        ref = (Path(P.DYBMODEL_CODE_DIR) / "reference" /
                                f"bestFit_{P.DYB_TOY_KEY}.dat")
                         got = Path(fit["harvested"][f"bestFit_{P.DYB_TOY_KEY}.dat"])
                         detail_note = _compare_bestfit(got, ref)

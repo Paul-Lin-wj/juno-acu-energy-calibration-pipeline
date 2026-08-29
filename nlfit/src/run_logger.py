@@ -92,7 +92,11 @@ class RunLogger:
             "external_manifest": str(P.EXTERNAL_MANIFEST),
             "peaks": [{"key": k, "e_true": e, "provider": p, "run_id": r}
                       for k, e, p, r in P.PEAKS],
-            "dybmodel_src": str(P.DYBMODEL_SRC),
+            "dybmodel_code": str(P.DYBMODEL_CODE_DIR),
+            "dybmodel_data": str(P.DYBMODEL_DATA_DIR),
+            "dybmodel_upstream": (f"{P.ENL_FITTER_REPO} @ "
+                                  f"{P.ENL_FITTER_COMMIT[:12]}"),
+            "dybmodel_bin_sha256": P.DYBMODEL_BIN_SHA256,
             "dybmodel_container": str(P.DYBMODEL_CONTAINER_DIR),
             "dybmodel_j17": str(P.DYBMODEL_J17),
             "cvmfs_setup": P.CVMFS_SETUP,

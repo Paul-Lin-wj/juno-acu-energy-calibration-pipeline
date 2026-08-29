@@ -77,11 +77,14 @@ Complete physics chain and coverage
    │                                                         to historical + warning]
    ▼
 ✅ Stage 6   Global nonlinearity fit (dyb model, E_rec/E_true vs E_true)
-   │                                                         [wrap ENL_agent/
-   │                                                         fitter_energynl_dybmodel (C++);
-   │                                                         sandbox + 2 documented
-   │                                                         non-physics patches,
-   │                                                         cvmfs J26.1.1, probed]
+   │                                                         [dybmodel C++ vendored
+   │                                                         in-repo at nlfit/dybmodel/
+   │                                                         (pinned upstream commit);
+   │                                                         data + prebuilt binary
+   │                                                         fetched with sha256 pins;
+   │                                                         file-feeding sandbox,
+   │                                                         zero code changes,
+   │                                                         behaviour lock]
    ▼
 ✅ Stage 7   E_rec → E_true inversion → E_true = f(E_rec) lookup table
                                                              [pure Python (e⁻/e⁺/γ curves,
@@ -117,8 +120,11 @@ New stages reuse the existing chassis (RunLogger / code snapshot / audit /
 exit codes / `--launched-by agent`); the top-level `run_pipeline.sh` now runs
 recon (optional) → calibsel → peakfit → nlfit. The sibling workspace
 `/datafs/users/wujxy/agent-sci/ENL_agent/` (DSH orchestration, `.dsh/skills/`)
-remains the code source for the 🔶 modules, and dybmodel itself is consumed
-read-only by `nlfit` (auto-rebuilt sandbox, inputs/outputs sha256-recorded).
+remains the code source for the 🔶 modules; the dybmodel
+(`fitter_energynl_dybmodel`) C++ source is **vendored in-repo** at
+`nlfit/dybmodel/` (pinned to the upstream `wujxy/ENL_fitter` commit), its run
+data + prebuilt binary fetched by script with sha256 pins, and `nlfit` drives
+it through a file-feeding sandbox with zero code changes.
 
 Every step's selection conditions (ROI, z_limit, energy window, ...) are
 archived with the run; each run also ships a **complete code snapshot** and an
@@ -130,7 +136,7 @@ archived with the run; each run also ships a **complete code snapshot** and an
 |---|---|
 | `calibsel/` | Data-processing pipeline: EDM→NPZ→26B correction→selection. `src/` is the algorithm code (line-by-line port of the original production chain; outputs bitwise identical to it); `pipeline/` holds orchestration & audit logging; `input/correction/` the 26B correction models; `calib_run_info/` the run→source/background mapping  The AmC branch lives in `src/amc/` (driver `pipeline/run_amcsel_all.py`, provenance in `PROVENANCE.amc.md`). |
 | `peakfit/` | Spectrum fitting: `src/FastGe68Fitter.py` (Ge68, cached MC templates, ~4 s), `src/FastSourceFitter.py` (generic for Cs137/Mn54/Co60/K40, ~0.5 s), `fitters/` (MC templates + classic fallback), `pipeline/run_fit_all.py` (main driver), `pipeline/run_amc_fit_all.py` (AmC triple peak: nH/nC pure Gaussian `NhnCFitter` + O16 template decomposition) |
-| `nlfit/` | Global nonlinearity fit (Stages 4b/5/6/7): external-data contract, 7-peak aggregation to `gamma_AllPhase.dat`, dybmodel C++ wrap (auto-rebuilt sandbox + behaviour lock), E_rec→E_true inversion lookup; `external_inputs/` holds the interim external-data contract |
+| `nlfit/` | Global nonlinearity fit (Stages 4b/5/6/7 + `--phase` per-phase mode): external-data contract, 7-peak aggregation to `gamma_AllPhase.dat`, dybmodel C++ wrap (**source vendored in-repo** at `nlfit/dybmodel/`; the 773 MB data + prebuilt binary fetched by `tools/fetch_dybmodel_data.sh`, sha256-pinned; sandbox feeds files with zero code changes + behaviour lock), E_rec→E_true inversion lookup; `external_inputs/` holds the interim external-data contract |
 | `recon/` | [optional Stage -1] rtraw→ESD local reconstruction: orchestration wrapper around the official `tut_rtraw2rec` (CVMFS J26.1.1) + OMILRECV2 overlay switch (`--impl omilrecv2\|baseline`); pure orchestration, zero algorithm code, flag set frozen in `config/paths.py` (see `PROVENANCE.md`; ⚠️ tag 26A vs production 26B pending) |
 | `run_pipeline.sh` | One-shot sequential driver: `recon` (optional, enabled via `RECON_IMPL`) → `calibsel` (gamma + AmC selection) → `peakfit` → `nlfit`, all outputs under one timestamped directory |
 | `output/` | Runtime outputs (not committed), see layout below |

@@ -11,6 +11,10 @@ __pycache__/
 **/.venv/
 **/TMP/
 
+# dybmodel staged data + prebuilt binary (fetched, sha-pinned — see
+# nlfit/tools/fetch_dybmodel_data.sh; ~773 MB, too big for git)
+nlfit/dybmodel_data/
+
 # AmC raw run data (re-fetchable — see calibsel/PROVENANCE.amc.md §3 and
 # calibsel/input/amc_data/MANIFEST.sha256 for checksums + fetch commands)
 calibsel/input/amc_data/*.npz

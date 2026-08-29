@@ -37,7 +37,7 @@ from src.run_logger import sha256_file
 
 def _input_fingerprints() -> dict:
     """sha256 of the necessaryfiles inputs actually consumed by the fit."""
-    base = Path(P.DYBMODEL_SRC) / "necessaryfiles" / "input"
+    base = Path(P.DYBMODEL_DATA_DIR) / "necessaryfiles" / "input"
     keys = ["Quenching.root", "Gamma_Electron.root", "FADC_scaleNL.txt",
             "LS_LBNL_2015_short.dat", "LS_IHEP.dat",
             "cerenkovCurve_2018.dat"]
@@ -67,10 +67,11 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
     Directories are linked WHOLESALE and never descended into (pruned),
     so nothing is ever created inside the original tree."""
     import os as _os
-    src = Path(P.DYBMODEL_SRC)
+    code = Path(P.DYBMODEL_CODE_DIR)
+    data = Path(P.DYBMODEL_DATA_DIR)
     if sandbox.exists():
         shutil.rmtree(sandbox)
-    nf_src = src / "necessaryfiles"
+    nf_src = data / "necessaryfiles"
     nf_dst = sandbox / "necessaryfiles"
     gamma_rel = "input/JUNO/ReProd26B/gamma_AllPhase.dat"
     iso_rel = f"{P.SPEC_FORNL_RELDIR}/{P.ISOTOPE_CANONICAL}"
@@ -80,13 +81,17 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
         # path can hold the per-phase real copy
         real_dirs |= {"input/JUNO/ReProd26B/Spec", P.SPEC_FORNL_RELDIR}
 
-    skip_top = {"necessaryfiles", "output", "plots", "obj", "cursor",
-                "run.log", ".git"}
     sandbox.mkdir(parents=True, exist_ok=True)
-    for entry in sorted(src.iterdir()):
-        if entry.name in skip_top:
-            continue
-        (sandbox / entry.name).symlink_to(entry)
+    # code: the vendored C++ tree (explicit list — reference/ and the
+    # provenance .md stay out of the run sandbox)
+    for name in ("Makefile", "run.sh", "src", "include"):
+        (sandbox / name).symlink_to(code / name)
+    # prebuilt binary (sha-pinned; behaviour lock depends on THIS binary)
+    bin_src = data / "fitter"
+    if not bin_src.is_file():
+        raise FileNotFoundError(
+            f"{bin_src} missing — run nlfit/tools/fetch_dybmodel_data.sh")
+    (sandbox / "fitter").symlink_to(bin_src)
 
     for root, dirs, files in _os.walk(nf_src):
         rel_root = Path(root).relative_to(nf_src)
@@ -121,12 +126,25 @@ def probe() -> dict:
         "apptainer": shutil.which(P.APPTAINER) is not None,
         "rootfs": (Path(P.DYBMODEL_ROOTFS) / "bin").is_dir(),
         "j17v1r1": Path(P.DYBMODEL_J17_SETUP).is_file(),
-        "dybmodel_src": Path(P.DYBMODEL_SRC).is_dir(),
+        "dybmodel_code": Path(P.DYBMODEL_CODE_DIR / "src").is_dir(),
+        "dybmodel_data": (Path(P.DYBMODEL_DATA_DIR) / "necessaryfiles").is_dir(),
+        "dybmodel_bin": Path(P.DYBMODEL_DATA_DIR, "fitter").is_file(),
+        "quenching": Path(P.DYBMODEL_DATA_DIR, "necessaryfiles", "input",
+                          "Quenching.root").is_file(),
     }
     ok["all"] = all(ok.values())
     if not ok["all"]:
-        ok["fix"] = ("run nlfit/tools/setup_container.sh to stage the "
-                     "container assets (SL6 rootfs + J17v1r1)")
+        missing = [k for k, v in ok.items() if k != "all" and not v]
+        hints = []
+        if any(k in missing for k in ("apptainer", "rootfs", "j17v1r1")):
+            hints.append("nlfit/tools/setup_container.sh (SL6 rootfs + J17v1r1)")
+        if any(k in missing for k in ("dybmodel_data", "dybmodel_bin",
+                                      "quenching")):
+            hints.append("nlfit/tools/fetch_dybmodel_data.sh (necessaryfiles "
+                         "+ prebuilt fitter binary)")
+        if "dybmodel_code" in missing:
+            hints.append("the vendored nlfit/dybmodel/ tree is incomplete")
+        ok["fix"] = "run: " + " ; ".join(hints)
     return ok
 
 
