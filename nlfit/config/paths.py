@@ -141,8 +141,6 @@ ISOTOPE_ROOT_BY_PHASE = {
 # The C++ code is NEVER modified: the per-run gamma table is placed at the
 # canonical necessaryfiles path inside a per-run symlink-farm sandbox.
 # ============================================================
-DYBMODEL_SRC = Path("/datafs/users/wujxy/agent-sci/ENL_agent/fitter_energynl_dybmodel")  # legacy alias (pre-vendoring); see below
-
 # ============================================================
 # dybmodel fitter — vendored CODE (in-repo) + staged DATA (out of git)
 #
@@ -174,8 +172,10 @@ QUENCHING_SHA256 = ("92a9d4d05f53cec24d3f31a14ec136ec4b0871c2"
                     "de89bedf22716ecf79a4319a")
 QUENCHING_RECOVER_COMMIT = "cda3b93b"
 
-# Container assets (staged outside the repo; see tools/setup_container.sh)
-DYBMODEL_CONTAINER_DIR = Path("/datafs/users/wujxy/containers/dybmodel-sl6")
+# Container assets (staged outside the repo; see tools/setup_container.sh —
+# honour the same env override the setup script uses for non-/datafs nodes)
+DYBMODEL_CONTAINER_DIR = Path(os.environ.get("DYBMODEL_CONTAINER_DIR")
+                              or "/datafs/users/wujxy/containers/dybmodel-sl6")
 DYBMODEL_SIF = DYBMODEL_CONTAINER_DIR / "sl69worknode20240820.sif"
 DYBMODEL_ROOTFS = DYBMODEL_CONTAINER_DIR / "rootfs"
 DYBMODEL_J17 = (DYBMODEL_CONTAINER_DIR / "juno-sl6-amd64_gcc447" /

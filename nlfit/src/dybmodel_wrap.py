@@ -14,9 +14,11 @@ Assets (staged on /datafs by tools/setup_container.sh, outside the repo):
     the host's /cvmfs/juno.ihep.ac.cn is a publicfs stand-in without sl6
     content, and unprivileged containers cannot shadow inherited mounts.
 
-No C++ modification: each run gets a symlink-farm sandbox of the original
-tree in which ONLY necessaryfiles/input/JUNO/ReProd26B/gamma_AllPhase.dat
-is this run's file; everything else is a symlink into DYBMODEL_SRC.
+No C++ modification: each run gets a symlink-farm sandbox whose symlinks
+point at the vendored code (DYBMODEL_CODE_DIR) and the staged data
+(DYBMODEL_DATA_DIR); the ONLY real files are this run's gamma table and,
+in per-phase mode, the phase's isotope root, both placed at the canonical
+paths the C++ opens.
 
 Note: the C++ main() returns 1 BY DESIGN on success — success is judged by
 the presence of bestFit/curves outputs, never by the exit code alone.
@@ -35,8 +37,12 @@ import config.paths as P
 from src.run_logger import sha256_file
 
 
-def _input_fingerprints() -> dict:
-    """sha256 of the necessaryfiles inputs actually consumed by the fit."""
+def _input_fingerprints(isotope_root: str | None = None) -> dict:
+    """sha256 of the necessaryfiles inputs actually consumed by the fit.
+
+    isotope_root: per-phase mode — ALSO fingerprint the Phase{N} root that
+    is actually materialized into the sandbox (the canonical AllPhase entry
+    below then records the default-the-run-overrides)."""
     base = Path(P.DYBMODEL_DATA_DIR) / "necessaryfiles" / "input"
     keys = ["Quenching.root", "Gamma_Electron.root", "FADC_scaleNL.txt",
             "LS_LBNL_2015_short.dat", "LS_IHEP.dat",
@@ -49,13 +55,19 @@ def _input_fingerprints() -> dict:
            "Isotope_data_AllPhase_FVcutR0_1720_Finalcorrection.root")
     out["Isotope_data_AllPhase.root"] = (
         sha256_file(iso) if iso.is_file() else None)
+    if isotope_root:
+        eff = (base / "JUNO" / "ReProd26B" / "Spec" / "forNLfitter" /
+               isotope_root)
+        out["Isotope_effective_this_run"] = (
+            sha256_file(eff) if eff.is_file() else None)
     return out
 
 
 # ---------------------------------------------------------------- sandbox
 def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
                               isotope_root: str | None = None) -> None:
-    """Mirror DYBMODEL_SRC into `sandbox` with symlinks, except that
+    """Mirror the vendored code + staged data into `sandbox` with symlinks,
+    except that
     necessaryfiles/input/JUNO/ReProd26B/gamma_AllPhase.dat is a REAL copy
     of this run's gamma table (the C++ reads that canonical path).
 
@@ -121,16 +133,26 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
 
 
 # ---------------------------------------------------------------- runtime
+def _lfs_stub(path: Path) -> bool:
+    """True if the file is still a Git-LFS pointer (clone without smudge)."""
+    try:
+        return path.open("rb").read(64).startswith(b"version https://git-lfs")
+    except OSError:
+        return False
+
+
 def probe() -> dict:
+    bin_p = Path(P.DYBMODEL_DATA_DIR, "fitter")
+    qc_p = Path(P.DYBMODEL_DATA_DIR, "necessaryfiles", "input",
+                "Quenching.root")
     ok = {
         "apptainer": shutil.which(P.APPTAINER) is not None,
         "rootfs": (Path(P.DYBMODEL_ROOTFS) / "bin").is_dir(),
         "j17v1r1": Path(P.DYBMODEL_J17_SETUP).is_file(),
         "dybmodel_code": Path(P.DYBMODEL_CODE_DIR / "src").is_dir(),
         "dybmodel_data": (Path(P.DYBMODEL_DATA_DIR) / "necessaryfiles").is_dir(),
-        "dybmodel_bin": Path(P.DYBMODEL_DATA_DIR, "fitter").is_file(),
-        "quenching": Path(P.DYBMODEL_DATA_DIR, "necessaryfiles", "input",
-                          "Quenching.root").is_file(),
+        "dybmodel_bin": bin_p.is_file() and not _lfs_stub(bin_p),
+        "quenching": qc_p.is_file() and not _lfs_stub(qc_p),
     }
     ok["all"] = all(ok.values())
     if not ok["all"]:
@@ -140,17 +162,47 @@ def probe() -> dict:
             hints.append("nlfit/tools/setup_container.sh (SL6 rootfs + J17v1r1)")
         if any(k in missing for k in ("dybmodel_data", "dybmodel_bin",
                                       "quenching")):
-            hints.append("nlfit/tools/fetch_dybmodel_data.sh (necessaryfiles "
-                         "+ prebuilt fitter binary)")
+            if _lfs_stub(bin_p) or _lfs_stub(qc_p):
+                hints.append("git lfs install && git lfs pull "
+                             "(LFS objects not smudged in this clone)")
+            else:
+                hints.append("nlfit/tools/fetch_dybmodel_data.sh "
+                             "(necessaryfiles + prebuilt fitter binary)")
         if "dybmodel_code" in missing:
             hints.append("the vendored nlfit/dybmodel/ tree is incomplete")
         ok["fix"] = "run: " + " ; ".join(hints)
     return ok
 
 
+def _container_binds(sandbox: Path) -> list[str]:
+    """Bind-mount list for the userns container.
+
+    The sandbox is a symlink farm: its symlinks point at the vendored code
+    dir and the (possibly repo-local) data dir, so BOTH must be visible
+    inside the container — not just /datafs as before vendoring. Bind the
+    shallowest existing ancestor of every path the run touches, skipping
+    any path already covered by an earlier bind.
+    """
+    needed = [sandbox, P.DYBMODEL_CODE_DIR, P.DYBMODEL_DATA_DIR,
+              P.DYBMODEL_CONTAINER_DIR, Path("/tmp")]
+    binds: list[str] = []
+    covered: list[Path] = []
+    for p in needed:
+        p = Path(p).resolve()
+        if any(p == c or c in p.parents for c in covered):
+            continue
+        # shallowest existing ancestor (mount points must exist on host)
+        a = p
+        while not a.is_dir():
+            a = a.parent
+        binds.append(f"-B {a}:{a}")
+        covered.append(a)
+    return binds
+
+
 def _apptainer_cmd(sandbox: Path) -> str:
     return (f"{P.APPTAINER} exec -e --userns "
-            f"-B /datafs:/datafs -B /tmp:/tmp {P.DYBMODEL_ROOTFS} "
+            f"{' '.join(_container_binds(sandbox))} {P.DYBMODEL_ROOTFS} "
             f"bash -c 'export HOME=/root USER=root; "
             f"ulimit -s unlimited 2>/dev/null || ulimit -s 65536; "
             f"source {P.DYBMODEL_J17_SETUP} >/dev/null 2>&1 && "
@@ -229,7 +281,7 @@ def run_dybmodel(out_dir, gamma_dat_path, work_dir=None,
         "success": True, "runtime": "own-container (original, unmodified)",
         "elapsed_s": round(elapsed, 1), "sandbox": str(sandbox),
         "harvested": harvested, "n_dybmodel_plots": n_plots,
-        "input_sha256": _input_fingerprints(),
+        "input_sha256": _input_fingerprints(isotope_root),
         "sif_sha256": sha256_file(P.DYBMODEL_SIF),
         "patches": ["none — original tree in original environment"],
         "note": ("C++ main() returns 1 by design; success judged by "

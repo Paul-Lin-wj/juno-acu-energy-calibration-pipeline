@@ -53,6 +53,11 @@ bash run_pipeline.sh ... --phase 2 --runs-override 'Cs137=12118,Ge68=12370'  # �
   不改同事代码、不重编译；映射表在 `config/paths.py::ISOTOPE_ROOT_BY_PHASE`。
 - **nC 口径**：生产所有分相表把 nC 钉在 5.08140；本模块默认用实测值，
   `--nc-pin` 切到生产口径（当前实测 5.024，差 −1.1%）。
+- **7 峰上限（复刻注意）**：入仓 `dybGammaData::LoadData` 只初始化 7 峰
+  （K40 的 `AddPeak` 在上游即被注释）。生产的 `gamma_Phase1_K40.dat` 是
+  8 行（含 K40）——喂 8 行会触发 "more peaks than initialized" 并越界。
+  本模块聚合**只写 7 峰**，故 P1 复刻与生产表天然差一个 K40 口径，
+  对比时按 7 峰对齐。
 
 ### 新增一个 phase 的操作清单（改数据不改代码，仅 1 行映射）
 
@@ -102,11 +107,19 @@ bash run_pipeline.sh ... --phase 2 --runs-override 'Cs137=12118,Ge68=12370'  # �
 - Python：numpy / scipy / matplotlib（`.venv`，`setup_env.sh` 自建）
 - **dybmodel C++（随仓分发）**：源码原样入仓于 [`dybmodel/`](dybmodel/)
   （src/include/Makefile/run.sh，逐字节等于上游 `wujxy/ENL_fitter` 的
-  `ENL_FITTER_COMMIT`，见 `config/paths.py` 钉版本）；773 MB 运行数据
-  （`necessaryfiles/`）与预编译二进制（1.4 MB，sha256 钉死，保证行为锁）
-  **不入 git**，`tools/fetch_dybmodel_data.sh` 一键拉到
-  `dybmodel_data/`（gitignored；Quenching.root 从上游旧提交
+  `ENL_FITTER_COMMIT`，见 `config/paths.py` 钉版本）；**运行时数据集也随仓**
+  ——小文件走普通 git，`Quenching.root`（364 MB）与预编译二进制（1.4 MB，
+  sha256 钉死保行为锁）走 **Git LFS**（`.gitattributes`）。
+  `Spec/` 下 ~409 MB 建表期谱（fitter 不读）被 gitignore 排除，需要全量树
+  或修复时用 `tools/fetch_dybmodel_data.sh`（Quenching.root 亦可从上游旧提交
   `cda3b93b` 自动恢复）。可用 `DYBMODEL_DATA` 指向已备好的目录。
+  **克隆需 git-lfs**（未装/未 smudge 时 probe 会指出并提示 `git lfs pull`）。
+  **无 /datafs 节点**：fetch 支持替代源（`DYBMODEL_FROM` 指向如
+  zhaorz@lustrefs 的拷贝，或 `ENL_FITTER_URL` 走 git clone）；替代源的
+  二进制与钉值不符时脚本会失败并说明——此时须 `ALLOW_MISMATCH=1`
+  显式放行，且**行为锁必须用 `--validate-ref` 实证**（pin 的口径不再
+  适用）。容器 bind 已随 vendoring 动态化（sandbox/代码/数据/容器资产
+  各自 bind），数据在仓内 lustrefs 路径也能跑。
 - Stage 6：自建 SL6 容器资产（见 `container/README.md`，`tools/setup_container.sh`
   一键布防到 `/datafs/users/wujxy/containers/dybmodel-sl6/`）+ 本机 apptainer
   （`--userns` 模式，无需 root/setuid）

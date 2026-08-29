@@ -17,7 +17,8 @@ from pathlib import Path
 SCHEMA_VERSION = "1.0"
 # code files that define this module's behaviour (snapshot + audit scope)
 _CODE_GLOBS = ["config/*.py", "src/*.py", "pipeline/*.py", "tools/*",
-               "run_pipeline.sh", "setup_env.sh", "external_inputs/*"]
+               "run_pipeline.sh", "setup_env.sh", "external_inputs/*",
+               "dybmodel/**/*"]
 
 
 def sha256_file(path) -> str:

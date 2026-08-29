@@ -3,10 +3,15 @@
 # fetch_dybmodel_data.sh — stage the dybmodel fitter DATA + prebuilt binary
 # =============================================================================
 # The C++ source is vendored in-repo (nlfit/dybmodel/, byte-verified against
-# ENL_FITTER_COMMIT in config/paths.py). Everything too big for git — the
-# 773 MB necessaryfiles/ tree and the prebuilt 1.4 MB `fitter` binary — is
-# staged by this script into $DYBMODEL_DATA (default nlfit/dybmodel_data/,
-# gitignored).
+# ENL_FITTER_COMMIT in config/paths.py), and the RUNTIME data set ships with
+# the repo too: small files in plain git, Quenching.root + the prebuilt
+# `fitter` binary via Git LFS (.gitattributes).
+#
+# This script is now the FULL-TREE / repair path: it stages the complete
+# 773 MB necessaryfiles/ (including the ~409 MB Spec/ build-time area that
+# git excludes) into $DYBMODEL_DATA (default nlfit/dybmodel_data/). Use it
+# when a clone was made without LFS, when the runtime set is incomplete, or
+# when you need the build-time spectra.
 #
 # Sources, in order (override with env):
 #   DYBMODEL_FROM  a ready local checkout of ENL_fitter at the pinned commit
@@ -63,7 +68,32 @@ echo "[fetch] 3/3  prebuilt fitter binary"
 cp -f "$FROM/fitter" "$DEST/fitter"
 
 echo "[fetch] verifying sha256 pins ..."
-echo "$BIN_SHA  $DEST/fitter" | sha256sum -c -
-echo "$QC_SHA  $QC" | sha256sum -c -
+check_pin() {  # $1 expected  $2 file  $3 label
+    if echo "$1  $2" | sha256sum -c - >/dev/null 2>&1; then
+        echo "[fetch]   $3: sha256 OK"
+        return 0
+    fi
+    echo "[fetch]   $3: sha256 MISMATCH (expected ${1:0:16}..., got $(sha256sum "$2" 2>/dev/null | cut -c1-16)...)"
+    return 1
+}
+rc=0
+check_pin "$BIN_SHA" "$DEST/fitter" "fitter binary" || rc=1
+check_pin "$QC_SHA" "$QC" "Quenching.root" || rc=1
+if [ "$rc" -ne 0 ]; then
+    cat <<'EOF'
+[fetch] The source you fetched from is NOT the pinned upstream
+        (wujxy/ENL_fitter @ the commit in config/paths.py).
+        This is expected when using an alternative source (e.g. a
+        zhaorz@lustrefs copy). The behaviour lock is then NOT guaranteed
+        by provenance — you MUST establish it empirically:
+          1) run nlfit with --validate-ref on a known-good gamma table,
+          2) confirm the bestFit comparison passes before trusting physics.
+        To accept the mismatch deliberately:  ALLOW_MISMATCH=1 <re-run fetch>
+EOF
+    if [ "${ALLOW_MISMATCH:-0}" != "1" ]; then
+        exit 1
+    fi
+    echo "[fetch] ALLOW_MISMATCH=1 — continuing with unpinned source."
+fi
 [ -n "$TMPCLONE" ] && rm -rf "$(dirname "$TMPCLONE")"
 echo "[fetch] done. Set DYBMODEL_DATA=$DEST (default already) and run nlfit."

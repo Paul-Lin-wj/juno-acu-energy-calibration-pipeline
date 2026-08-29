@@ -102,7 +102,8 @@ JUNO（江门中微子实验）ACU（自动刻度单元）伽马源刻度数据�
 peakfit → nlfit 四段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_agent/`（DSH 编排，
 `.dsh/skills/`）仍是 🔶 待并入模块的代码来源；dybmodel（`fitter_energynl_dybmodel`）
 的 C++ 源码已**原样入仓**于 `nlfit/dybmodel/`（上游 `wujxy/ENL_fitter` 钉提交），
-运行数据与预编译二进制由 fetch 脚本拉取 sha256 钉死，`nlfit` 沙箱喂文件零改码调用。
+运行时数据集随仓分发（小文件普通 git，`Quenching.root` + 预编译二进制走 Git LFS、
+sha256 钉死），全量谱与修复路径由 fetch 脚本提供，`nlfit` 沙箱喂文件零改码调用。
 
 每一步的挑选条件（ROI、z_limit、能量窗等）随运行自动归档；每次运行还附带
 **完整代码快照**与**结束完整性审计**，保证结果可溯源。
@@ -114,7 +115,7 @@ peakfit → nlfit 四段。姊妹工作区 `/datafs/users/wujxy/agent-sci/ENL_ag
 | `recon/` | 【可选 Stage −1】rtraw→ESD 本地重建：官方 `tut_rtraw2rec`（CVMFS J26.1.1）编排包装 + OMILRECV2 overlay 开关（`--impl omilrecv2\|baseline`）；纯编排零算法代码，flag 集冻结于 `config/paths.py`（见 `PROVENANCE.md`；⚠️ tag 26A vs 生产 26B 待对齐） |
 | `calibsel/` | 刻度事例挑选（γ 单例链 + AmC 关联对支线）：γ 链 EDM→NPZ→26B 修正→挑选（`src/` 算法自原生产链路逐行移植，输出与原链路逐位一致）；AmC 支线 `src/amc/` 为 correlate_selection 原样并入（仅 2 行 import 本地化，行为与生产侧逐数值一致，见 `PROVENANCE.amc.md`）；`pipeline/run_all.py`（γ，`--esd-list-dir` 吃 recon 衔接清单）与 `pipeline/run_amcsel_all.py`（AmC）为调度与审计留档 |
 | `peakfit/` | 能谱拟合：`src/FastGe68Fitter.py`（Ge68，MC 模板缓存，~4 s）、`src/FastSourceFitter.py`（Cs137/Mn54/Co60/K40 通用，~0.5 s）、`fitters/`（MC 模板与经典版回退）、`pipeline/run_fit_all.py`（主流程）、`pipeline/run_amc_fit_all.py`（AmC 三峰：nH/nC 纯高斯 `NhnCFitter` + O16 模板分解） |
-| `nlfit/` | 非线性全局拟合（Stage 4b/5/6/7 + `--phase` 分相模式）：外部数据契约、7 峰聚合 `gamma_AllPhase.dat`、dybmodel C++ wrap（**源码随仓分发**于 `nlfit/dybmodel/`，773 MB 数据与预编译二进制由 `tools/fetch_dybmodel_data.sh` 拉取、sha256 钉版本；沙箱喂文件零改码 + 行为锁定）、E_rec→E_true 反演查询表；`external_inputs/` 为过渡期外部数据契约 |
+| `nlfit/` | 非线性全局拟合（Stage 4b/5/6/7 + `--phase` 分相模式）：外部数据契约、7 峰聚合 `gamma_AllPhase.dat`、dybmodel C++ wrap（**源码随仓分发**于 `nlfit/dybmodel/`；运行时数据集随仓——小文件普通 git，`Quenching.root`+预编译二进制走 Git LFS、sha256 钉版本；全量谱/修复走 `tools/fetch_dybmodel_data.sh`；沙箱喂文件零改码 + 行为锁定）、E_rec→E_true 反演查询表；`external_inputs/` 为过渡期外部数据契约 |
 | `run_pipeline.sh` | 一键依次驱动 `recon`（可选，`RECON_IMPL` 开启）→ `calibsel`（γ+AmC 挑选）→ `peakfit`（拟合）→ `nlfit`，各项目的输出收进同一个时间戳目录 |
 | `output/` | 运行输出（不入库），见下文布局 |
 

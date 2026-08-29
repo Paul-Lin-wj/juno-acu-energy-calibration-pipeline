@@ -11,9 +11,16 @@ __pycache__/
 **/.venv/
 **/TMP/
 
-# dybmodel staged data + prebuilt binary (fetched, sha-pinned — see
-# nlfit/tools/fetch_dybmodel_data.sh; ~773 MB, too big for git)
-nlfit/dybmodel_data/
+# dybmodel staged data: the RUNTIME set ships with the repo (small files in
+# plain git; Quenching.root + prebuilt `fitter` via Git LFS — see
+# .gitattributes). Excluded below: everything under Spec/ except
+# forNLfitter/ (the path the C++ opens) — that means ~409 MB of build-time
+# per-run spectra plus the colleague production work area (sh_job/, png/,
+# backup/); the full tree remains obtainable via
+# nlfit/tools/fetch_dybmodel_data.sh.
+nlfit/dybmodel_data/necessaryfiles/input/JUNO/ReProd26B/Spec/*
+!nlfit/dybmodel_data/necessaryfiles/input/JUNO/ReProd26B/Spec/forNLfitter/
+nlfit/dybmodel_data/**/__pycache__/
 
 # AmC raw run data (re-fetchable — see calibsel/PROVENANCE.amc.md §3 and
 # calibsel/input/amc_data/MANIFEST.sha256 for checksums + fetch commands)

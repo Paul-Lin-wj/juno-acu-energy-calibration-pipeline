@@ -7,8 +7,8 @@
 #
 # Requires nlfit/.venv (run setup_env.sh once). Stage 6 additionally needs
 # the cvmfs ROOT environment from config/paths.py::CVMFS_SETUP and the
-# dybmodel source tree (DYBMODEL_SRC); it is skipped with a clear error
-# only when those are missing (use --skip-dybmodel to skip on purpose).
+# dybmodel data (DYBMODEL_DATA; code is vendored in nlfit/dybmodel/); it is
+# skipped with a clear error only when missing (use --skip-dybmodel to skip).
 set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
