@@ -215,6 +215,10 @@ cd calibsel && .venv/bin/python pipeline/run_amcsel_all.py --run 10110 \
 - 拟合设计与日志规范：`peakfit/README.md`、`peakfit/DESIGN_REPORT.md`
 - 非线性拟合与外部数据契约：`nlfit/README.md`、`nlfit/external_inputs/MANIFEST.json`
 - 使用手册：各模块 `skills/`（环境/配置/运行/排障/审计）
+- 刻度取数套图（run vs date 时间线/z 扫描覆盖/取数节奏，标准画法）：
+  `calibsel/tools/plot_run_inventory.py`，画法规范见
+  `.claude/skills/calib-run-timeline/SKILL.md`（固定源配色/phase 带/字体/
+  legend 外置/双格式，跨用户可比）
 
 ## 相关文档（飞书）
 

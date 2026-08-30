@@ -250,6 +250,11 @@ cd peakfit && .venv/bin/python pipeline/run_fit_all.py \
 - Nonlinearity fit & external-data contract: `nlfit/README.md`, `nlfit/external_inputs/MANIFEST.json`
 - Manuals: `skills/` under each module (environment / configuration /
   running / troubleshooting / audit)
+- Calibration inventory figures (run-vs-date timeline / z-scan coverage /
+  cadence, standardized): `calibsel/tools/plot_run_inventory.py`; the
+  plotting convention lives in `.claude/skills/calib-run-timeline/SKILL.md`
+  (fixed source colours, phase bands, fonts, out-of-data legends, dual
+  format — comparable across users)
 
 ## Related Documents (Feishu)
 
