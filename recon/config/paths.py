@@ -90,7 +90,7 @@ RTRAW_CURATED_BASE = "/eos/juno/juno-rtraw"
 RTRAW_CURATED_VERSIONS = ["J25.7.1", "J25.7.0", "J25.5.0"]
 
 # run -> date / source / position (owned by calibsel; read-only here)
-CALIB_POS_FILE = SUITE_ROOT / "calibsel" / "calib_run_info" / "CalibRUN_from_file.csv"
+CALIB_POS_FILE = SUITE_ROOT / "runcheck" / "data" / "CalibRUN_from_file.csv"
 
 # ============================================================
 # Frozen reconstruction flags (verbatim from the validated invocation;

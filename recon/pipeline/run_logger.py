@@ -55,8 +55,8 @@ CODE_FILES = [
 CONFIG_FILES = [
     "config/paths.py",
     "requirements.txt",
-    "calib_run_info/calib_to_analyze.txt",
-    "calib_run_info/CalibRUN_from_file.csv",
+    "runcheck/data/calib_to_analyze.txt",
+    "runcheck/data/CalibRUN_from_file.csv",
     "input/correction/correction_api.py",
 ]
 

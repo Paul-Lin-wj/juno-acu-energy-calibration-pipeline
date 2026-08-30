@@ -8,8 +8,14 @@ ReProd26B EDM chunks on lustrefs and run, per calibration run:
     Stage 1  EDM -> NPZ            src/convert_edm_to_npz.py
     Stage 2  26B Finalcorrection   src/apply_final_correction.py
     Stage 2b background run (auto) stages 1-2 for the mapped physics run
+    ---- source routing: Stage 1+2 is source-agnostic; from here ----
+    ---- gamma singles:                                       ----
     Stage 3  singles selection     src/combine_selection.py   (cuts!)
     Stage 4  physics QA figures    tools/make_physics_qa.py
+    ---- AmC family (Am*/Cf* tags, see paths.is_amc_source): ----
+    (done)   npz_corrected/RUN{N}.npz is the deliverable — the correlated-
+             pair selection lives in pipeline/run_amcsel_all.py, which
+             consumes it (with the mapped BKG run) directly.
 
 Optional "full-esd" mode additionally runs Stage 0 (ESD -> EDM, needs the
 external JUNO CVMFS/JUNOSW environment; see config/paths.py).
@@ -24,6 +30,7 @@ cuts/ (the runtime cut values).
 Usage:
     python pipeline/run_all.py                      # DEFAULT_RUNS, from-edm
     python pipeline/run_all.py --runs 12370 12295
+    python pipeline/run_all.py --runs 10110         # AmC: stages 1-2 only
     python pipeline/run_all.py --full-esd           # + ESD reconstruction
     python pipeline/run_all.py --full-esd --slice 3 # smoke test, 3 ESD files
     python pipeline/run_all.py --edm-input <DIR>    # custom EDM chunks
@@ -347,6 +354,23 @@ def main() -> int:
                     logger.add_run(**{**rec, "status": "failed"})
                     break
 
+                # ---------------- source routing ----------------
+                # Stage 1+2 (EDM→NPZ→26B correction) is source-agnostic;
+                # from here the branches diverge. AmC-family runs stop at
+                # the corrected npz — their event selection is the
+                # correlated-pair analysis (pipeline/run_amcsel_all.py),
+                # which consumes npz_corrected/RUN{N}.npz directly. The
+                # gamma singles selection below is meaningless for them.
+                is_amc = paths.is_amc_source(rec.get("source") or "")
+                if is_amc:
+                    print(f"[Info] RUN {run} ({rec.get('source')}) is an "
+                          "AmC-family run — Stages 3/4 (gamma singles "
+                          "selection/QA) skipped; corrected npz is the "
+                          "deliverable (feed run_amcsel_all.py)")
+                    rec["branch"] = "amc"
+                    logger.add_run(**rec)
+                    continue
+
                 # ---------------- Stage 3: selection (cuts) ----------------
                 sel_work = work / f"selection_{run}"
                 rc, o, dt = run_stage(
@@ -413,12 +437,18 @@ def main() -> int:
                         out / "code" / "sha256.json"]
             for run in runs:
                 expected += [
-                    out / "cuts" / f"{run}_cuts.json",
-                    out / paths.SELECTION_NPZ_SUBDIR / f"Run{run}_SelectionResult.npz",
-                    out / "figures" / "selection" / f"Run{run}_1_SelectionPlot.png",
                     out / "results" / "npz_raw" / f"RUN{run}.npz",
                     out / "results" / "npz_corrected" / f"RUN{run}.npz",
                 ]
+                # gamma singles branch: selection deliverables (AmC runs
+                # stop at the corrected npz — see the routing note above)
+                ri = run_info_of(run)
+                if not paths.is_amc_source(ri.get("source") or ""):
+                    expected += [
+                        out / "cuts" / f"{run}_cuts.json",
+                        out / paths.SELECTION_NPZ_SUBDIR / f"Run{run}_SelectionResult.npz",
+                        out / "figures" / "selection" / f"Run{run}_1_SelectionPlot.png",
+                    ]
                 if not args.skip_bkg:
                     bkg = bkg_run_of(run)
                     if bkg and bkg.isdigit():

@@ -76,7 +76,7 @@ MU_ERR_FLOOR = 0.005
 #      energy scale under calibsel/input/correction/ — cannot be
 #      self-generated; out-of-range runs fall back to the NEAREST phase,
 #      see correction_api.phase_from_run.)
-#   2. calibsel/calib_run_info/{CalibRUN_from_file.csv,
+#   2. runcheck/data/{CalibRUN_from_file.csv,
 #      calib_to_analyze.txt} — the new phase's runs (production-side
 #      updates anyway).
 #   3. dybmodel necessaryfiles .../Spec/forNLfitter/ — add the phase's
@@ -88,7 +88,7 @@ MU_ERR_FLOOR = 0.005
 # ============================================================
 PHASE_TABLE = (SUITE_ROOT / "calibsel" / "input" / "correction" / "data" /
                "ValProd26BPhase.csv")
-CALIB_RUN_TABLE = (SUITE_ROOT / "calibsel" / "calib_run_info" /
+CALIB_RUN_TABLE = (SUITE_ROOT / "runcheck" / "data" /
                    "CalibRUN_from_file.csv")
 
 # centre-run convention for automatic per-phase selection (matches the
@@ -141,6 +141,10 @@ ISOTOPE_ROOT_BY_PHASE = {
 # The C++ code is NEVER modified: the per-run gamma table is placed at the
 # canonical necessaryfiles path inside a per-run symlink-farm sandbox.
 # ============================================================
+# Pre-vendoring legacy tree (kept for reference only — nothing reads it now;
+# the data staging source is tools/fetch_dybmodel_data.sh's $DYBMODEL_FROM).
+DYBMODEL_SRC_LEGACY = Path("/datafs/users/wujxy/agent-sci/ENL_agent/fitter_energynl_dybmodel")
+
 # ============================================================
 # dybmodel fitter — vendored CODE (in-repo) + staged DATA (out of git)
 #
@@ -172,18 +176,20 @@ QUENCHING_SHA256 = ("92a9d4d05f53cec24d3f31a14ec136ec4b0871c2"
                     "de89bedf22716ecf79a4319a")
 QUENCHING_RECOVER_COMMIT = "cda3b93b"
 
-# Container assets (staged outside the repo; see tools/setup_container.sh —
-# honour the same env override the setup script uses for non-/datafs nodes)
-DYBMODEL_CONTAINER_DIR = Path(os.environ.get("DYBMODEL_CONTAINER_DIR")
-                              or "/datafs/users/wujxy/containers/dybmodel-sl6")
-DYBMODEL_SIF = DYBMODEL_CONTAINER_DIR / "sl69worknode20240820.sif"
-DYBMODEL_ROOTFS = DYBMODEL_CONTAINER_DIR / "rootfs"
-DYBMODEL_J17 = (DYBMODEL_CONTAINER_DIR / "juno-sl6-amd64_gcc447" /
-                "Release" / "J17v1r1")
+# Container runtime — the OFFICIAL IHEP hep_container wrapper, used
+# directly off cvmfs (zero local staging: the SL6 SIF and the J17v1r1
+# release are both read in place from /cvmfs). `-g juno` supplies the
+# binds (/lustrefs, /cvmfs, /scratch, ...) via container.ihep.ac.cn's
+# mount_relation table. tools/setup_container.sh remains as the FALLBACK
+# for nodes without this cvmfs repo (self-staged rootfs + J17 copy).
+HEP_CONTAINER = "/cvmfs/container.ihep.ac.cn/bin/hep_container"
+DYBMODEL_J17 = Path("/cvmfs/juno.ihep.ac.cn/sl6_amd64_gcc447/"
+                    "Release/J17v1r1")
 DYBMODEL_J17_SETUP = str(DYBMODEL_J17 / "setup.sh")  # host==container path
-APPTAINER = "apptainer"
-DYBMODEL_SIF_SHA256 = ("50c6aff2278a7d85dd69c985d326bbb69b1f8387b"
-                       "d22fafa412b7c07f7d4cd4b")  # see container/SHA256SUMS
+DYBMODEL_SIF_SHA256 = ("50c6aff2278a7d85dd69c9853d26bbb69b1f8387b"
+                       "d22fafa412b7c07f7d4cd4b")
+# ^ sl69worknode20240820.sif, which hep_container's SL6 alias
+# (sl69imagelink) resolves to; see container/SHA256SUMS
 
 # Local el9 ROOT env — used ONLY for tools/dump_curves.C (TSV export)
 CVMFS_SETUP = "/cvmfs/juno.ihep.ac.cn/el9_amd64_gcc11/Release/J26.1.1/setup.sh"

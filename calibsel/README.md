@@ -9,6 +9,12 @@ AmC 支线（Stage 3c，2026-08-27 并入）：`(prompt, delayed)` 关联对挑�
 `peakfit/pipeline/run_amc_fit_all.py`）。详见
 [README.amc.md](README.amc.md) / [PROVENANCE.amc.md](PROVENANCE.amc.md)。
 
+**源分流（2026-08-29）**：`run_all.py` 的 Stage 1+2（EDM→NPZ→26B 修正）对源
+类型无关，是两条支线的公共前段——AmC 族 run（`paths.is_amc_source`：源名带
+Am/Cf 标签）走到修正 npz 即收尾（γ 的单例挑选对它们无意义），产出
+`npz_corrected/RUN{N}.npz`（含自动本底 run）直接喂 `run_amcsel_all.py`；
+γ run 继续 Stage 3/4。`run_all.py --runs 10110` 与 `--runs 12370` 同一入口。
+
 两条支线都对每次运行做审计级留档（含**全部挑选 cut 条件**）。
 γ 链代码溯源与逐位一致性审计见 `PROVENANCE.md`；使用说明见 `skills/`。
 
@@ -69,7 +75,8 @@ standalone_calibsel/
 │   ├── combine_selection.py #   Stage 3: 挑选（cut 定义所在）
 │   └── local_utils.py       #   内联工具函数
 ├── input/correction/        # 26B 修正 API + 模型数据（md5 校验副本）
-├── calib_run_info/          # run→源/本底映射（md5 校验副本）
+├── calib_run_info -> ../runcheck/data  # run 事实源表真身在 runcheck/（链外
+│                            # 用户级目录）；符号链接保冻结 src 路径不变
 ├── tools/
 │   ├── make_physics_qa.py   # 生产 QA：单 run 物理特征图（无需参考）
 │   └── make_audit_report.py # 备用：与原链路逐位比对报告

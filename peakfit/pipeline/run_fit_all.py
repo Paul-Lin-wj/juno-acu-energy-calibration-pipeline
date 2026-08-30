@@ -45,12 +45,62 @@ _parser.add_argument("--input-dir", default=None,
 _parser.add_argument("--out-dir", default=None,
                      help="output root (default: <project>/output/<timestamp>); "
                           "when given, writes directly into this directory")
+_parser.add_argument("--runs", default=None, metavar="SRC=RUN[+RUN...]",
+                     help="per-source run override, e.g. "
+                          "'Ge68=10801+10803,Cs137=9600' (phase replication: "
+                          "fit this phase's centre runs instead of the "
+                          "config SOURCES defaults). A bare list applies to "
+                          "every gamma source; sources not listed keep "
+                          "their config default run)")
 _args, _unknown = _parser.parse_known_args()
 
-# Overrides: input data dir + output root
+
+def _parse_runs_override(text):
+    """'Ge68=10801+10803,Cs137=9600' -> {'Ge68': [10801, 10803], ...};
+    bare '9600+9624' -> {'*': [9600, 9624]} (all sources). Multiple runs
+    per source are '+'-joined (the comma is the source separator)."""
+    out = {}
+    for part in (text or "").split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "=" in part:
+            src, runs = part.split("=", 1)
+            vals = [int(v) for v in runs.split("+") if v.strip().isdigit()]
+            if vals:
+                out.setdefault(src.strip(), []).extend(vals)
+        elif part.isdigit():
+            out.setdefault("*", []).append(int(part))
+    return out
+
+
+def _expand_sources(sources, override):
+    """Apply the parsed override to config SOURCES — one entry per run.
+    Named source lists replace that source's runs; a bare list applies to
+    every source. Order follows SOURCES (stable downstream aggregation)."""
+    if not override:
+        return list(sources)
+    wildcard = override.get("*")
+    expanded = []
+    for src_name, run_id, e_true, fitter_type in sources:
+        runs = override.get(src_name, wildcard)
+        if not runs:
+            expanded.append((src_name, run_id, e_true, fitter_type))
+        else:
+            for rid in runs:
+                expanded.append((src_name, rid, e_true, fitter_type))
+    return expanded
+
+
+# Overrides: input data dir + output root + per-source runs
 if _args.input_dir:
     DATA_INPUT_PATH = _args.input_dir
     print(f"[Info] DATA_INPUT_PATH overridden: {DATA_INPUT_PATH}")
+_runs_override = _parse_runs_override(_args.runs)
+if _runs_override:
+    SOURCES = _expand_sources(SOURCES, _runs_override)
+    print(f"[Info] SOURCES overridden by --runs: "
+          f"{[(s, r) for s, r, _e, _f in SOURCES]}")
 
 # Output directory
 _timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -192,7 +242,10 @@ with RunLogger(
                 ndf = int(data["ndf"])
                 data.close()
                 sigma_over_e = sigma / mu * 100
-                results[src_name] = {"mu": mu, "sigma": sigma, "sigma_over_e": sigma_over_e,
+                # key by (source, run): --runs may fit several runs of one
+                # source (phase centre runs) — a bare src_name would
+                # overwrite all but the last
+                results[(src_name, run_id)] = {"mu": mu, "sigma": sigma, "sigma_over_e": sigma_over_e,
                                       "chi2": chi2, "ndf": ndf, "e_true": e_true, "elapsed_s": elapsed}
                 fit_results = {"mu": mu, "sigma": sigma, "sigma_over_e_pct": sigma_over_e, "chi2": chi2, "ndf": ndf}
             else:
@@ -200,7 +253,7 @@ with RunLogger(
                 sigma = 0
                 sigma_over_e = 0
                 fit_results = {}
-                results[src_name] = {"mu": 0, "sigma": 0, "sigma_over_e": 0,
+                results[(src_name, run_id)] = {"mu": 0, "sigma": 0, "sigma_over_e": 0,
                                       "chi2": 0, "ndf": 0, "e_true": e_true, "elapsed_s": elapsed}
 
             output_files = {}
@@ -230,17 +283,17 @@ with RunLogger(
         print(f"Total time: {time.time() - total_start:.1f}s")
         print()
 
-        print(f"{'Source':<8} {'E_true':<10} {'E_rec':<10} {'sigma/E':<10} {'chi2/ndf':<12} {'Time':<10} {'Fitter':<10}")
-        print("-" * 70)
-        for src_name, _, _, fitter_type in SOURCES:
-            if src_name not in results:
+        print(f"{'Source':<8} {'Run':<8} {'E_true':<10} {'E_rec':<10} {'sigma/E':<10} {'chi2/ndf':<12} {'Time':<10} {'Fitter':<10}")
+        print("-" * 78)
+        for src_name, run_id, _, fitter_type in SOURCES:
+            if (src_name, run_id) not in results:
                 continue
-            r = results[src_name]
+            r = results[(src_name, run_id)]
             if r["mu"] > 0:
-                print(f"{src_name:<8} {r['e_true']:<10.3f} {r['mu']:<10.4f} "
+                print(f"{src_name:<8} {run_id:<8} {r['e_true']:<10.3f} {r['mu']:<10.4f} "
                       f"{r['sigma_over_e']:<10.2f}% {r['chi2']:<.0f}/{r['ndf']:<5} {r['elapsed_s']:<8.1f}s {fitter_type:<10}")
             else:
-                print(f"{src_name:<8} {r['e_true']:<10.3f} {'FAILED':<10} {'N/A':<10} {'N/A':<12} {r['elapsed_s']:<8.1f}s {fitter_type:<10}")
+                print(f"{src_name:<8} {run_id:<8} {r['e_true']:<10.3f} {'FAILED':<10} {'N/A':<10} {'N/A':<12} {r['elapsed_s']:<8.1f}s {fitter_type:<10}")
 
         # ENL-style plot
         print("\nDrawing ENL-style resolution plot...")
@@ -252,10 +305,10 @@ with RunLogger(
                 "k--", alpha=0.35, linewidth=1.5,
                 label=f"JUNO reference ($a$={A_JUNO_REF:.2f}, $b$={B_JUNO_REF:.2f})")
 
-        for src_name, _, _, fitter_type in SOURCES:
-            if src_name not in results or results[src_name]["mu"] == 0:
+        for src_name, run_id, _, fitter_type in SOURCES:
+            if (src_name, run_id) not in results or results[(src_name, run_id)]["mu"] == 0:
                 continue
-            r = results[src_name]
+            r = results[(src_name, run_id)]
             ax.errorbar(r["mu"], r["sigma_over_e"], fmt=MARKERS[src_name],
                         color=COLORS[src_name], markersize=10, capsize=4,
                         capthick=1.5, linewidth=1.5, label=f"{src_name}", zorder=4)
@@ -286,7 +339,7 @@ with RunLogger(
             "total_sources_configured": len(SOURCES),
             "total_sources_fitted": len(results),
             "total_time_s": f"{time.time() - total_start:.1f}",
-            "sources": ", ".join(results.keys()),
+            "sources": ", ".join(f"{s}@{r}" for s, r in results.keys()),
             "output_directory": str(OUTPUT_DIR),
         })
 

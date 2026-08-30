@@ -55,8 +55,8 @@ CODE_FILES = [
 CONFIG_FILES = [
     "config/paths.py",
     "requirements.txt",
-    "calib_run_info/calib_to_analyze.txt",
-    "calib_run_info/CalibRUN_from_file.csv",
+    "runcheck/data/calib_to_analyze.txt",
+    "runcheck/data/CalibRUN_from_file.csv",
     "input/correction/correction_api.py",
 ]
 
@@ -350,7 +350,8 @@ class RunLogger:
                 event_statistics: dict | None = None,
                 stages: list | None = None,
                 cuts_ref: str | None = None,
-                outputs: list | None = None) -> None:
+                outputs: list | None = None,
+                branch: str | None = None) -> None:
         """Append one per-run audit record (mirrors fitter's sources[])."""
         self.data["runs"].append({
             "run": int(run),
@@ -362,6 +363,7 @@ class RunLogger:
             "stages": stages or [],
             "cuts_ref": cuts_ref,
             "outputs": outputs or [],
+            "branch": branch,   # "amc" = Stage 1+2 only (front deliverable)
         })
         self.dump()
 

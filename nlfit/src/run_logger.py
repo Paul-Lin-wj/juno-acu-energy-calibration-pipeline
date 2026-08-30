@@ -98,7 +98,7 @@ class RunLogger:
             "dybmodel_upstream": (f"{P.ENL_FITTER_REPO} @ "
                                   f"{P.ENL_FITTER_COMMIT[:12]}"),
             "dybmodel_bin_sha256": P.DYBMODEL_BIN_SHA256,
-            "dybmodel_container": str(P.DYBMODEL_CONTAINER_DIR),
+            "dybmodel_container": f"{P.HEP_CONTAINER} SL6 -g juno (cvmfs)",
             "dybmodel_j17": str(P.DYBMODEL_J17),
             "cvmfs_setup": P.CVMFS_SETUP,
             "dyb_toy_key": P.DYB_TOY_KEY,

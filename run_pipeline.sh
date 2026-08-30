@@ -32,10 +32,11 @@
 #     #       全量: RECON_SLICE=9999 RECON_EVTMAX=-1
 #
 # Run routing: each run number is looked up in
-# calibsel/calib_run_info/calib_to_analyze.txt; AmC* sources → calibsel AmC
+# runcheck/data/calib_to_analyze.txt; AmC* sources → calibsel AmC
 # branch + peakfit run_amc_fit_all, other sources → γ branch + run_fit_all.
 # RECON note: 本地重建目前只服务 γ 分支（calibsel Stage 0 吃 recon 的
-# esd_list）；AmC 走本地重建还需 run_all 出 npz_corrected（待 --corrections-only）。
+# esd_list）；AmC run 已在 calibsel 前段自动分流（is_amc_source → Stage 1+2
+# 止，产 npz_corrected 供 AmC 支线），无需 --corrections-only。
 # Requires the submodules' venvs to exist (auto-created on first use).
 #
 # Every figure produced anywhere in the chain ends up with a PNG twin (screen
@@ -45,7 +46,8 @@
 set -e
 SUITE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TS="$(date +%Y%m%d_%H%M%S)"
-OUT="$SUITE/output/$TS"
+# OUT_ROOT override (phase driver: one tree per phase); default output/<ts>
+OUT="${OUT_ROOT:-$SUITE/output/$TS}"
 mkdir -p "$OUT/recon" "$OUT/calibsel" "$OUT/calibsel_amc" "$OUT/peakfit" "$OUT/peakfit_amc" "$OUT/nlfit"
 
 # ---------------- suite-level bookkeeping ----------------
@@ -197,7 +199,7 @@ if [ ${#RUNS[@]} -eq 0 ] && [ -n "$RUNS_ENV" ]; then RUNS=($RUNS_ENV); fi
 if [ -n "$AMC_RUNS_ENV_STR" ]; then AMC_RUNS_ENV=($AMC_RUNS_ENV_STR); else AMC_RUNS_ENV=(); fi
 
 # ---- route runs by source type (AmC* → AmC branch; rest → γ branch) ----
-CALIB_INFO="$SUITE/calibsel/calib_run_info/calib_to_analyze.txt"
+CALIB_INFO="$SUITE/runcheck/data/calib_to_analyze.txt"
 classify() {  # echo "AmC" or "gamma" for a run id (stdlib-only, no venv needed)
     command -v python3 >/dev/null 2>&1 || {
         echo "ERROR: python3 not found — cannot classify run $1"; return 1; }
@@ -261,11 +263,15 @@ stage_recon() {
 }
 
 stage_calibsel_gamma() {
-    # （未给 run 时保留 calibsel 自己的 DEFAULT_RUNS 默认；显式只给 AmC run 时跳过）
-    if [ ${#GAMMA_RUNS[@]} -gt 0 ] || [ ${#RUNS[@]} -eq 0 ]; then
-        echo "calibsel (gamma): EDM → selection NPZ → $OUT/calibsel"
+    # run_all.py 的 Stage 1+2（EDM→NPZ→26B 修正）对源类型无关：γ run 继续
+    # Stage 3/4 挑选，AmC run（paths.is_amc_source 分流）到修正 npz 为止，
+    # 供下方 AmC 支线消费。因此 AmC run 也从这里进 —— 不再让 AmC-only
+    # 批次跳过本 stage（那会没有 npz_corrected，AmC 支线只能退回预置数据）。
+    local FRONT_RUNS=(${GAMMA_RUNS[@]} ${AMC_RUNS[@]})
+    if [ ${#FRONT_RUNS[@]} -gt 0 ] || [ ${#RUNS[@]} -eq 0 ]; then
+        echo "calibsel (front): EDM → NPZ → 26B correction → [γ: selection | AmC: stop] → $OUT/calibsel"
         cd "$SUITE/calibsel"
-        CALIBSEL_ARGS=("${GAMMA_RUNS[@]}" "${GAMMA_FLAGS[@]}" --out-dir "$OUT/calibsel")
+        CALIBSEL_ARGS=("${FRONT_RUNS[@]}" "${GAMMA_FLAGS[@]}" --out-dir "$OUT/calibsel")
         # recon 本地重建的 ESD 清单（含 Stage 0；本底 run 需一并重建）
         if [ -n "${RECON_IMPL:-}" ] && [ ${#GAMMA_RUNS[@]} -gt 0 ] \
            && [ -d "$OUT/recon/results/esd_lists" ]; then
@@ -273,7 +279,7 @@ stage_calibsel_gamma() {
         fi
         bash run_pipeline.sh "${CALIBSEL_ARGS[@]}"
     else
-        echo "calibsel (gamma): skipped (no gamma runs)"
+        echo "calibsel (front): skipped (no runs)"
     fi
 }
 
@@ -302,8 +308,12 @@ stage_peakfit_gamma() {
     [ -x "$PY" ] || { echo "ERROR: peakfit/.venv missing — run peakfit/setup_env.sh first"; return 1; }
     SEL_DIR="$OUT/calibsel/results/selection_npz"
     if compgen -G "$SEL_DIR/*.npz" >/dev/null; then
+        PEAKFIT_RUNS_ARGS=()
+        # phase 复刻：限定只拟合本 phase 的中心 run（run_phase_all.sh 注入）
+        [ -n "${PEAKFIT_RUNS:-}" ] && PEAKFIT_RUNS_ARGS=(--runs "$PEAKFIT_RUNS")
         "$PY" pipeline/run_fit_all.py --input-dir "$SEL_DIR" \
-                                      --out-dir "$OUT/peakfit"
+                                      --out-dir "$OUT/peakfit" \
+                                      "${PEAKFIT_RUNS_ARGS[@]}"
     else
         echo "peakfit (gamma): skipped — no selection NPZ in this batch" \
              "(gamma branch off/unavailable, or calibsel produced nothing)"
@@ -314,31 +324,36 @@ stage_peakfit_amc() {
     cd "$SUITE/peakfit"
     PY="$SUITE/peakfit/.venv/bin/python"
     [ -x "$PY" ] || { echo "ERROR: peakfit/.venv missing — run peakfit/setup_env.sh first"; return 1; }
-    # 拟合本批产出了 correlation npz 的最后一个 AmC run
-    r=""
-    for x in "${AMC_RUNS[@]}"; do
-        [ -f "$OUT/calibsel_amc/results/RUN$x/correlation_result_RUN$x.npz" ] && r="$x"
-    done
-    if [ -n "$r" ]; then
-        if [ ${#AMC_RUNS[@]} -gt 1 ]; then
-            echo "[Warning] ${#AMC_RUNS[@]} AmC runs selected but only run $r" \
-                 "is peak-fitted; the others are selection-only."
-        fi
+    # 拟合本批产出了 correlation npz 的每个 AmC run（phase 复刻需要
+    # 该 phase 全部中心 run 的三峰结果做加权平均）
+    n_fitted=0
+    for r in "${AMC_RUNS[@]}"; do
+        CORR="$OUT/calibsel_amc/results/RUN$r/correlation_result_RUN$r.npz"
+        [ -f "$CORR" ] || continue
         # AmC 拟合单独留档（避免与 γ 拟合的 run_log 互相覆盖），
         # 结果 npz 汇入 $OUT/peakfit/results 供 nlfit 统一消费
         "$PY" pipeline/run_amc_fit_all.py --run "$r" \
-            --corr-npz "$OUT/calibsel_amc/results/RUN$r/correlation_result_RUN$r.npz" \
-            --out-dir "$OUT/peakfit_amc"
+            --corr-npz "$CORR" \
+            --out-dir "$OUT/peakfit_amc/RUN$r"
         mkdir -p "$OUT/peakfit/results"
-        cp "$OUT"/peakfit_amc/results/RUN"${r}"_*.npz "$OUT/peakfit/results/"
-    else
+        cp "$OUT"/peakfit_amc/RUN"${r}"/results/RUN"${r}"_*.npz "$OUT/peakfit/results/"
+        n_fitted=$((n_fitted+1))
+    done
+    if [ "$n_fitted" -eq 0 ]; then
         echo "peakfit (AmC): skipped (no correlation npz from this batch)"
+    else
+        echo "peakfit (AmC): fitted $n_fitted run(s)"
     fi
 }
 
 stage_nlfit() {
     cd "$SUITE/nlfit"
     NLFIT_ARGS=(--fitter-results "$OUT/peakfit/results" --out-dir "$OUT/nlfit")
+    # phase 复刻：run_phase_all.sh 注入 NLFIT_PHASE（如 2）→ nlfit --phase 2
+    if [ -n "${NLFIT_PHASE:-}" ]; then
+        NLFIT_ARGS+=(--phase "$NLFIT_PHASE")
+        [ -n "${NLFIT_NC_PIN:-}" ] && NLFIT_ARGS+=(--nc-pin)
+    fi
     # extra nlfit flags (e.g. --skip-dybmodel) via env: NLFIT_FLAGS="--skip-dybmodel"
     if [ -n "$NLFIT_FLAGS" ]; then NLFIT_ARGS+=($NLFIT_FLAGS); fi
     bash run_pipeline.sh "${NLFIT_ARGS[@]}"
@@ -396,7 +411,7 @@ PY
 
 # ---------------- run the chain ----------------
 run_stage "[0/6] recon"                 stage_recon
-run_stage "[1/6] calibsel (gamma)"      stage_calibsel_gamma
+run_stage "[1/6] calibsel (front)"      stage_calibsel_gamma
 run_stage "[2/6] calibsel (AmC)"        stage_calibsel_amc
 run_stage "[3/6] peakfit (gamma)"       stage_peakfit_gamma
 run_stage "[4/6] peakfit (AmC)"         stage_peakfit_amc

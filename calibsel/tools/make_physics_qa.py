@@ -65,7 +65,7 @@ BKG_LABEL = ["K40 1.461", "Tl208 2.615"]
 
 def source_of_run(run: int):
     """从 CalibRUN_from_file.csv 读 (source, x, y, z) [m]；读不到返回 (None,)*4。"""
-    path = os.path.join(PROJECT, "calib_run_info", "CalibRUN_from_file.csv")
+    path = os.path.join(os.path.dirname(PROJECT), "runcheck", "data", "CalibRUN_from_file.csv")
     if not os.path.exists(path):
         return None, None, None, None
     with open(path) as f:
@@ -80,7 +80,7 @@ def source_of_run(run: int):
 
 
 def bkg_run_of(run: int):
-    path = os.path.join(PROJECT, "calib_run_info", "calib_to_analyze.txt")
+    path = os.path.join(os.path.dirname(PROJECT), "runcheck", "data", "calib_to_analyze.txt")
     if not os.path.exists(path):
         return None
     with open(path) as f:

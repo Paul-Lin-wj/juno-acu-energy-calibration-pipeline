@@ -64,7 +64,7 @@ CORRECTION_API_DIR = PROJECT_ROOT / "input" / "correction"
 CORRECTION_DATA_DIR = CORRECTION_API_DIR / "data"
 
 # Run -> source / background-run mapping (copied into this project)
-CALIB_INFO_DIR      = PROJECT_ROOT / "calib_run_info"
+CALIB_INFO_DIR      = PROJECT_ROOT.parent / "runcheck" / "data"
 CALIB_INFO_FILE     = CALIB_INFO_DIR / "calib_to_analyze.txt"
 CALIB_POS_FILE      = CALIB_INFO_DIR / "CalibRUN_from_file.csv"
 
@@ -130,6 +130,16 @@ AMC_CS137_ENERGY_STD_CUT = 3.0                    # test.py §7
 AMC_SOURCES_DO_CORRELATION = ["AmC", "AmC100", "AmC117", "AmC-Cs137",
                               "Co60", "Cf252"]     # test.py §9
 AMC_SOURCES_DO_CS137 = ["AmC-Cs137", "Cs137"]
+
+
+def is_amc_source(source: str) -> bool:
+    """Route a source name to the AmC branch (Stage 1+2 only in run_all.py,
+    then run_amcsel_all.py). Mirrors run_pipeline.sh classify(): the Am/Cf
+    tag decides. NOTE AMC_SOURCES_DO_CORRELATION also lists Co60 (its
+    cascade pairs CAN be correlation-analyzed), but production takes Co60
+    through the gamma singles branch — so routing follows the tag, not
+    that list."""
+    return "Am" in (source or "") or "Cf" in (source or "")
 
 # 中子源（Am*/Cf*）与普通源的关联参数 —— test.py main() 第 5 步原值
 AMC_PARAMS_NEUTRON = {
