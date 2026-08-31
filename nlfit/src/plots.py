@@ -80,7 +80,9 @@ def plot_stage5(peaks: list[dict], fig_dir):
                  "(dybmodel 7-peak convention)", fontsize=12,
                  fontweight="bold")
     ax.grid(True, alpha=0.3, ls=":")
-    ax.legend(fontsize=10, loc="lower left")
+    # 点位走左下→右上对角线（低能在左下、nC/O16 高能在右上），
+    # 两个对角都占；空的只有右下（x>4.5 MeV 且 NL<0.93 的区域）
+    ax.legend(fontsize=10, loc="lower right")
 
     ax2.axhline(0, color="k", lw=0.8, alpha=0.5)
     ax2.bar(e_true, dev, width=0.12, color=COLORS["fitter"], alpha=0.7)
@@ -100,7 +102,16 @@ def plot_stage6(curves: dict, peaks: list[dict], fig_dir):
         if name not in curves:
             continue
         x, y = curves[name]
-        ax.plot(x, y, label=CURVE_LABEL.get(name, name), zorder=2, **style)
+        if name in ("gammaFullNL", "gammaScintNL") and len(x) < 100:
+            # γ 系曲线 C++ 侧仅 18 个采样点（hE1..hE18 网格：0.2-1.0 步长
+            # 0.1，以上步长 1）；样条加密仅作显示平滑，不改数值
+            from scipy.interpolate import CubicSpline  # noqa: PLC0415
+            spl = CubicSpline(x, y)
+            xs = np.linspace(x.min(), x.max(), 981)
+            ax.plot(xs, spl(xs), label=CURVE_LABEL.get(name, name),
+                    zorder=2, **style)
+        else:
+            ax.plot(x, y, label=CURVE_LABEL.get(name, name), zorder=2, **style)
 
     peaks = [p for p in peaks if p.get("mu")]
     e_true = np.array([p["e_true"] for p in peaks])
@@ -126,6 +137,7 @@ def plot_stage6(curves: dict, peaks: list[dict], fig_dir):
     ax.set_title("Stage 6 — dybmodel global NL fit", fontsize=12,
                  fontweight="bold")
     ax.set_xlim(0, 12)
+    ax.set_ylim(0.8, None)   # 闪烁 NL 低能段 0.79 起步，从 0.8 起聚焦量程
     ax.grid(True, alpha=0.3, ls=":")
     ax.legend(fontsize=9.5, loc="lower right", ncol=2)
     ax2.set_xlabel(r"$E_{\mathrm{true}}$ [MeV]", fontsize=13)

@@ -1,6 +1,6 @@
 ---
 name: nlfit-stage
-description: nlfit 模块 stage skill——非线性全局拟合（Stage 4b/5/6/7）的项目背景、怎么跑、每 stage 的物理含义、产物与图怎么读。进入 nlfit/ 深潜、跑 nlfit、解读 gamma 表/NL 曲线/E_true 查询表时用这个。
+description: nlfit 模块 stage skill——非线性全局拟合（Stage 4b/5/6/7/8）的项目背景、怎么跑、每 stage 的物理含义、产物与图怎么读。进入 nlfit/ 深潜、跑 nlfit、解读 gamma 表/NL 曲线/E_true 查询表/论文复刻图时用这个。
 ---
 
 # Skill: nlfit — 非线性全局拟合（链路第 4 段）
@@ -93,6 +93,15 @@ err 下限 MU_ERR_FLOOR=0.005，防统计误差过小被过度加权）。缺峰
 **含义**：NL 曲线是 E_rec/E_true vs E_true，物理分析要反着查——
 给 E_rec 求 E_true。纯 Python 数值反演（e⁻/e⁺/γ 三条），带单调性
 校验和往返误差检查（≤2e-5）。
+
+### Stage 8 — 论文复刻图（fig_a / fig_d）
+**含义**：JUNO 首篇文章 Extended Data Fig. 2 的 a/d 两 panel 口径——
+`fig_a_scintillator_nl`（液闪 NL vs **等效单 γ 能量**：多 γ 源沿
+gammaScintNL 反解等效点，单 γ 实心圆/多 γ 空心菱形）与 `fig_d_full_nl`
+（e⁻/e⁺/γ 三条 full NL vs E_true，y 轴 0.8 起）。**非致命 stage**：
+失败只记 warning 不影响 audit（可事后 `tools/paper_style_nl_figures.py
+--tree <树>` 单独补出）。注意与 stage6 横坐标口径不同（stage6=E_true
+全能量，fig_a=等效单 γ 能量——Ge68 在 fig_a 落 ~0.49 而非 1.022）。
 **产物**：`Etrue_from_Erec_lookup.npz/.csv`（插值查询表，**下游物理
 分析直接消费的最终交付物**）。
 **图 `stage7_inversion.png`**：反演曲线 + 往返误差。**读法**：误差
@@ -106,6 +115,7 @@ panel 应全程 ~1e-5 量级平线，出现尖峰=数值问题，不是物理。
    K40 行再比；P1 的 Cs137/Mn54/Co60 来自试运行周、生产口径不同
    （详见 pipeline-suite §5，未决、勿自行"修"）
 3. Stage 7 单调性/往返误差通过
+4. Stage 8 fig_a/fig_d 已出（失败不拦 audit，但要看 run_log 有无 warning）
 
 ## 5. 红线（本模块特有）
 

@@ -93,8 +93,12 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
     # provenance .md stay out of the run sandbox)
     for name in ("Makefile", "run.sh", "src", "include"):
         (sandbox / name).symlink_to(code / name)
-    # prebuilt binary (sha-pinned; behaviour lock depends on THIS binary)
-    bin_src = data / "fitter"
+    # prebuilt binary (sha-pinned; behaviour lock depends on THIS binary).
+    # DYB_CLBAND_FITTER overrides it with an opt-in build (CL-band runs:
+    # identical fit path, plus the GetCLSample curve loop in DrawErrors);
+    # unset = the pinned binary, byte-identical behaviour as always.
+    clband = os.environ.get("DYB_CLBAND_FITTER")
+    bin_src = Path(clband) if clband else data / "fitter"
     if not bin_src.is_file():
         raise FileNotFoundError(
             f"{bin_src} missing — run nlfit/tools/fetch_dybmodel_data.sh")
@@ -128,6 +132,14 @@ def make_symlink_farm_sandbox(sandbox: Path, gamma_dat: Path,
 
 
 # ---------------------------------------------------------------- runtime
+def _fit_timeout_s() -> int:
+    """Fit wall-time budget. Default 3600 covers the fit itself; CL-band
+    sampling runs for hours past it, so $DYB_FIT_TIMEOUT_S can override
+    (ops knob only — no effect on any physics path)."""
+    v = os.environ.get("DYB_FIT_TIMEOUT_S")
+    return int(v) if v and v.isdigit() else P.DYB_FIT_TIMEOUT_S
+
+
 def probe() -> dict:
     ok = {
         "hep_container": Path(P.HEP_CONTAINER).is_file(),
@@ -169,7 +181,11 @@ def _apptainer_cmd(sandbox: Path) -> str:
         "ulimit -s unlimited 2>/dev/null || ulimit -s 65536\n"
         f"source {P.DYBMODEL_J17_SETUP} >/dev/null 2>&1\n"
         f"cd {sandbox}\n"
-        f"timeout {P.DYB_FIT_TIMEOUT_S} ./fitter\n")
+        # CL_CONTOUR_NITR: read by the opt-in fitter_clband build; the
+        # pinned binary ignores it (no getenv of this name in its path)
+        + (f"export CL_CONTOUR_NITR={os.environ['CL_CONTOUR_NITR']}\n"
+           if os.environ.get("CL_CONTOUR_NITR") else "")
+        + f"timeout {_fit_timeout_s()} ./fitter\n")
     runner.chmod(0o755)
     return f"{P.HEP_CONTAINER} exec SL6 -g juno {runner}"
 
@@ -200,7 +216,7 @@ def run_dybmodel(out_dir, gamma_dat_path, work_dir=None,
     t0 = time.time()
     proc = subprocess.run(["bash", "-c", _apptainer_cmd(sandbox)],
                           capture_output=True, text=True,
-                          timeout=P.DYB_FIT_TIMEOUT_S + 900)
+                          timeout=_fit_timeout_s() + 900)
     elapsed = time.time() - t0
     (sandbox / "fit_stdout.log").write_text(
         proc.stdout + "\n--- stderr ---\n" + proc.stderr)

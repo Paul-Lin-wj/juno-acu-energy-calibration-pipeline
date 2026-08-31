@@ -91,6 +91,11 @@ class RunLogger:
         cfg = {
             "fitter_results_dir": str(P.FITTER_RESULTS_DIR),
             "external_manifest": str(P.EXTERNAL_MANIFEST),
+            # physics-relevant knobs at a glance (mirrored in the suite log
+            # header; provenance.json carries the per-peak detail)
+            "nc_pin": bool(os.environ.get("NLFIT_NC_PIN")),
+            "nc_pin_value": P.NC_PIN,
+            "mu_err_floor": P.MU_ERR_FLOOR,
             "peaks": [{"key": k, "e_true": e, "provider": p, "run_id": r}
                       for k, e, p, r in P.PEAKS],
             "dybmodel_code": str(P.DYBMODEL_CODE_DIR),

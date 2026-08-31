@@ -1,4 +1,4 @@
-# nlfit — 非线性全局拟合模块（Stage 4b/5/6/7）
+# nlfit — 非线性全局拟合模块（Stage 4b/5/6/7/8）
 
 把 peakfit 的峰位结果变成 **E_true = f(E_rec)**：
 

@@ -48,14 +48,23 @@ int main(int argc, char** argv){
         //globalFit.Plot();
 	//return 1;
 	globalFit.Fit();
-        std::cout<<"running WriteResult()"<<std::endl; 
+        std::cout<<"running WriteResult()"<<std::endl;
 	globalFit.WriteResult();
         std::cout<<"running Plot()"<<std::endl;
 	globalFit.Plot();
 
 	std::cout<<"running dybEnergyModel::SaveCurves()"<<std::endl;
         dybEnergyModel::SaveCurves();
-	
+
+	// CL band: 0 upstream disables the sampling loop in DrawErrors().
+	// Env opt-in (used by the pipeline's error-band runs): the fit path
+	// (Fit/WriteResult/SaveCurves) is untouched, only the number of
+	// GetCLSample() curve samples after it changes.
+	const char* clItr = getenv("CL_CONTOUR_NITR");
+	if (clItr && atoi(clItr) > 0) {
+		std::cout<<"CL_CONTOUR_NITR="<<clItr<<" — enabling error band"<<std::endl;
+		globalFit.SetContourNItr(atoi(clItr));
+	}
         std::cout<<"running dybEnergyModel::DrawErrors()"<<std::endl;
         globalFit.DrawErrors();
 	return 1;

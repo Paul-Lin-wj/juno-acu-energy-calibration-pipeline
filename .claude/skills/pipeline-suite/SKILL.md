@@ -69,16 +69,41 @@ bash run_pipeline.sh 12370 10110        # 显式 run（γ + AmC 自动路由）
 bash TMP/hepsub/submit_phases.sh        # 4 作业并行 → output/<ROOT_TS>/phase{N}/
 bash TMP/hepsub/submit_phases.sh 2      # 只跑指定 phase
 NC_PIN=1 ...                            # nC 钉 5.08140（已批例外，默认不钉）
+# NL 曲线 68% C.L. 误差带采样（拒绝采样慢，只能上集群；见 submit_clband.sh 头注）
+bash TMP/hepsub/submit_clband.sh 1 output/<ts>/phase1 100
 ```
 - **`-m 8000` 必带**：Stage 1 整 run numpy 常驻（本底 run 440 万事例
   ≈2.5 GB），默认 2.5 GB cgroup 会 held（8368979 实测）
 - 节点已验证同构（AlmaLinux9/py3.9.25/lustrefs+scratchfs2+cvmfs 挂载/
   hep_container exec 可用——TMP/hepsub/probe_node.out）
-- 时长参考：P2 ~33 min、P1/P3 ~50 min、P4 ~55 min（AmC run 数主导）
+- 时长参考：P2 ~33 min、P1/P3 ~50 min、P4 ~55 min（AmC run 数主导）；
+  clband 采样 ~4 min/条 → NITR=100 约 7-12 h，**只交集群勿在登录节点跑**
 
 ### 常用变量
 `DYBMODEL_DATA`（scratchfs2 上）、`NLFIT_FLAGS`（如 --skip-dybmodel 干跑）、
-`SUITE_FLAGS`（透传 calibsel）、`OUT_ROOT`、`ROOT_TS`（并行作业共树）
+`SUITE_FLAGS`（透传 calibsel）、`OUT_ROOT`、`ROOT_TS`（并行作业共树）、
+`DYB_CLBAND_FITTER`+`CL_CONTOUR_NITR`（误差带采样 opt-in，默认关= pinned
+二进制原行为）
+
+## 2b. 算力纪律（集群 vs 登录节点）
+
+**大任务交 hep_sub 节点作业；登录节点只做快速分析**（画图、表格对比、
+<10 min 的单段验证）。判据——任一成立即上集群：
+
+- 预计 >30 min（全 phase 链路、dybmodel 拟合 7 min、CL 采样 4 min/条）
+- 整 run numpy 常驻 >2 GB（Stage 1，`-m 8000` 必带）
+- 多 phase 并行（每 phase 一个作业共树）
+
+作业模板：`TMP/hepsub/submit_phases.sh`（全链路）、`submit_clband.sh`
+（误差带采样）。登录节点挂多小时后台任务**不许**——会话退出连杀子进程
+（8404199 前身实测被杀，且占共用登录资源）。
+
+**交完作业必挂监视器**（CronCreate 定时，30 min 间隔足够）：
+1. `hep_q -u lidian` 查状态
+2. 在跑：看输出树关键文件的 mtime/大小增长（如 errors_*.root 逐条涨）
+   → 汇报进度，继续等
+3. 完成：查 run_log audit + 与基线逐字节核对（行为锁），然后走画图/汇报
+4. held/失败：读作业 `.out.<jobid>.0` 与模块 log 定位，汇报勿自行重交
 
 ## 3. 跑的规范（每次运行都要守住）
 

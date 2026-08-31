@@ -233,9 +233,33 @@ def main() -> int:
                     logger.set_exit_code(1)
                     return 1
 
+            # ---------------- Stage 8: paper-style NL figures ----------------
+            # 论文复刻图（fig_a 液闪 NL / fig_d 三条 full NL）——纯只读出图，
+            # 失败只记 warning，不影响 fit 结果与 audit（图可事后用
+            # tools/paper_style_nl_figures.py --tree 单独补出）
+            if curves is None:
+                logger.add_stage("8 paper-figures", "skipped",
+                                 detail={"note": "depends on Stage 6"})
+            else:
+                t0 = time.time()
+                try:
+                    from tools.paper_style_nl_figures import render  # noqa: PLC0415
+                    tag = (f"Phase {phase}" if phase is not None
+                           else "AllPhase") + f" — {out.parent.name}"
+                    saved = render(res_dir, fig_dir, tag)
+                    logger.add_stage("8 paper-figures", "ok",
+                                     round(time.time() - t0, 1),
+                                     outputs={"figures": saved})
+                except Exception as e:
+                    logger.add_stage("8 paper-figures", "failed",
+                                     round(time.time() - t0, 1),
+                                     detail={"error": str(e)})
+                    logger.add_error("8", str(e))
+                    print(f"[Warn] Stage 8 paper figures failed (non-fatal): {e}")
+
             # ---------------- summary + audit ----------------
             logger.set_summary({
-                "stages_run": "4b,5" + (",6,7" if curves is not None else ""),
+                "stages_run": "4b,5" + (",6,7,8" if curves is not None else ""),
                 "gamma_dat": stage5["gamma_dat"],
                 "lookup": (lookup or {}).get("lookup_npz", "n/a"),
             })
@@ -254,6 +278,8 @@ def main() -> int:
                              res_dir / f"curves_{P.DYB_TOY_KEY}.root",
                              fig_dir / "stage6_nl_curves.png",
                              fig_dir / "stage7_inversion.png",
+                             fig_dir / "fig_a_scintillator_nl.png",
+                             fig_dir / "fig_d_full_nl.png",
                              res_dir / "Etrue_from_Erec_lookup.npz"]
             audit = logger.run_audit(expected)
             if audit["passed"]:
